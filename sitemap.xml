@@ -1,75 +1,76 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://yang110.hkfree.work/</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/my-tools.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/my-tools.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/%E6%8A%BD%E5%A5%96.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/%E6%8A%BD%E5%A5%96.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/pomodoro.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/pomodoro.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/notes.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/notes.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/calculator.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/calculator.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/design-tools.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/design-tools.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/snippets.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/snippets.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/charts.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/charts.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/markdown-editor.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/markdown-editor.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>http://yang110.hkfree.work/date/share.html</loc>
+    <loc>https://beau-cpu.github.io/infinitycore/date/share.html</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 </urlset>
+

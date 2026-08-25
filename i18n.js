@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InfinityCore 多语言系统
  * 支持中文(zh-CN)和英文(en)切换
  */
@@ -76,7 +76,7 @@ const i18n = {
             // 联系方式
             'contact.title': '联系我',
             'contact.desc': '欢迎交流技术与合作机会',
-            'contact.website': 'http://yang110.hkfree.work/',
+            'contact.website': 'https://beau-cpu.github.io/infinitycore/',
             'contact.email.click': '[点击显示邮箱]',
             
             // 项目页面
@@ -135,7 +135,7 @@ const i18n = {
             
             // 页脚
             'footer.copyright': '© {year} Beau 🤍 的个人项目 | 探索 · 创造 · 分享',
-            'footer.website': '网址：http://yang110.hkfree.work/',
+            'footer.website': '网址：https://beau-cpu.github.io/infinitycore/',
             'footer.email': '邮箱：[点击显示]',
             
             // 打赏弹窗
@@ -222,7 +222,7 @@ const i18n = {
             // Contact
             'contact.title': 'Contact Me',
             'contact.desc': 'Welcome to discuss technology and collaboration opportunities',
-            'contact.website': 'http://yang110.hkfree.work/',
+            'contact.website': 'https://beau-cpu.github.io/infinitycore/',
             'contact.email.click': '[Click to show email]',
             
             // Projects Page
@@ -281,7 +281,7 @@ const i18n = {
             
             // Footer
             'footer.copyright': '{year} Beau 🤍 Personal Project | Explore · Create · Share',
-            'footer.website': 'Website: http://yang110.hkfree.work/',
+            'footer.website': 'Website: https://beau-cpu.github.io/infinitycore/',
             'footer.email': 'Email: [Click to show]',
             
             // Donate Modal
@@ -400,3 +400,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 100);
 });
+

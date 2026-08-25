@@ -1,5 +1,5 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
 Disallow: /打赏/
 Disallow: /图标/
-Sitemap: http://yang110.hkfree.work/sitemap.xml
+Sitemap: https://beau-cpu.github.io/infinitycore/sitemap.xml
