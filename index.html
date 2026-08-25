@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="图标/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfinityCore - 无限核心 | Beau 🤍 的技术空间</title>
+    <meta name="description" content="Beau 🤍 的个人技术空间，汇集学习过程中开发的各种实用工具和项目实践">
+    
+    <!-- SEO & Open Graph -->
+    <meta property="og:title" content="InfinityCore - 无限核心 | Beau 🤍 的技术空间">
+    <meta property="og:description" content="个人技术实验场，汇集学习过程中开发的各种实用工具和项目实践 | 全新升级版">
+    <meta property="og:type" content="website">
+    <meta name="keywords" content="InfinityCore, Beau, 技术空间, Web开发, 前端, JavaScript, HTML, CSS, 工具箱, 学习笔记">
+    <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
+    <meta name="sogou_site_verification" content="lBYwadlYSS" />
+    <meta name="theme-color" content="#c7a27c">
+
+    <!-- 外部CSS文件 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- 多语言系统 -->
+    <script src="i18n.js"></script>
+</head>
+<body>
+    <!-- 自定义光标（简化版） -->
+    <div class="cursor-dot"></div>
+    
+    <!-- 背景粒子 -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- 加载动画 -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="logo-loading">InfinityCore</div>
+            <div class="loader-spinner"></div>
+            <div class="loader-progress"></div>
+            <div class="loader-complete" data-i18n="loader.ready">准备就绪</div>
+        </div>
+    </div>
+
+    <!-- 导航栏（只保留前4项 + 语言切换） -->
+    <nav class="navbar" id="navbar">
+        <div class="logo">
+            <span class="logo-icon">∞</span>
+            <span data-i18n="nav.logo">Beau 🤍 的技术空间</span>
+        </div>
+        <div class="nav-actions">
+            <!-- 语言切换按钮 -->
+            <button class="lang-toggle" id="langToggle" data-tooltip="Switch to English" title="切换语言">EN</button>
+            <button class="mobile-toggle" id="mobileToggle">☰</button>
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#" class="active" onclick="showContent('home', this)" data-i18n="nav.home">首页</a></li>
+            <li><a href="#" onclick="showContent('about', this)" data-i18n="nav.about">关于我</a></li>
+            <li><a href="#" onclick="showContent('projects', this)" data-i18n="nav.projects">我的项目</a></li>
+            <li><a href="my-tools.html" target="_blank" rel="noopener noreferrer" data-i18n="nav.toolbox">工具箱</a></li>
+        </ul>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="container">
+        <!-- 首页内容 -->
+        <section id="home-content" class="content-section">
+            <div class="hero">
+                <h1><span id="typewriter"></span><span class="cursor-blink">|</span></h1>
+                <p data-i18n="hero.subtitle">这里是 Beau 🤍 的技术实验场，汇集学习过程中开发的各种实用工具和项目实践</p>
+                <div class="hero-stats">
+                    <div class="stat-badge"><i class="fas fa-code"></i><span id="projectCount">8+</span> <span data-i18n="stats.projects">个项目</span></div>
+                    <div class="stat-badge"><i class="fas fa-tools"></i><span id="toolCount">12+</span> <span data-i18n="stats.tools">个工具</span></div>
+                    <div class="stat-badge"><i class="fas fa-eye"></i><span id="visitCount">--</span> <span data-i18n="stats.visits">次访问</span></div>
+                    <div class="stat-badge"><i class="fas fa-heart"></i> <span data-i18n="stats.updating">持续更新中</span></div>
+                </div>
+            </div>
+            
+            <div class="content-card perspective fade-in-up">
+                <div class="card-3d">
+                    <div class="icon-container">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h2 data-i18n="card.tech.title">技术探索</h2>
+                    <p data-i18n="card.tech.desc1">在学习过程中不断尝试新技术，从HTML/CSS到JavaScript，探索Web开发的无限可能。</p>
+                    <p data-i18n="card.tech.desc2">通过实际项目驱动学习，将理论知识转化为实用工具。</p>
+                    <div class="tech-tags">
+                        <span class="mini-tag">HTML5</span>
+                        <span class="mini-tag">CSS3</span>
+                        <span class="mini-tag">JavaScript</span>
+                        <span class="mini-tag">ES6+</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card perspective fade-in-up">
+                <div class="card-3d">
+                    <div class="icon-container">
+                        <i class="fas fa-pencil-ruler"></i>
+                    </div>
+                    <h2 data-i18n="card.learn.title">学习实践</h2>
+                    <p data-i18n="card.learn.desc1">注重理论与实践结合，每一个项目都是对知识的深入理解和应用。</p>
+                    <p data-i18n="card.learn.desc2">通过用户研究和数据分析，确保每个项目都能带来实际价值。</p>
+                    <div class="tech-tags">
+                        <span class="mini-tag">响应式设计</span>
+                        <span class="mini-tag">用户体验</span>
+                        <span class="mini-tag">性能优化</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card perspective fade-in-up">
+                <div class="card-3d">
+                    <div class="icon-container">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h2 data-i18n="card.future.title">未来规划</h2>
+                    <p data-i18n="card.future.desc1">持续学习，不断进步。计划深入前端框架、后端开发，探索更广阔的技术领域。</p>
+                    <p data-i18n="card.future.desc2">期待将更多想法转化为实用的工具和项目。</p>
+                    <div class="tech-tags">
+                        <span class="mini-tag">Vue.js</span>
+                        <span class="mini-tag">Node.js</span>
+                        <span class="mini-tag">TypeScript</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最新动态卡片 -->
+            <div class="content-card perspective fade-in-up update-card">
+                <div class="card-3d">
+                    <div class="icon-container update-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h2><i class="fas fa-bolt"></i> <span data-i18n="updates.title">最新动态</span></h2>
+                    <div class="update-list">
+                        <div class="update-item">
+                            <span class="update-date">2026-08-16</span>
+                            <span class="update-text" data-i18n="update.1">全新UI升级：优化视觉层次与交互体验</span>
+                            <span class="update-tag major" data-i18n="updates.major">Major</span>
+                        </div>
+                        <div class="update-item">
+                            <span class="update-date">2026-08-16</span>
+                            <span class="update-text" data-i18n="update.2">新增数据可视化图表工具</span>
+                            <span class="update-tag new" data-i18n="updates.new">New</span>
+                        </div>
+                        <div class="update-item">
+                            <span class="update-date">2026-08-15</span>
+                            <span class="update-text" data-i18n="update.3">新增Markdown编辑器实时预览功能</span>
+                            <span class="update-tag new" data-i18n="updates.new">New</span>
+                        </div>
+                        <div class="update-item">
+                            <span class="update-date">2026-08-15</span>
+                            <span class="update-text" data-i18n="update.4">新增番茄钟专注工具</span>
+                            <span class="update-tag new" data-i18n="updates.new">New</span>
+                        </div>
+                        <div class="update-item">
+                            <span class="update-date">2026-08-15</span>
+                            <span class="update-text" data-i18n="update.5">新增多功能计算器（科学+单位转换）</span>
+                            <span class="update-tag new" data-i18n="updates.new">New</span>
+                        </div>
+                        <div class="update-item">
+                            <span class="update-date">2026-08-14</span>
+                            <span class="update-text" data-i18n="update.6">优化页面滚动动画与交互体验</span>
+                            <span class="update-tag improve" data-i18n="updates.improve">Improve</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        
+        <!-- 关于内容 -->
+        <section id="about-content" class="content-section" style="display:none;">
+            <div class="hero">
+                <h1 data-i18n="about.title">关于我</h1>
+                <p data-i18n="about.subtitle">一名热爱技术的计算机科学学生</p>
+            </div>
+
+            <div class="content-card perspective fade-in-up">
+                <div class="card-3d">
+                    <div class="icon-container">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2 data-i18n="about.education.bg">学习背景</h2>
+                    <p data-i18n="about.education.school">YIPC · 物联网工程专业</p>
+                    <p data-i18n="about.education.desc">专注于Web开发与网络技术，通过项目实践驱动学习，对前端开发、物联网应用和网络技术有浓厚兴趣。</p>
+                </div>
+            </div>
+
+            <div class="content-card perspective fade-in-up">
+                <div class="card-3d">
+                    <div class="icon-container">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h2 data-i18n="about.skills.title">技术栈</h2>
+                    <p data-i18n="about.skills.list">HTML5 · CSS3 · JavaScript · 响应式设计</p>
+                    <p data-i18n="about.skills.learning">正在学习 Vue.js/React · Node.js 基础 · Git 版本控制</p>
+                    <p data-i18n="about.skills.note">这个网站是我学习和实践过程的成果展示。</p>
+                    
+                    <!-- 技能进度条 -->
+                    <div class="skills-container">
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name"><i class="fab fa-html5"></i> HTML5</span>
+                                <span class="skill-percent">92%</span>
+                            </div>
+                            <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name"><i class="fab fa-css3-alt"></i> CSS3</span>
+                                <span class="skill-percent">88%</span>
+                            </div>
+                            <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name"><i class="fab fa-js-square"></i> JavaScript</span>
+                                <span class="skill-percent">82%</span>
+                            </div>
+                            <div class="skill-bar"><div class="skill-fill" data-width="82"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name"><i class="fas fa-mobile-alt"></i> 响应式设计</span>
+                                <span class="skill-percent">85%</span>
+                            </div>
+                            <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name"><i class="fab fa-vuejs"></i> Vue.js</span>
+                                <span class="skill-percent">50%</span>
+                            </div>
+                            <div class="skill-bar"><div class="skill-fill" data-width="50"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name"><i class="fab fa-node-js"></i> Node.js</span>
+                                <span class="skill-percent">40%</span>
+                            </div>
+                            <div class="skill-bar"><div class="skill-fill" data-width="40"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-card perspective fade-in-up">
+                <div class="card-3d">
+                    <div class="icon-container">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h2>项目目标</h2>
+                    <p>通过实际项目深入学习技术，开发有用的工具解决实际问题。</p>
+                    <p>记录学习过程，整理有用的资源和经验，为未来职业发展打下基础。</p>
+                    
+                    <!-- 时间线视图 -->
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <h4 data-i18n="timeline.start">🚀 启程</h4>
+                                <p data-i18n="timeline.start.desc">开始接触 Web 开发，搭建第一个个人网站</p>
+                                <span class="timeline-date">2023 年初</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <h4 data-i18n="timeline.explore">🛠️ 探索</h4>
+                                <p data-i18n="timeline.explore.desc">开发抽奖工具、资源导航站等实用小工具</p>
+                                <span class="timeline-date">2023 年中</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <h4 data-i18n="timeline.growth">📈 成长</h4>
+                                <p data-i18n="timeline.growth.desc">学习 JavaScript 深入知识，构建代码共享平台</p>
+                                <span class="timeline-date">2024 年</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot active"></div>
+                            <div class="timeline-content">
+                                <h4 data-i18n="timeline.now">✨ 现在</h4>
+                                <p data-i18n="timeline.now.desc">全面升级，新增多个实用工具模块</p>
+                                <span class="timeline-date">2026 年</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 新增：联系方式卡片 -->
+            <div class="content-card perspective fade-in-up contact-card">
+                <div class="card-3d">
+                    <div class="icon-container">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h2 data-i18n="contact.title">联系我</h2>
+                    <p data-i18n="contact.desc">欢迎交流技术与合作机会</p>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-globe"></i>
+                            <span data-i18n="contact.website">http://yang110.hkfree.work/</span>
+                        </div>
+                        <div class="contact-item" id="emailDisplay">
+                            <i class="fas fa-envelope"></i>
+                            <span class="email-link" onclick="showEmail()" data-i18n="contact.email.click">[点击显示邮箱]</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 我的项目内容 -->
+        <section id="projects-content" class="content-section" style="display:none;">
+            <div class="hero">
+                <h1 data-i18n="projects.title">我的项目集合</h1>
+                <p data-i18n="projects.subtitle">在学习过程中开发的各种实用工具</p>
+            </div>
+
+            <div class="projects-grid">
+                <!-- 抽奖工具 -->
+                <div class="project-card fade-in-up">
+                    <div class="project-header">
+                        <i class="fas fa-gift"></i>
+                        <h3 data-i18n="project.lottery.name">随机抽选工具</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.lottery.desc">用于课堂抽点、活动抽奖的实用工具，支持自定义名单和多种随机算法。</p>
+                    <div class="project-links">
+                        <a href="抽奖.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.lottery.btn">使用工具</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">HTML5</span>
+                        <span class="tag">CSS3</span>
+                    </div>
+                </div>
+
+                <!-- 资源导航 -->
+                <div class="project-card fade-in-up">
+                    <div class="project-header">
+                        <i class="fas fa-bookmark"></i>
+                        <h3 data-i18n="project.resources.name">资源导航站</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.resources.desc">收集整理的学习资源和实用网站，方便快速访问常用开发工具和学习平台。</p>
+                    <div class="project-links">
+                        <a href="友情链接.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.resources.btn">查看资源</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">资源整理</span>
+                        <span class="tag">导航设计</span>
+                        <span class="tag">用户体验</span>
+                    </div>
+                </div>
+
+                 <!-- 代码学习库 -->
+                <div class="project-card fade-in-up">
+                    <div class="project-header">
+                        <i class="fas fa-code-branch"></i>
+                        <h3 data-i18n="project.code.name">代码学习中心</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.code.desc">收集整理的学习代码的方法，方便快速搭建交流平台。</p>
+                    <div class="project-links">
+                        <a href="date/share.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.code.btn">进入中心</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">融合整理</span>
+                        <span class="tag">代码共享</span>
+                        <span class="tag">共建平台</span>
+                    </div>
+                </div>
+
+                <!-- 番茄钟工具 -->
+                <div class="project-card fade-in-up featured">
+                    <div class="project-badge-new" data-i18n="status.hot">✨ 热门</div>
+                    <div class="project-header">
+                        <i class="fas fa-clock"></i>
+                        <h3 data-i18n="project.pomodoro.name">番茄钟专注工具</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.pomodoro.desc">基于番茄工作法的专注计时器，帮助提升学习和工作效率，支持自定义时长和休息提醒。</p>
+                    <div class="project-links">
+                        <a href="pomodoro.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.pomodoro.btn">使用工具</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">效率工具</span>
+                        <span class="tag">时间管理</span>
+                    </div>
+                </div>
+
+                <!-- 多功能计算器 -->
+                <div class="project-card fade-in-up featured">
+                    <div class="project-badge-new" data-i18n="status.hot">✨ 热门</div>
+                    <div class="project-header">
+                        <i class="fas fa-calculator"></i>
+                        <h3 data-i18n="project.calculator.name">多功能计算器</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.calculator.desc">支持基础计算、科学函数（三角/对数/幂运算）、8种单位转换的在线计算工具。</p>
+                    <div class="project-links">
+                        <a href="calculator.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.calculator.btn">使用工具</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">科学计算</span>
+                        <span class="tag">单位转换</span>
+                    </div>
+                </div>
+
+                <!-- 技术笔记 -->
+                <div class="project-card fade-in-up featured">
+                    <div class="project-badge-new" data-i18n="status.hot">✨ 热门</div>
+                    <div class="project-header">
+                        <i class="fas fa-book-open"></i>
+                        <h3 data-i18n="project.notes.name">技术学习笔记</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.notes.desc">系统化的前端学习笔记，涵盖 HTML/CSS/JS 核心知识、Git 使用、性能优化等实战内容。</p>
+                    <div class="project-links">
+                        <a href="notes.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.notes.btn">阅读笔记</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">学习笔记</span>
+                        <span class="tag">前端知识</span>
+                        <span class="tag">最佳实践</span>
+                    </div>
+                </div>
+
+                <!-- Markdown编辑器 -->
+                <div class="project-card fade-in-up featured">
+                    <div class="project-badge-new" data-i18n="status.hot">✨ 热门</div>
+                    <div class="project-header">
+                        <i class="fas fa-markdown"></i>
+                        <h3 data-i18n="project.markdown.name">Markdown 编辑器</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.markdown.desc">在线 Markdown 编辑器，支持实时预览、语法高亮、工具栏快捷操作、一键导出 HTML。</p>
+                    <div class="project-links">
+                        <a href="markdown-editor.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.markdown.btn">使用工具</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">Markdown</span>
+                        <span class="tag">编辑器</span>
+                        <span class="tag">实时预览</span>
+                    </div>
+                </div>
+
+                <!-- 数据可视化 -->
+                <div class="project-card fade-in-up featured">
+                    <div class="project-badge-new" data-i18n="status.hot">✨ 热门</div>
+                    <div class="project-header">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3 data-i18n="project.charts.name">数据可视化工具</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.charts.desc">纯前端数据可视化工具，支持柱状图/折线图/饼图/雷达图等多种图表类型，即输即显。</p>
+                    <div class="project-links">
+                        <a href="charts.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.charts.btn">使用工具</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">Canvas</span>
+                        <span class="tag">数据可视化</span>
+                        <span class="tag">图表生成</span>
+                    </div>
+                </div>
+
+                <!-- 设计工具箱 -->
+                <div class="project-card fade-in-up featured">
+                    <div class="project-badge-new" data-i18n="status.hot">✨ 热门</div>
+                    <div class="project-header">
+                        <i class="fas fa-palette"></i>
+                        <h3 data-i18n="project.design.name">设计工具箱</h3>
+                        <span class="project-status done" data-i18n="status.done">已完成</span>
+                    </div>
+                    <p data-i18n="project.design.desc">前端设计辅助工具集合，包含颜色选择、渐变生成、阴影效果、圆角预览、字体预览等功能。</p>
+                    <div class="project-links">
+                        <a href="design-tools.html" target="_blank" rel="noopener noreferrer" class="btn" data-i18n="project.design.btn">使用工具</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">CSS工具</span>
+                        <span class="tag">设计辅助</span>
+                        <span class="tag">前端效率</span>
+                    </div>
+                </div>
+
+                <!-- 博客系统（计划中） -->
+                <div class="project-card fade-in-up">
+                    <div class="project-header">
+                        <i class="fas fa-blog"></i>
+                        <h3 data-i18n="project.blog.name">个人技术博客</h3>
+                        <span class="project-status plan" data-i18n="status.plan">计划中</span>
+                    </div>
+                    <p data-i18n="project.blog.desc">计划中的个人技术博客，用于记录学习笔记、技术总结和项目经验分享。</p>
+                    <div class="project-links">
+                        <a href="javascript:void(0)" class="btn-secondary" data-i18n="project.blog.btn">开发中</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">计划中</span>
+                        <span class="tag">Node.js</span>
+                        <span class="tag">数据库</span>
+                    </div>
+                </div>
+
+
+                <!-- API工具集（计划中） -->
+                <div class="project-card fade-in-up">
+                    <div class="project-header">
+                        <i class="fas fa-tools"></i>
+                        <h3 data-i18n="project.api.name">API工具集合</h3>
+                        <span class="project-status plan" data-i18n="status.plan">计划中</span>
+                    </div>
+                    <p data-i18n="project.api.desc">计划开发的一系列API工具，包括天气查询、IP查询、二维码生成等实用功能。</p>
+                    <div class="project-links">
+                        <a href="javascript:void(0)" class="btn-secondary" data-i18n="project.api.btn">构思中</a>
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">计划中</span>
+                        <span class="tag">API开发</span>
+                        <span class="tag">后端</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <p data-i18n="footer.copyright">&copy; <span id="currentYear"></span> Beau 🤍 的个人项目 | 探索 · 创造 · 分享</p>
+        <p><span class="email-link" data-i18n="footer.website">网址：http://yang110.hkfree.work/</span> |
+            <span class="email-link" id="emailText" data-i18n="footer.email">邮箱：[点击显示]</span>
+        </p>
+
+        <div class="social-links">
+            <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+            <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+        </div>
+
+     </footer>
+
+    <!-- 打赏按钮 -->
+    <button class="donate-btn" onclick="openDonateModal()">💖</button>
+    
+    <!-- 打赏弹窗 -->
+    <div class="modal" id="donateModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeDonateModal()">&times;</button>
+            <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--accent);" data-i18n="donate.title">感谢您的支持</h2>
+
+            <div class="qr-tabs">
+                <button class="tab-btn active" onclick="showQR('wechat')" data-i18n="donate.wechat">微信支付</button>
+                <button class="tab-btn" onclick="showQR('alipay')" data-i18n="donate.alipay">支付宝</button>
+            </div>
+            
+            <div class="qr-container">
+                <div class="qr-code" id="wechatQR">
+                    <div class="qr-code-img-container">
+                        <img src="打赏/WeChat Pay.jpg" alt="微信支付二维码" class="qr-code-img active" id="wechatImg"
+                             data-loaded="false"
+                             onclick="if(window.zoomImage){zoomImage(this.src)}"
+                             style="width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:cover!important;overflow:hidden!important;">
+                        <div class="qr-loading" id="wechatLoading"><i class="fas fa-spinner"></i></div>
+                        <div class="qr-error" id="wechatError" style="display: none;">图片加载失败</div>
+                    </div>
+                </div>
+                <div class="qr-code" id="alipayQR" style="display: none;">
+                    <div class="qr-code-img-container">
+                        <img src="打赏/Alipay.jpg" alt="支付宝二维码" class="qr-code-img" id="alipayImg"
+                             data-loaded="false"
+                             onclick="if(window.zoomImage){zoomImage(this.src)}"
+                             style="width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:cover!important;overflow:hidden!important;">
+                        <div class="qr-loading" id="alipayLoading"><i class="fas fa-spinner"></i></div>
+                        <div class="qr-error" id="alipayError" style="display: none;">图片加载失败</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="donate-text">
+                <p data-i18n="donate.text1">您的支持是我持续学习和创作的动力</p>
+                <p data-i18n="donate.text2">每一份支持都将用于技术学习和项目开发</p>
+                <p data-i18n="donate.text3">感谢您对InfinityCore的信任与支持！</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 图片放大查看器 -->
+    <div class="image-zoom-modal" id="imageZoomModal">
+        <span class="zoom-close" onclick="closeZoomModal()">&times;</span>
+        <img class="zoom-content" id="zoomedImage">
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn()"><i class="fas fa-plus"></i></button>
+            <button class="zoom-btn" onclick="zoomOut()"><i class="fas fa-minus"></i></button>
+            <button class="zoom-btn" onclick="resetZoom()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+    </div>
+
+    <!-- 回到顶部按钮 -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- 外部JavaScript文件 -->
+    <script src="script.js"></script>
+    <script>
+        // ====== 页面初始化增强 ======
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 更新年份
+            const yearEl = document.getElementById('currentYear');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+            
+            // 2. 访问计数器（localStorage）
+            let visits = parseInt(localStorage.getItem('infinitycore_visits') || '0') + 1;
+            localStorage.setItem('infinitycore_visits', visits);
+            const visitEl = document.getElementById('visitCount');
+            if (visitEl) visitEl.textContent = visits;
+
+            // 3. 打字机效果
+            initTypewriter();
+            
+            // 4. 初始化技能条动画
+            initSkillBars();
+            
+            // 5. 初始化滚动动画观察器
+            initScrollAnimations();
+
+            // 6. 初始化回到顶部按钮显示逻辑
+            initBackToTop();
+        });
+
+        // 打字机效果
+        function initTypewriter() {
+            const el = document.getElementById('typewriter');
+            if (!el) return;
+            const texts = ['无限核心 · 探索未来', 'InfinityCore · Explore Future', '代码改变世界', 'Code Changes The World'];
+            let textIndex = 0, charIndex = 0, isDeleting = false;
+            
+            function type() {
+                const current = texts[textIndex];
+                if (isDeleting) {
+                    el.textContent = current.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    el.textContent = current.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+                
+                let speed = isDeleting ? 50 : 120;
+                if (!isDeleting && charIndex === current.length) {
+                    speed = 2000;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    textIndex = (textIndex + 1) % texts.length;
+                    speed = 500;
+                }
+                setTimeout(type, speed);
+            }
+            type();
+        }
+
+        // 技能条动画
+        function initSkillBars() {
+            const bars = document.querySelectorAll('.skill-fill');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const w = entry.target.dataset.width;
+                        entry.target.style.width = w + '%';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            bars.forEach(b => observer.observe(b));
+        }
+
+        // 滚动渐入动画
+        function initScrollAnimations() {
+            const els = document.querySelectorAll('.fade-in-up');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+            els.forEach(el => observer.observe(el));
+        }
+
+        // 邮箱防爬虫保护
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailText = document.getElementById('emailText');
+            if (emailText) {
+                emailText.addEventListener('click', function() {
+                    const encodedEmail = 'MTcyNjU5ODU5NjFAMTYzLmNvbQ==';
+                    const email = atob(encodedEmail);
+                    this.innerHTML = `<a href="mailto:${email}" class="email-link">邮箱：${email}</a>`;
+                });
+                emailText.style.cursor = 'pointer';
+                emailText.title = '点击显示邮箱地址';
+            }
+        });
+
+        // 显示邮箱函数（关于页面）
+        function showEmail() {
+            const encodedEmail = 'MTcyNjU5ODU5NjFAMTYzLmNvbQ==';
+            const email = atob(encodedEmail);
+            const container = document.querySelector('#emailDisplay .email-link');
+            if (container) {
+                container.innerHTML = `<a href="mailto:${email}">${email}</a>`;
+            }
+        }
+
+        // 回到顶部功能
+        function initBackToTop() {
+            const btn = document.getElementById('backToTop');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 400) {
+                    btn.classList.add('visible');
+                } else {
+                    btn.classList.remove('visible');
+                }
+            });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

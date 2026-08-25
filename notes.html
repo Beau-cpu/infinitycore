@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="图标/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>技术学习笔记 · InfinityCore</title>
+    <meta name="description" content="系统化的前端学习笔记，涵盖HTML/CSS/JS核心知识、Git使用、性能优化等实战内容">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================================
+                   核心变量 & 重置
+                   ============================================================ */
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --secondary: #8a9b6e;
+            --dark: #2d2d2d;
+            --light: #f8f7f4;
+            --gray: #6d6d6d;
+            --border: #e0ded9;
+            --accent: #c7a27c;
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 12px 36px rgba(0, 0, 0, 0.08);
+            --radius: 20px;
+            --transition: all 0.3s ease;
+            --font: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            --touch-target: 44px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(248, 247, 244, 0.92), rgba(248, 247, 244, 0.92)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path fill="rgba(199,162,124,0.03)" d="M20,20 Q40,5 60,20 T100,20 Q85,40 100,60 T100,100 Q60,85 20,100 T0,100 Q5,60 0,20 T20,20"/></svg>');
+            background-size: cover, 300px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ============================================================
+                   顶部导航（共用）
+                   ============================================================ */
+        .header {
+            text-align: center;
+            margin-bottom: 1.8rem;
+            padding-top: 0.5rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            color: var(--dark);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 0.8rem;
+            transition: color 0.2s;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        .back-link:hover {
+            color: var(--accent);
+            background: rgba(199, 162, 124, 0.06);
+        }
+
+        /* ============================================================
+                   横屏布局 (≥ 900px) — 左侧目录 + 右侧内容
+                   ============================================================ */
+        @media (min-width: 900px) {
+            .main-layout {
+                display: grid;
+                grid-template-columns: 240px 1fr;
+                gap: 28px;
+                max-width: 1200px;
+                margin: 0 auto;
+                align-items: start;
+            }
+
+            /* 左侧目录侧边栏 */
+            .toc-sidebar {
+                position: sticky;
+                top: 20px;
+                background: var(--card-bg);
+                border-radius: var(--radius);
+                padding: 20px 16px;
+                border: 1px solid rgba(0, 0, 0, 0.04);
+                box-shadow: var(--shadow);
+                max-height: calc(100vh - 120px);
+                overflow-y: auto;
+                transition: var(--transition);
+            }
+            .toc-sidebar::-webkit-scrollbar {
+                width: 3px;
+            }
+            .toc-sidebar::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 4px;
+            }
+
+            .toc-sidebar .toc-title {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: var(--gray);
+                font-weight: 600;
+                padding: 0 6px 12px;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .toc-sidebar .toc-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 12px;
+                border-radius: 10px;
+                color: var(--gray);
+                text-decoration: none;
+                font-size: 0.85rem;
+                font-weight: 500;
+                transition: var(--transition);
+                cursor: pointer;
+                border: none;
+                background: none;
+                width: 100%;
+                text-align: left;
+                font-family: var(--font);
+            }
+            .toc-sidebar .toc-item:hover {
+                background: rgba(74, 111, 165, 0.06);
+                color: var(--dark);
+            }
+            .toc-sidebar .toc-item.active {
+                background: linear-gradient(135deg, rgba(199, 162, 124, 0.12), rgba(74, 111, 165, 0.08));
+                color: var(--primary-dark);
+                font-weight: 600;
+            }
+            .toc-sidebar .toc-item .toc-icon {
+                width: 28px;
+                height: 28px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                flex-shrink: 0;
+                color: #fff;
+            }
+            .toc-sidebar .toc-item .toc-label {
+                flex: 1;
+            }
+            .toc-sidebar .toc-item .toc-badge {
+                font-size: 0.6rem;
+                padding: 2px 8px;
+                border-radius: 10px;
+                background: rgba(0, 0, 0, 0.04);
+                color: var(--gray);
+            }
+
+            /* 右侧内容区 */
+            .content-area {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            /* 移动端目录导航在横屏时隐藏 */
+            .toc-mobile {
+                display: none !important;
+            }
+
+            /* 笔记卡片在横屏下更舒展 */
+            .note-card {
+                background: var(--card-bg);
+                border-radius: var(--radius);
+                padding: 2.2rem 2.4rem;
+                border: 1px solid rgba(0, 0, 0, 0.04);
+                box-shadow: var(--shadow);
+                transition: var(--transition);
+            }
+            .note-card:hover {
+                transform: translateY(-3px);
+                box-shadow: var(--shadow-hover);
+            }
+
+            .note-title {
+                font-size: 1.35rem;
+            }
+
+            .note-body {
+                font-size: 0.95rem;
+                line-height: 1.85;
+            }
+
+            .note-body pre {
+                font-size: 0.85rem;
+                padding: 18px 20px;
+            }
+        }
+
+        /* ============================================================
+                   竖屏布局 (< 900px) — 顶部目录 + 单栏内容
+                   ============================================================ */
+        @media (max-width: 899px) {
+            .main-layout {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                max-width: 100%;
+            }
+
+            /* 横屏侧边栏在竖屏时隐藏 */
+            .toc-sidebar {
+                display: none !important;
+            }
+
+            /* 移动端目录导航 */
+            .toc-mobile {
+                display: flex !important;
+                background: var(--card-bg);
+                border-radius: 16px;
+                padding: 12px 16px;
+                gap: 6px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                align-items: center;
+                border: 1px solid rgba(0, 0, 0, 0.04);
+                box-shadow: var(--shadow);
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+            }
+            .toc-mobile::-webkit-scrollbar {
+                height: 3px;
+            }
+            .toc-mobile::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 4px;
+            }
+
+            .toc-mobile .toc-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--gray);
+                white-space: nowrap;
+                padding-right: 8px;
+                flex-shrink: 0;
+            }
+
+            .toc-mobile .toc-item {
+                padding: 6px 14px;
+                border-radius: 20px;
+                background: rgba(74, 111, 165, 0.05);
+                color: var(--primary-dark);
+                text-decoration: none;
+                font-size: 0.78rem;
+                font-weight: 500;
+                transition: var(--transition);
+                white-space: nowrap;
+                flex-shrink: 0;
+                scroll-snap-align: start;
+                border: none;
+                cursor: pointer;
+                font-family: var(--font);
+            }
+            .toc-mobile .toc-item:hover,
+            .toc-mobile .toc-item.active {
+                background: linear-gradient(135deg, var(--accent), var(--primary));
+                color: white;
+            }
+
+            .content-area {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .note-card {
+                background: var(--card-bg);
+                border-radius: 18px;
+                padding: 1.4rem 1.2rem;
+                border: 1px solid rgba(0, 0, 0, 0.04);
+                box-shadow: var(--shadow);
+                transition: var(--transition);
+            }
+
+            .note-title {
+                font-size: 1.1rem;
+            }
+
+            .note-body {
+                font-size: 0.88rem;
+                line-height: 1.75;
+            }
+
+            .note-body pre {
+                font-size: 0.78rem;
+                padding: 14px 16px;
+            }
+        }
+
+        /* ============================================================
+                   小屏手机 (≤ 480px) 进一步压缩
+                   ============================================================ */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .header p {
+                font-size: 0.85rem;
+            }
+            .note-card {
+                padding: 1rem 0.9rem;
+                border-radius: 14px;
+            }
+            .note-title {
+                font-size: 1rem;
+            }
+            .note-body {
+                font-size: 0.82rem;
+                line-height: 1.7;
+            }
+            .note-body pre {
+                font-size: 0.72rem;
+                padding: 10px 12px;
+                border-radius: 10px;
+            }
+            .note-body table {
+                font-size: 0.75rem;
+            }
+            .note-body th,
+            .note-body td {
+                padding: 6px 8px;
+            }
+            .toc-mobile {
+                padding: 8px 12px;
+                gap: 4px;
+            }
+            .toc-mobile .toc-item {
+                padding: 4px 12px;
+                font-size: 0.7rem;
+            }
+            .toc-mobile .toc-label {
+                font-size: 0.65rem;
+            }
+            .note-header {
+                gap: 8px;
+                padding-bottom: 8px;
+            }
+            .note-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 0.95rem;
+            }
+            .note-meta {
+                font-size: 0.65rem;
+            }
+            .note-tag {
+                font-size: 0.6rem;
+                padding: 1px 8px;
+            }
+            .back-link {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            .back-to-top {
+                width: 38px;
+                height: 38px;
+                font-size: 0.85rem;
+                bottom: 16px;
+                right: 16px;
+            }
+            .tip-box,
+            .warn-box {
+                padding: 10px 12px;
+                font-size: 0.82rem;
+            }
+        }
+
+        /* ============================================================
+                   笔记卡片通用样式
+                   ============================================================ */
+        .note-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            flex-wrap: wrap;
+        }
+        .note-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            color: var(--accent);
+            background: linear-gradient(135deg, rgba(199, 162, 124, 0.12), rgba(74, 111, 165, 0.08));
+            flex-shrink: 0;
+        }
+        .note-title {
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .note-meta {
+            margin-left: auto;
+            font-size: 0.78rem;
+            color: var(--gray);
+            white-space: nowrap;
+        }
+        .note-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+        .tag-html {
+            background: rgba(231, 76, 60, 0.10);
+            color: #E74C3C;
+        }
+        .tag-css {
+            background: rgba(41, 128, 185, 0.10);
+            color: #2980B9;
+        }
+        .tag-js {
+            background: rgba(243, 156, 18, 0.10);
+            color: #F39C12;
+        }
+        .tag-git {
+            background: rgba(155, 89, 182, 0.10);
+            color: #9B59B6;
+        }
+        .tag-perf {
+            background: rgba(39, 174, 96, 0.10);
+            color: #27AE60;
+        }
+
+        .note-body h3 {
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+            margin: 1.2rem 0 0.6rem;
+            font-weight: 600;
+        }
+        .note-body p {
+            margin-bottom: 0.7rem;
+        }
+        .note-body code {
+            background: rgba(74, 111, 165, 0.08);
+            color: var(--primary-dark);
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.84em;
+        }
+        .note-body pre {
+            background: rgba(45, 45, 45, 0.95);
+            color: #f8f8f2;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-size: 0.84em;
+            line-height: 1.65;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .note-body pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        .note-body ul,
+        .note-body ol {
+            padding-left: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+        .note-body li {
+            margin-bottom: 4px;
+        }
+        .note-body strong {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        .note-body blockquote {
+            border-left: 3px solid var(--accent);
+            padding: 10px 16px;
+            margin: 1rem 0;
+            background: rgba(199, 162, 124, 0.05);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: var(--gray);
+        }
+        .note-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.88rem;
+        }
+        .note-body th,
+        .note-body td {
+            padding: 10px 14px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        .note-body th {
+            background: rgba(74, 111, 165, 0.06);
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        .note-body td {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(92, 184, 92, 0.08), rgba(138, 155, 110, 0.06));
+            border: 1px solid rgba(92, 184, 92, 0.20);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 1rem 0;
+            display: flex;
+            gap: 10px;
+            align-items: start;
+        }
+        .tip-box i {
+            color: #5cb85c;
+            font-size: 1rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .warn-box {
+            background: linear-gradient(135deg, rgba(240, 173, 78, 0.08), rgba(217, 83, 79, 0.06));
+            border: 1px solid rgba(240, 173, 78, 0.25);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 1rem 0;
+            display: flex;
+            gap: 10px;
+            align-items: start;
+        }
+        .warn-box i {
+            color: #F0AD4E;
+            font-size: 1rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+                   回到顶部
+                   ============================================================ */
+        .back-to-top {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: var(--card-bg);
+            color: var(--accent);
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(199, 162, 124, 0.3);
+        }
+
+        /* ============================================================
+                   页脚
+                   ============================================================ */
+        .page-footer {
+            text-align: center;
+            padding: 2rem 0 0.5rem;
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid var(--border);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .page-footer p {
+            margin-bottom: 4px;
+        }
+
+        /* ============================================================
+                   滚动条美化（横屏侧边栏）
+                   ============================================================ */
+        @media (min-width: 900px) {
+            .toc-sidebar::-webkit-scrollbar {
+                width: 3px;
+            }
+            .toc-sidebar::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 4px;
+            }
+        }
+
+        /* ============================================================
+                   加载动画（轻量）
+                   ============================================================ */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10000;
+            transition: opacity 0.6s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loading-text {
+            margin-top: 16px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 加载动画 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">加载笔记中...</div>
+    </div>
+
+    <div style="max-width:1200px;margin:0 auto;">
+
+        <!-- 顶部 -->
+        <div class="header">
+            <h1><i class="fas fa-book-open"></i> 技术学习笔记</h1>
+            <p>前端开发知识体系 · 持续更新中</p>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回首页</a>
+        </div>
+
+        <!-- 主体布局 -->
+        <div class="main-layout">
+
+            <!-- ====== 横屏：左侧目录侧边栏 ====== -->
+            <aside class="toc-sidebar" id="tocSidebar">
+                <div class="toc-title"><i class="fas fa-list"></i> 目录导航</div>
+                <button class="toc-item active" data-target="html-basics">
+                    <span class="toc-icon" style="background:#E74C3C;"><i class="fab fa-html5"></i></span>
+                    <span class="toc-label">HTML基础</span>
+                    <span class="toc-badge">5</span>
+                </button>
+                <button class="toc-item" data-target="css-mastery">
+                    <span class="toc-icon" style="background:#2980B9;"><i class="fab fa-css3-alt"></i></span>
+                    <span class="toc-label">CSS进阶</span>
+                    <span class="toc-badge">6</span>
+                </button>
+                <button class="toc-item" data-target="js-core">
+                    <span class="toc-icon" style="background:#F39C12;"><i class="fab fa-js-square"></i></span>
+                    <span class="toc-label">JavaScript</span>
+                    <span class="toc-badge">8</span>
+                </button>
+                <button class="toc-item" data-target="git-workflow">
+                    <span class="toc-icon" style="background:#9B59B6;"><i class="fab fa-git-alt"></i></span>
+                    <span class="toc-label">Git工作流</span>
+                    <span class="toc-badge">4</span>
+                </button>
+                <button class="toc-item" data-target="perf-opt">
+                    <span class="toc-icon" style="background:#27AE60;"><i class="fas fa-tachometer-alt"></i></span>
+                    <span class="toc-label">性能优化</span>
+                    <span class="toc-badge">6</span>
+                </button>
+                <button class="toc-item" data-target="best-practices">
+                    <span class="toc-icon" style="background:var(--accent);"><i class="fas fa-star"></i></span>
+                    <span class="toc-label">最佳实践</span>
+                    <span class="toc-badge">4</span>
+                </button>
+            </aside>
+
+            <!-- ====== 竖屏：顶部移动端目录导航 ====== -->
+            <nav class="toc-mobile" id="tocMobile">
+                <span class="toc-label"><i class="fas fa-list"></i> 跳转</span>
+                <button class="toc-item active" data-target="html-basics">HTML基础</button>
+                <button class="toc-item" data-target="css-mastery">CSS进阶</button>
+                <button class="toc-item" data-target="js-core">JavaScript</button>
+                <button class="toc-item" data-target="git-workflow">Git工作流</button>
+                <button class="toc-item" data-target="perf-opt">性能优化</button>
+                <button class="toc-item" data-target="best-practices">最佳实践</button>
+            </nav>
+
+            <!-- ====== 右侧内容区 ====== -->
+            <main class="content-area" id="contentArea">
+
+                <!-- HTML基础 -->
+                <article class="note-card" id="html-basics">
+                    <div class="note-header">
+                        <div class="note-icon"><i class="fab fa-html5"></i></div>
+                        <h2 class="note-title">HTML5 核心知识</h2>
+                        <span class="note-meta">持续更新</span>
+                        <span class="note-tag tag-html">HTML</span>
+                    </div>
+                    <div class="note-body">
+                        <h3>语义化标签</h3>
+                        <p>HTML5 引入了丰富的语义化标签，让页面结构更清晰：</p>
+                        <pre><code>&lt;header&gt; — 页面头部区域
+&lt;nav&gt;   — 导航链接容器
+&lt;main&gt;  — 主要内容区（每个页面仅一个）
+&lt;article&gt; — 独立的内容块
+&lt;section&gt; — 内容分组
+&lt;aside&gt;  — 侧边栏/辅助内容
+&lt;footer&gt; — 页脚区域</code></pre>
+
+                        <div class="tip-box">
+                            <i class="fas fa-lightbulb"></i>
+                            <div><strong>最佳实践：</strong>优先使用语义化标签而非 div，这对 SEO 和无障碍访问都有帮助。使用语义化标签可以让屏幕阅读器更好地理解页面结构。</div>
+                        </div>
+
+                        <h3>表单增强</h3>
+                        <p>HTML5 表单新增了多种输入类型和验证属性：</p>
+                        <table>
+                            <tr><th>类型</th><th>用途</th><th>示例</th></tr>
+                            <tr><td><code>email</code></td><td>邮箱地址</td><td><code>&lt;input type="email"&gt;</code></td></tr>
+                            <tr><td><code>number</code></td><td>数字输入</td><td><code>&lt;input type="number" min="0" max="100"&gt;</code></td></tr>
+                            <tr><td><code>date</code></td><td>日期选择</td><td><code>&lt;input type="date"&gt;</code></td></tr>
+                            <tr><td><code>range</code></td><td>滑块选择</td><td><code>&lt;input type="range"&gt;</code></td></tr>
+                            <tr><td><code>url</code></td><td>URL 地址</td><td><code>&lt;input type="url"&gt;</code></td></tr>
+                        </table>
+
+                        <h3>多媒体支持</h3>
+                        <pre><code>&lt;!-- 视频 --&gt;
+&lt;video controls width="640"&gt;
+    &lt;source src="video.mp4" type="video/mp4"&gt;
+    您的浏览器不支持视频播放。
+&lt;/video&gt;
+
+&lt;!-- 音频 --&gt;
+&lt;audio controls&gt;
+    &lt;source src="audio.mp3" type="audio/mpeg"&gt;
+&lt;/audio&gt;</code></pre>
+                    </div>
+                </article>
+
+                <!-- CSS进阶 -->
+                <article class="note-card" id="css-mastery">
+                    <div class="note-header">
+                        <div class="note-icon"><i class="fab fa-css3-alt"></i></div>
+                        <h2 class="note-title">CSS 进阶技巧</h2>
+                        <span class="note-tag tag-css">CSS</span>
+                    </div>
+                    <div class="note-body">
+                        <h3>CSS 变量（自定义属性）</h3>
+                        <pre><code>:root {
+    --primary-color: #4a6fa5;
+    --accent-color: #c7a27c;
+    --spacing-unit: 8px;
+    --shadow-sm: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.card {
+    background: var(--primary-color);
+    padding: calc(var(--spacing-unit) * 3);
+    box-shadow: var(--shadow-sm);
+}</code></pre>
+
+                        <h3>Flexbox 布局模式</h3>
+                        <pre><code>.container {
+    display: flex;
+    justify-content: space-between;  /* 主轴对齐 */
+    align-items: center;             /* 交叉轴对齐 */
+    gap: 16px;                       /* 元素间距 */
+    flex-wrap: wrap;                 /* 允许换行 */
+}
+
+.item { flex: 1; }  /* 等分空间 */</code></pre>
+
+                        <h3>Grid 布局</h3>
+                        <pre><code>.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}</code></pre>
+
+                        <div class="warn-box">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div><strong>注意：</strong>Flexbox 是一维布局（行或列），Grid 是二维布局（行和列同时控制）。简单的一维排列用 Flexbox，复杂的二维布局用 Grid。</div>
+                        </div>
+
+                        <h3>常用动画与过渡</h3>
+                        <pre><code>/* 平滑过渡 */
+.element {
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* 关键帧动画 */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate { animation: fadeInUp 0.6s ease forwards; }</code></pre>
+                    </div>
+                </article>
+
+                <!-- JavaScript -->
+                <article class="note-card" id="js-core">
+                    <div class="note-header">
+                        <div class="note-icon"><i class="fab fa-js-square"></i></div>
+                        <h2 class="note-title">JavaScript 核心概念</h2>
+                        <span class="note-tag tag-js">JavaScript</span>
+                    </div>
+                    <div class="note-body">
+                        <h3>ES6+ 常用特性</h3>
+                        <pre><code>// 解构赋值
+const { name, age } = user;
+const [first, ...rest] = array;
+
+// 箭头函数
+const greet = (name) => `Hello, ${name}!`;
+
+// Promise 异步处理
+fetch('/api/data')
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.error(err));
+
+// async/await (语法糖)
+async function getData() {
+    try {
+        const res = await fetch('/api/data');
+        return await res.json();
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// 可选链操作符
+const city = user?.address?.city;
+
+// 空值合并运算符
+const value = input ?? 'default';</code></pre>
+
+                        <h3>DOM 操作最佳实践</h3>
+                        <pre><code>// 使用事件委托（性能优化）
+document.querySelector('.list').addEventListener('click', (e) => {
+    if (e.target.classList.contains('item')) {
+        // 处理点击事件
+    }
+});
+
+// 使用 IntersectionObserver 实现懒加载
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.src = entry.target.dataset.src;
+            observer.unobserve(entry.target);
+        }
+    });
+});
+document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));</code></pre>
+
+                        <div class="tip-box">
+                            <i class="fas fa-lightbulb"></i>
+                            <div><strong>性能提示：</strong>频繁操作 DOM 时，先使用 DocumentFragment 或字符串拼接批量操作，最后一次性插入 DOM，避免多次重排重绘。</div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Git工作流 -->
+                <article class="note-card" id="git-workflow">
+                    <div class="note-header">
+                        <div class="note-icon"><i class="fab fa-git-alt"></i></div>
+                        <h2 class="note-title">Git 工作流指南</h2>
+                        <span class="note-tag tag-git">Git</span>
+                    </div>
+                    <div class="note-body">
+                        <h3>常用命令速查</h3>
+                        <table>
+                            <tr><th>操作</th><th>命令</th></tr>
+                            <tr><td>初始化仓库</td><td><code>git init</code></td></tr>
+                            <tr><td>添加所有更改</td><td><code>git add .</code></td></tr>
+                            <tr><td>提交更改</td><td><code>git commit -m "描述"</code></td></tr>
+                            <tr><td>推送到远程</td><td><code>git push origin main</code></td></tr>
+                            <tr><td>拉取最新代码</td><td><code>git pull origin main</code></td></tr>
+                            <tr><td>查看状态</td><td><code>git status</code></td></tr>
+                            <tr><td>查看提交历史</td><td><code>git log --oneline</code></td></tr>
+                            <tr><td>创建新分支</td><td><code>git checkout -b feature-name</code></td></tr>
+                            <tr><td>合并分支</td><td><code>git merge feature-name</code></td></tr>
+                        </table>
+
+                        <h3>.gitignore 配置模板</h3>
+                        <pre><code># Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local</code></pre>
+
+                        <blockquote>
+                            "Commit early, push often." — Git 最佳实践原则：小步快跑，频繁提交。
+                        </blockquote>
+                    </div>
+                </article>
+
+                <!-- 性能优化 -->
+                <article class="note-card" id="perf-opt">
+                    <div class="note-header">
+                        <div class="note-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <h2 class="note-title">前端性能优化</h2>
+                        <span class="note-tag tag-perf">性能</span>
+                    </div>
+                    <div class="note-body">
+                        <h3>加载性能优化</h3>
+                        <ul>
+                            <li><strong>资源压缩：</strong>使用 Gzip/Brotli 压缩文本资源，可减少 60-80% 体积</li>
+                            <li><strong>图片优化：</strong>使用 WebP 格式，配合 lazy loading 延迟加载</li>
+                            <li><strong>CSS/JS 压缩：</strong>移除空格注释，缩短变量名</li>
+                            <li><strong>关键 CSS 内联：</strong>将首屏关键样式内联到 HTML 中</li>
+                            <li><strong>预加载关键资源：</strong>使用 <code>&lt;link rel="preload"&gt;</code></li>
+                        </ul>
+
+                        <h3>渲染性能优化</h3>
+                        <ul>
+                            <li><strong>减少重排重绘：</strong>批量修改 DOM，使用 CSS transform 替代 top/left</li>
+                            <li><strong>虚拟滚动：</strong>长列表只渲染可视区域内的元素</li>
+                            <li><strong>防抖节流：</strong>高频事件（scroll/resize）使用 debounce/throttle</li>
+                            <li><strong>will-change：</strong>提前告知浏览器元素将发生变化</li>
+                        </ul>
+
+                        <pre><code>// 防抖函数
+function debounce(fn, delay = 300) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+}
+
+// 节流函数
+function throttle(fn, limit = 200) {
+    let inThrottle;
+    return (...args) => {
+        if (!inThrottle) {
+            fn(...args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}</code></pre>
+                    </div>
+                </article>
+
+                <!-- 最佳实践 -->
+                <article class="note-card" id="best-practices">
+                    <div class="note-header">
+                        <div class="note-icon"><i class="fas fa-star"></i></div>
+                        <h2 class="note-title">前端开发最佳实践</h2>
+                        <span class="note-meta">持续整理中...</span>
+                    </div>
+                    <div class="note-body">
+                        <h3>代码规范</h3>
+                        <ul>
+                            <li>使用一致的命名规范：驼峰式（camelCase）用于变量/函数，帕斯卡式（PascalCase）用于类/组件</li>
+                            <li>保持函数单一职责，一个函数只做一件事</li>
+                            <li>有意义的变量名优于简写：<code>userList</code> 比 <code>arr</code> 更好</li>
+                            <li>添加必要的注释，解释"为什么"而不是"做什么"</li>
+                        </ul>
+
+                        <h3>可访问性（A11y）</h3>
+                        <ul>
+                            <li>图片始终提供 <code>alt</code> 属性</li>
+                            <li>表单元素关联 <code>label</code></li>
+                            <li>确保足够的颜色对比度（WCAG AA 标准：4.5:1）</li>
+                            <li>键盘可访问：所有交互功能都应可通过键盘操作</li>
+                            <li>使用语义化 HTML 标签</li>
+                        </ul>
+
+                        <h3>安全注意事项</h3>
+                        <div class="warn-box">
+                            <i class="fas fa-shield-alt"></i>
+                            <div>
+                                <strong>XSS 防护：</strong>永远不要直接将用户输入插入 DOM，使用 textContent 而非 innerHTML 处理不可信数据。<br><br>
+                                <strong>CSRF 防护：</strong>表单提交使用 CSRF Token 验证请求来源。
+                            </div>
+                        </div>
+
+                        <blockquote style="margin-top:1.5rem;">
+                            "任何傻瓜都能写出计算机能理解的代码。优秀的程序员写出人能理解的代码。" — Martin Fowler
+                        </blockquote>
+                    </div>
+                </article>
+
+            </main>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="page-footer">
+            <p>InfinityCore · 技术学习笔记 · 持续更新中</p>
+            <p style="margin-top:4px;">最后更新：2026-08-16</p>
+        </footer>
+    </div>
+
+    <!-- 回到顶部 -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        // ================================================================
+        //  交互逻辑：目录高亮 + 平滑滚动 + 回到顶部
+        // ================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // ---- 隐藏加载动画 ----
+            const overlay = document.getElementById('loadingOverlay');
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 400);
+
+            // ---- 获取所有目录项和对应的卡片 ----
+            const tocItems = document.querySelectorAll('.toc-item');
+            const cards = document.querySelectorAll('.note-card');
+            const cardIds = Array.from(cards).map(c => c.id);
+
+            // ---- 目录点击跳转 ----
+            tocItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const targetCard = document.getElementById(targetId);
+                    if (targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        // 更新高亮
+                        tocItems.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        // 移动端同步
+                        document.querySelectorAll('.toc-mobile .toc-item').forEach(t => t.classList.remove(
+                        'active'));
+                        document.querySelector(`.toc-mobile .toc-item[data-target="${targetId}"]`)?.classList
+                            .add('active');
+                    }
+                });
+            });
+
+            // ---- IntersectionObserver: 滚动高亮 ----
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        // 更新侧边栏高亮
+                        document.querySelectorAll('.toc-sidebar .toc-item').forEach(item => {
+                            item.classList.toggle('active', item.dataset.target === id);
+                        });
+                        // 更新移动端高亮
+                        document.querySelectorAll('.toc-mobile .toc-item').forEach(item => {
+                            item.classList.toggle('active', item.dataset.target === id);
+                        });
+                    }
+                });
+            }, {
+                threshold: 0.25,
+                rootMargin: '-80px 0px 0px 0px'
+            });
+
+            cards.forEach(card => observer.observe(card));
+
+            // ---- 回到顶部按钮 ----
+            const backBtn = document.getElementById('backToTop');
+            window.addEventListener('scroll', () => {
+                backBtn.classList.toggle('visible', window.scrollY > 400);
+            }, { passive: true });
+
+            console.log('%c📝 技术学习笔记已加载 | InfinityCore', 'color: #8a9b6e;');
+        });
+    </script>
+</body>
+</html>

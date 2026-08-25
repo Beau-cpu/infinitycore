@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="图标/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 编辑器 · InfinityCore v1.3.0</title>
+    <meta name="description" content="在线Markdown编辑器，支持实时预览、语法高亮、工具栏快捷操作">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6fa5; --primary-dark: #3a5a8a; --secondary: #8a9b6e;
+            --dark: #2d2d2d; --light: #f8f7f4; --gray: #6d6d6d;
+            --border: #e0ded9; --accent: #c7a27c;
+            --card-bg: rgba(255,255,255,0.88);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
+            background:var(--light);color:var(--dark);line-height:1.7;
+            min-height:100vh;padding:20px;position:relative;
+        }
+        body::before{
+            content:"";position:fixed;top:0;left:0;width:100%;height:100%;
+            background:linear-gradient(rgba(248,247,244,0.92),rgba(248,247,244,0.92)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path fill="rgba(199,162,124,0.03)" d="M20,20 Q40,5 60,20 T100,20 Q85,40 100,60 T100,100 Q60,85 20,100 T0,100 Q5,60 0,20 T20,20"/></svg>');
+            background-size:cover,300px;z-index:-1;pointer-events:none;
+        }
+        .container{max-width:1200px;margin:0 auto;}
+        .header{text-align:center;margin-bottom:1.5rem;padding-top:0.5rem;}
+        .header h1{font-size:1.8rem;color:var(--dark);font-weight:700;margin-bottom:0.4rem;}
+        .header p{color:var(--gray);font-size:0.95rem;}
+        .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--primary);text-decoration:none;font-size:0.88rem;margin-top:0.6rem;transition:color 0.2s;}
+        .back-link:hover{color:var(--accent);}
+
+        .editor-wrap{background:var(--card-bg);border-radius:20px;overflow:hidden;border:1px solid rgba(0,0,0,0.04);box-shadow:0 8px 30px rgba(0,0,0,0.05);}
+        
+        /* 工具栏 */
+        .toolbar{
+            display:flex;flex-wrap:wrap;gap:4px;padding:10px 14px;
+            background:rgba(0,0,0,0.02);border-bottom:1px solid var(--border);
+            align-items:center;
+        }
+        .tool-btn{
+            width:34px;height:34px;border:none;border-radius:8px;
+            background:transparent;color:var(--gray);cursor:pointer;
+            font-size:0.88rem;display:flex;align-items:center;justify-content:center;
+            transition:all 0.15s;
+        }
+        .tool-btn:hover{background:rgba(74,111,165,0.1);color:var(--primary-dark);}
+        .tool-btn:active{transform:scale(0.92);}
+        .tool-sep{width:1px;height:22px;background:var(--border);margin:0 6px;}
+        .tool-group{display:flex;gap:2px;}
+
+        /* 编辑器主体 */
+        .editor-main{display:grid;grid-template-columns:1fr 1fr;min-height:520px;}
+        @media(max-width:800px){.editor-main{grid-template-columns:1fr;}}
+
+        .pane{display:flex;flex-direction:column;}
+        .pane-header{
+            display:flex;justify-content:space-between;align-items:center;
+            padding:8px 14px;background:rgba(0,0,0,0.02);border-bottom:1px solid var(--border);
+            font-size:0.82rem;font-weight:600;color:var(--gray);
+        }
+        .char-count{font-size:0.75rem;color:var(--gray);font-weight:400;}
+
+        .editor-area{
+            flex:1;width:100%;padding:16px 18px;border:none;outline:none;
+            font-family:'Consolas','Monaco','Courier New',monospace;
+            font-size:0.9rem;line-height:1.7;color:var(--dark);
+            resize:none;background:transparent;
+            tab-size:4;
+        }
+
+        .preview-area{
+            flex:1;padding:16px 18px;overflow-y:auto;
+            border-left:1px solid var(--border);
+            line-height:1.8;font-size:0.94rem;
+        }
+        .preview-area img{max-width:100%;border-radius:8px;}
+        .preview-area pre{background:rgba(45,45,45,0.95);color:#f8f8f2;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:0.86em;margin:0.8rem 0;}
+        .preview-area code{font-family:'Consolas','Monaco',monospace;font-size:0.88em;}
+        .preview-area :not(pre)>code{background:rgba(74,111,165,0.1);color:var(--primary-dark);padding:2px 6px;border-radius:4px;}
+        .preview-area blockquote{border-left:3px solid var(--accent);padding:10px 16px;margin:0.8rem 0;background:rgba(199,162,124,0.05);border-radius:0 8px 8px 0;color:var(--gray);font-style:italic;}
+        .preview-area table{width:100%;border-collapse:collapse;margin:0.8rem 0;font-size:0.88em;}
+        .preview-area th,.preview-area td{padding:8px 12px;border:1px solid var(--border);text-align:left;}
+        .preview-area th{background:rgba(74,111,165,0.06);font-weight:600;color:var(--primary-dark);}
+        .preview-area h1,.preview-area h2,.preview-area h3{color:var(--dark);margin:1rem 0 0.5rem;font-weight:700;}
+        .preview-area h1{font-size:1.6rem;border-bottom:2px solid var(--accent);padding-bottom:8px;}
+        .preview-area h2{font-size:1.35rem;}
+        .preview-area h3{font-size:1.15rem;}
+        .preview-area a{color:var(--primary);text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.2s;}
+        .preview-area a:hover{border-color:var(--primary);}
+        .preview-area ul,.preview-area ol{padding-left:1.5rem;margin:0.6rem 0;}
+        .preview-area li{margin-bottom:3px;}
+        .preview-area hr{border:none;border-top:1px solid var(--border);margin:1.2rem 0;}
+        .preview-area strong{font-weight:600;color:var(--dark);}
+        .preview-area em{font-style:italic;}
+
+        /* 底部操作栏 */
+        .action-bar{
+            display:flex;justify-content:space-between;align-items:center;
+            padding:12px 16px;background:rgba(0,0,0,0.02);border-top:1px solid var(--border);
+        }
+        .btn{
+            padding:8px 18px;border:none;border-radius:10px;font-size:0.85rem;
+            font-weight:500;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;
+        }
+        .btn-primary{background:linear-gradient(135deg,var(--accent),var(--primary));color:white;}
+        .btn-primary:hover{box-shadow:0 4px 12px rgba(199,162,124,0.3);transform:translateY(-1px);}
+        .btn-secondary{background:transparent;color:var(--gray);border:1.5px solid var(--border);}
+        .btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+
+        .status-text{font-size:0.78rem;color:var(--gray);}
+        /* 回到顶部 */
+        .back-to-top{
+            position:fixed;bottom:28px;right:28px;width:42px;height:42px;
+            border:none;border-radius:50%;background:var(--card-bg);color:var(--accent);
+            font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.08);
+            opacity:0;visibility:hidden;transform:translateY(20px);
+            transition:all 0.35s cubic-bezier(0.23,1,0.32,1);z-index:99;
+            display:flex;align-items:center;justify-content:center;
+        }
+        .back-to-top.visible{opacity:1;visibility:visible;transform:translateY(0);}
+        .back-to-top:hover{background:var(--accent);color:white;transform:translateY(-3px);}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-markdown"></i> Markdown 编辑器</h1>
+        <p>实时预览 · 语法高亮 · 一键导出</p>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回首页</a>
+    </div>
+
+    <div class="editor-wrap">
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <div class="tool-group">
+                <button class="tool-btn" onclick="insertFormat('**','**')" title="粗体 (Ctrl+B)"><i class="fas fa-bold"></i></button>
+                <button class="tool-btn" onclick="insertFormat('*','*')" title="斜体 (Ctrl+I)"><i class="fas fa-italic"></i></button>
+                <button class="tool-btn" onclick="insertFormat('~~','~~')" title="删除线"><i class="fas fa-strikethrough"></i></button>
+                <button class="tool-btn" onclick="insertLine('---')" title="分割线"><i class="fas fa-minus"></i></button>
+            </div>
+            <div class="tool-sep"></div>
+            <div class="tool-group">
+                <button class="tool-btn" onclick="insertLine('# ')" title="标题 H1"><b>H1</b></button>
+                <button class="tool-btn" onclick="insertLine('## ')" title="标题 H2"><b>H2</b></button>
+                <button class="tool-btn" onclick="insertLine('### ')" title="标题 H3"><b>H3</b></button>
+            </div>
+            <div class="tool-sep"></div>
+            <div class="tool-group">
+                <button class="tool-btn" onclick="insertFormat('[','](url)')" title="链接"><i class="fas fa-link"></i></button>
+                <button class="tool-btn" onclick="insertLine('![alt](url)')" title="图片"><i class="fas fa-image"></i></button>
+                <button class="tool-btn" onclick="insertFormat('`','`')" title="行内代码"><i class="fas fa-code"></i></button>
+                <button class="tool-btn" onclick="insertBlock('```','```')" title="代码块"><i class="fas fa-file-code"></i></button>
+            </div>
+            <div class="tool-sep"></div>
+            <div class="tool-group">
+                <button class="tool-btn" onclick="insertLine('- ')" title="无序列表"><i class="fas fa-list-ul"></i></button>
+                <button class="tool-btn" onclick="insertLine('1. ')" title="有序列表"><i class="fas fa-list-ol"></i></button>
+                <button class="tool-btn" onclick="insertLine('> ')" title="引用"><i class="fas fa-quote-right"></i></button>
+                <button class="tool-btn" onclick="insertTable()" title="表格"><i class="fas fa-table"></i></button>
+            </div>
+            <div class="tool-sep"></div>
+            <div class="tool-group">
+                <button class="tool-btn" onclick="clearAll()" title="清空"><i class="fas fa-trash-alt"></i></button>
+                <button class="tool-btn" onclick="loadSample()" title="示例"><i class="fas fa-file-import"></i></button>
+            </div>
+        </div>
+
+        <!-- 编辑器主体 -->
+        <div class="editor-main">
+            <div class="pane">
+                <div class="pane-header">
+                    <span><i class="fas fa-edit"></i> 编辑</span>
+                    <span class="char-count" id="charCount">0 字符</span>
+                </div>
+                <textarea class="editor-area" id="editor" placeholder="在这里输入 Markdown 内容..." spellcheck="false"># 欢迎使用 Markdown 编辑器
+
+## 功能特性
+
+- **实时预览**：左侧编辑，右侧即时显示效果
+- **工具栏快捷操作**：一键插入格式化内容
+- **语法高亮**：代码块自动高亮显示
+- **导出功能**：支持复制为 HTML
+
+## 示例代码
+
+```javascript
+function hello() {
+    console.log("Hello, InfinityCore!");
+}
+```
+
+> 这是一段引用文字，可以用来强调重要内容。
+
+| 功能 | 状态 |
+|------|------|
+| 实时预览 | ✅ 已完成 |
+| 工具栏 | ✅ 已完成 |
+| 导出HTML | ✅ 已完成 |
+
+---
+
+*InfinityCore v1.3.0 · Built with ❤️*</textarea>
+            </div>
+            <div class="pane">
+                <div class="pane-header"><span><i class="fas fa-eye"></i> 预览</span></div>
+                <div class="preview-area" id="preview"></div>
+            </div>
+        </div>
+
+        <!-- 操作栏 -->
+        <div class="action-bar">
+            <span class="status-text" id="statusText">就绪</span>
+            <div style="display:flex;gap:8px;">
+                <button class="btn btn-secondary" onclick="copyMarkdown()"><i class="fas fa-copy"></i> 复制 MD</button>
+                <button class="btn btn-primary" onclick="copyHTML()"><i class="fas fa-download"></i> 导出 HTML</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const editor = document.getElementById('editor');
+const preview = document.getElementById('preview');
+const charCount = document.getElementById('charCount');
+
+// 简易 Markdown 解析器
+function parseMarkdown(md) {
+    let html = md
+        // 转义HTML特殊字符（但保留我们处理的标记）
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+    
+    // 代码块 ```language\n...\n```
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    
+    // 行内代码
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // 标题
+    html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    
+    // 粗体和斜体
+    html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+    
+    // 分割线
+    html = html.replace(/^---+$/gm, '<hr>');
+    
+    // 图片 ![alt](url)
+    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+    
+    // 链接 [text](url)
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    
+    // 引用
+    html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+    // 合并连续引用
+    html = html.replace(/<\/blockquote>\n<blockquote>/g, '\n');
+    
+    // 无序列表
+    html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+    
+    // 有序列表
+    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+    
+    // 表格
+    html = html.replace(/^\|(.+)\|$/gm, function(match) {
+        const cells = match.split('|').filter(c=>c.trim());
+        if(cells.every(c=>c.trim().match(/^[\-:]+$/))) return ''; // 分隔行
+        const tds = cells.map(c=>`<td>${c.trim()}</td>`).join('');
+        return `<tr>${tds}</tr>`;
+    });
+    html = html.replace(/(<tr>.*<\/tr>\n?)+/g, m => `<table>${m}</table>`);
+    
+    // 段落
+    html = html.replace(/\n\n/g, '</p><p>');
+    html = '<p>' + html + '</p>';
+    
+    // 清理空段落
+    html = html.replace(/<p><\/p>/g, '');
+    html = html.replace(/<p>(<(?:h[1-6]|ul|ol|pre|blockquote|hr|table))/g, '$1');
+    html = html.replace(/(<\/(?:h[1-6]|ul|ol|pre|blockquote|hr|table)>)<\/p>/g, '$1');
+    
+    // 恢复换行
+    html = html.replace(/\n/g, '<br>');
+    
+    return html;
+}
+
+function updatePreview() {
+    const md = editor.value;
+    preview.innerHTML = parseMarkdown(md);
+    charCount.textContent = `${md.length} 字符`;
+    
+    // 自动保存到 localStorage
+    localStorage.setItem('md_editor_content', md);
+}
+
+editor.addEventListener('input', updatePreview);
+
+// 初始化
+window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('md_editor_content');
+    if(saved && editor.value.includes('欢迎使用')) {
+        // 如果是默认内容且有保存的内容，则使用保存的
+    }
+    updatePreview();
+});
+
+// ====== 工具栏功能 ======
+function insertFormat(before, after) {
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const selected = editor.value.substring(start, end);
+    editor.setRangeText(before + selected + after, start, end, 'end');
+    editor.focus();
+    updatePreview();
+}
+
+function insertLine(prefix) {
+    const start = editor.selectionStart;
+    const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+    editor.value = editor.value.substring(0, lineStart) + prefix + editor.value.substring(lineStart);
+    editor.setSelectionRange(lineStart + prefix.length, lineStart + prefix.length);
+    editor.focus();
+    updatePreview();
+}
+
+function insertBlock(before, after) {
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const selected = editor.value.substring(start, end) || '\n';
+    editor.setRangeText('\n' + before + selected + after + '\n', start, end, 'end');
+    editor.focus();
+    updatePreview();
+}
+
+function insertTable() {
+    const table = `
+| 列1 | 列2 | 列3 |
+|-----|-----|-----|
+| 数据 | 数据 | 数据 |
+| 数据 | 数据 | 数据 |`;
+    const pos = editor.selectionStart;
+    editor.value = editor.value.substring(0, pos) + table + editor.value.substring(pos);
+    editor.focus();
+    updatePreview();
+}
+
+function clearAll() {
+    if(confirm('确定要清空所有内容吗？')) {
+        editor.value = '';
+        updatePreview();
+    }
+}
+
+function loadSample() {
+    editor.value = `# Markdown 编辑器示例
+
+## 文本格式
+
+这是**粗体文字**，这是*斜体文字*，这是~~删除线~~。
+
+## 代码展示
+
+\`\`\`javascript
+function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n-1) + fibonacci(n-2);
+}
+\`\`\`
+
+行内代码示例：\`const x = 42;\`
+
+## 列表示例
+
+- 第一项
+- 第二项
+  - 子项 A
+  - 子项 B
+- 第三项
+
+1. 有序第一项
+2. 有序第二项
+3. 有序第三项
+
+## 引用
+
+> 代码是写给人看的，顺便给机器运行。
+> —— Harold Abelson
+
+## 链接与图片
+
+[访问 GitHub](https://github.com)
+
+## 表格
+
+| 功能 | 支持 | 备注 |
+|------|------|------|
+| 实时预览 | ✅ | 即时渲染 |
+| 工具栏 | ✅ | 快捷操作 |
+| 导出 | ✅ | HTML格式 |
+
+---
+
+*由 [InfinityCore](./index.html) 提供支持*`;
+    updatePreview();
+}
+
+function copyMarkdown() {
+    navigator.clipboard.writeText(editor.value).then(() => showStatus('已复制 Markdown 到剪贴板'));
+}
+
+function copyHTML() {
+    navigator.clipboard.writeText(preview.innerHTML).then(() => showStatus('已复制 HTML 到剪贴板'));
+}
+
+function showStatus(msg) {
+    const el = document.getElementById('statusText');
+    el.textContent = msg;
+    setTimeout(() => el.textContent = '就绪', 2500);
+}
+
+// 键盘快捷键
+editor.addEventListener('keydown', e => {
+    if(e.ctrlKey || e.metaKey) {
+        switch(e.key.toLowerCase()) {
+            case 'b': e.preventDefault(); insertFormat('**','**'); break;
+            case 'i': e.preventDefault(); insertFormat('*','*'); break;
+        }
+    }
+    // Tab 插入空格
+    if(e.key === 'Tab') {
+        e.preventDefault();
+        insertFormat('    ', '');
+    }
+});
+
+console.log('%c✍️ Markdown编辑器已加载 | InfinityCore v1.3.0', 'color: #c7a27c;');
+</script>
+<!-- 回到顶部 -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-chevron-up"></i>
+</button>
+<script>
+(function(){
+    const btn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('visible', window.scrollY > 400);
+    }, {passive:true});
+})();
+</script>
+</body>
+</html>

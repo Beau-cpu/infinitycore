@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>交流 · 代码共享空间</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        /* ============================================================
+                   核心变量
+                   ============================================================ */
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --accent: #c7a27c;
+            --light: #f8f7f4;
+            --dark: #2d2d2d;
+            --gray: #6d6d6d;
+            --border: #e0ded9;
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+            --radius: 28px;
+            --font: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            --touch-target: 44px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ====== 导航栏 ====== */
+        .navbar {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.8rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 64px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 4px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-links li a {
+            color: var(--gray);
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            color: var(--dark);
+            background: rgba(199, 162, 124, 0.08);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+            padding: 4px 10px;
+            line-height: 1;
+            border-radius: 8px;
+            transition: background 0.2s;
+            touch-action: manipulation;
+        }
+        .mobile-toggle:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        /* ====== 容器 ====== */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 5% 2rem;
+        }
+
+        /* ====== Hero ====== */
+        .hero {
+            text-align: center;
+            padding: 2.5rem 0 2.5rem;
+        }
+        .hero h1 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .hero h1 i {
+            color: var(--accent);
+        }
+        .hero p {
+            color: var(--gray);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ====== 卡片 ====== */
+        .content-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(2px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 0.75rem;
+        }
+        .code-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .code-title i {
+            color: var(--accent);
+        }
+        .code-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+            flex-wrap: wrap;
+        }
+        .code-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ====== 代码块 ====== */
+        pre {
+            background: #f6f8fa;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            font-size: 0.85rem;
+            border: 1px solid #e9ecef;
+        }
+        pre code {
+            font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre;
+        }
+
+        /* ====== 按钮 ====== */
+        .btn-icon {
+            background: rgba(0, 0, 0, 0.04);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font);
+            touch-action: manipulation;
+        }
+        .btn-icon:hover {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-icon:active {
+            transform: scale(0.94);
+        }
+        .btn-icon.delete-btn:hover {
+            background: #d9534f;
+            color: white;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ====== 上传表单 ====== */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--dark);
+            font-size: 0.92rem;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 24px;
+            border: 1.5px solid var(--border);
+            background: white;
+            font-family: var(--font);
+            font-size: 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            color: var(--dark);
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(199, 162, 124, 0.12);
+        }
+        .form-group textarea {
+            border-radius: 20px;
+            resize: vertical;
+            min-height: 150px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.25s;
+            font-family: var(--font);
+            touch-action: manipulation;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(199, 162, 124, 0.30);
+        }
+        .submit-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ====== 空状态 ====== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: rgba(0, 0, 0, 0.015);
+            border-radius: 2rem;
+            color: var(--gray);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: rgba(199, 162, 124, 0.25);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* ====== Toast ====== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--dark);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            z-index: 999;
+            opacity: 0;
+            transition: all 0.35s ease;
+            pointer-events: none;
+            font-family: var(--font);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ====== 页脚 ====== */
+        footer {
+            background: var(--dark);
+            padding: 2.5rem 5%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 2rem;
+            font-size: 0.85rem;
+        }
+        footer p {
+            margin: 0;
+        }
+
+        /* ============================================================
+                   横屏布局 (≥ 900px)
+                   ============================================================ */
+        @media (min-width: 900px) {
+            .container {
+                padding: 0 4% 2rem;
+            }
+            .hero h1 {
+                font-size: 2.6rem;
+            }
+            .content-card {
+                padding: 2rem 2.4rem;
+            }
+            .code-header {
+                flex-wrap: nowrap;
+            }
+        }
+
+        /* ============================================================
+                   竖屏/手机布局 (< 900px)
+                   ============================================================ */
+        @media (max-width: 899px) {
+            /* 导航栏：显示汉堡按钮 */
+            .mobile-toggle {
+                display: block !important;
+            }
+            .navbar {
+                padding: 0.5rem 4% !important;
+                min-height: 56px !important;
+            }
+            .logo {
+                font-size: 1.05rem !important;
+            }
+            .nav-links {
+                display: none !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                padding: 10px 0 8px !important;
+                gap: 2px !important;
+                background: rgba(255, 255, 255, 0.98) !important;
+                border-radius: 16px !important;
+                margin-top: 6px !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+                backdrop-filter: blur(8px) !important;
+            }
+            .nav-links.active {
+                display: flex !important;
+            }
+            .nav-links li {
+                width: 100% !important;
+            }
+            .nav-links li a {
+                display: block !important;
+                padding: 10px 16px !important;
+                text-align: center !important;
+                border-radius: 10px !important;
+                font-size: 0.9rem !important;
+                width: 100% !important;
+            }
+
+            /* 容器 */
+            .container {
+                padding: 0 14px 1.5rem !important;
+            }
+
+            /* Hero */
+            .hero {
+                padding: 1.5rem 0 1.5rem !important;
+            }
+            .hero h1 {
+                font-size: 1.5rem !important;
+            }
+            .hero p {
+                font-size: 0.9rem !important;
+            }
+
+            /* 卡片 */
+            .content-card {
+                padding: 1rem 1.2rem !important;
+                border-radius: 18px !important;
+                margin-bottom: 1rem !important;
+            }
+            .code-title {
+                font-size: 0.95rem !important;
+            }
+            .code-meta {
+                font-size: 0.7rem !important;
+                gap: 0.6rem !important;
+            }
+            .code-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            /* 代码块 */
+            pre {
+                padding: 0.8rem 1rem !important;
+                font-size: 0.78rem !important;
+                border-radius: 12px !important;
+            }
+            pre code {
+                font-size: 0.78rem !important;
+            }
+
+            /* 按钮 */
+            .btn-icon {
+                padding: 6px 14px !important;
+                font-size: 0.75rem !important;
+                min-height: 36px !important;
+            }
+
+            /* 表单 */
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 10px 14px !important;
+                font-size: 0.85rem !important;
+                border-radius: 18px !important;
+                min-height: 42px !important;
+            }
+            .form-group textarea {
+                min-height: 120px !important;
+            }
+
+            /* 提交按钮 */
+            .submit-btn {
+                padding: 12px 24px !important;
+                font-size: 0.9rem !important;
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            /* Toast */
+            .toast {
+                font-size: 0.8rem !important;
+                padding: 8px 18px !important;
+                white-space: normal !important;
+                max-width: 85% !important;
+                text-align: center !important;
+                bottom: 20px !important;
+            }
+
+            /* 页脚 */
+            footer {
+                padding: 1.8rem 4% !important;
+                font-size: 0.75rem !important;
+            }
+
+            /* 空状态 */
+            .empty-state {
+                padding: 2rem 1rem !important;
+            }
+            .empty-state i {
+                font-size: 2.2rem !important;
+            }
+
+            /* 卡片操作按钮组 */
+            .card-actions {
+                justify-content: flex-start !important;
+                gap: 8px !important;
+            }
+        }
+
+        /* ============================================================
+                   极小屏 (≤ 480px)
+                   ============================================================ */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 0.9rem !important;
+            }
+            .logo i {
+                font-size: 0.9rem !important;
+            }
+            .hero h1 {
+                font-size: 1.3rem !important;
+            }
+            .content-card {
+                padding: 0.8rem 0.9rem !important;
+                border-radius: 14px !important;
+            }
+            .code-title {
+                font-size: 0.85rem !important;
+            }
+            pre {
+                padding: 0.6rem 0.8rem !important;
+                font-size: 0.7rem !important;
+                border-radius: 10px !important;
+            }
+            pre code {
+                font-size: 0.7rem !important;
+            }
+            .btn-icon {
+                padding: 4px 10px !important;
+                font-size: 0.7rem !important;
+                min-height: 32px !important;
+                border-radius: 30px !important;
+            }
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 8px 12px !important;
+                font-size: 0.8rem !important;
+                min-height: 36px !important;
+                border-radius: 14px !important;
+            }
+            .submit-btn {
+                padding: 10px 20px !important;
+                font-size: 0.85rem !important;
+            }
+            .code-meta {
+                font-size: 0.62rem !important;
+                gap: 0.4rem !important;
+            }
+            .nav-links li a {
+                padding: 8px 12px !important;
+                font-size: 0.8rem !important;
+            }
+        }
+
+        /* ============================================================
+                   平板 (600-899px)
+                   ============================================================ */
+        @media (min-width: 600px) and (max-width: 899px) {
+            .content-card {
+                padding: 1.4rem 1.6rem !important;
+            }
+            .code-header {
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+            }
+            .hero h1 {
+                font-size: 2rem !important;
+            }
+        }
+
+        /* ============================================================
+                   滚动条美化
+                   ============================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray);
+        }
+
+        /* ============================================================
+                   代码高亮增强
+                   ============================================================ */
+        .hljs {
+            background: transparent !important;
+        }
+        pre code.hljs {
+            padding: 0 !important;
+        }
+
+        /* 行内代码样式 */
+        .code-inline {
+            background: rgba(74, 111, 165, 0.08);
+            color: var(--primary-dark);
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== 导航栏 ====== -->
+    <div class="navbar" id="navbar">
+        <div class="logo">
+            <i class="fas fa-comments"></i>
+            <span>交流 · 代码共享</span>
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="javascript:void(0)" onclick="showContent('home', this)" class="active">📚 代码广场</a></li>
+            <li><a href="javascript:void(0)" onclick="showContent('upload', this)">✍️ 分享代码</a></li>
+            <li><a href="javascript:void(0)" onclick="showContent('about', this)">📖 关于交流</a></li>
+        </ul>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="切换菜单"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <!-- ====== 主容器 ====== -->
+    <div class="container">
+
+        <!-- ====== 首页：代码广场 ====== -->
+        <div id="home-content" class="content-section" style="display: block;">
+            <div class="hero">
+                <h1><i class="fas fa-comments"></i> 交流 · 代码共享空间</h1>
+                <p>所有代码保存在服务器文件夹中，永久共享，自由交流</p>
+            </div>
+            <div id="codeList">
+                <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i>加载中...</div>
+            </div>
+        </div>
+
+        <!-- ====== 上传页面 ====== -->
+        <div id="upload-content" class="content-section" style="display: none;">
+            <div class="content-card">
+                <h2 style="margin-bottom: 1.2rem; font-size: 1.3rem;">
+                    <i class="fas fa-cloud-upload-alt" style="color: var(--accent);"></i>
+                    分享你的代码
+                </h2>
+                <form id="uploadForm" autocomplete="off">
+                    <div class="form-group">
+                        <label for="title">📌 标题</label>
+                        <input type="text" id="title" placeholder="请输入代码标题..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="author">👤 作者</label>
+                        <input type="text" id="author" value="热心交流者" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lang">💻 编程语言</label>
+                        <select id="lang">
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="html">HTML/CSS</option>
+                            <option value="sql">SQL</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="code">📄 代码内容</label>
+                        <textarea id="code" rows="8" placeholder="粘贴你的代码..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-cloud-upload-alt"></i> 发布交流
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ====== 关于页面 ====== -->
+        <div id="about-content" class="content-section" style="display: none;">
+            <div class="content-card">
+                <h2 style="margin-bottom: 0.8rem;"><i class="fas fa-info-circle" style="color: var(--accent);"></i> 关于“交流”</h2>
+                <p style="font-size: 1rem; line-height: 1.8; color: var(--gray);">
+                    这是一个基于服务器文件存储的代码共享平台，每个代码独立保存在 <code class="code-inline">data/</code> 文件夹中，所有访问者共享同一数据源，无需第三方API，永久保留。
+                </p>
+                <p style="font-size: 1rem; line-height: 1.8; color: var(--gray); margin-top: 0.8rem;">
+                    在这里，你可以自由分享代码、互相学习、共同进步。所有上传内容都会真实保存在服务器上，随时可查看、复制或删除。
+                </p>
+                <p style="font-size: 1rem; line-height: 1.8; color: var(--gray); margin-top: 0.8rem;">
+                    💡 让我们在“交流”中碰撞出更多技术火花！
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ====== 页脚 ====== -->
+    <footer>
+        <p>© 交流 · 服务器存储版 · 让代码自由流动</p>
+    </footer>
+
+    <!-- ====== Toast ====== -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ================================================================
+        //  完整功能脚本（保留原版所有逻辑，增强交互）
+        // ================================================================
+
+        // ---------- Toast ----------
+        function showToast(msg, duration) {
+            duration = duration || 2000;
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(function() {
+                t.classList.remove('show');
+            }, duration);
+        }
+
+        // ---------- 获取代码列表 ----------
+        async function fetchSnippets() {
+            try {
+                var res = await fetch('list.asp');
+                if (!res.ok) throw new Error('加载失败');
+                var data = await res.json();
+                renderSnippets(data);
+            } catch (e) {
+                document.getElementById('codeList').innerHTML =
+                    '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i>加载失败，请刷新重试</div>';
+                console.error('加载失败:', e);
+            }
+        }
+
+        // ---------- 渲染列表 ----------
+        function renderSnippets(snippets) {
+            var container = document.getElementById('codeList');
+            if (!snippets || snippets.length === 0) {
+                container.innerHTML =
+                    '<div class="empty-state"><i class="fas fa-code-branch"></i>暂无代码，成为第一个分享者吧 ✨</div>';
+                return;
+            }
+            var html = '';
+            snippets.forEach(function(s) {
+                html += `
+                    <div class="content-card" data-id="${escapeHtml(s.id)}">
+                        <div class="code-header">
+                            <div class="code-title"><i class="fas fa-file-code"></i> ${escapeHtml(s.title)}</div>
+                            <div class="code-meta">
+                                <span><i class="fas fa-user"></i> ${escapeHtml(s.author)}</span>
+                                <span><i class="fas fa-tag"></i> ${escapeHtml(s.language)}</span>
+                                <span><i class="far fa-clock"></i> ${escapeHtml(s.date)}</span>
+                            </div>
+                        </div>
+                        <pre><code class="language-${s.language}">${escapeHtml(s.code)}</code></pre>
+                        <div class="card-actions">
+                            <button class="btn-icon copy-btn" data-code="${escapeHtml(s.code).replace(/"/g, '&quot;')}"><i class="far fa-copy"></i> 复制</button>
+                            <button class="btn-icon delete-btn" data-id="${s.id}"><i class="far fa-trash-alt"></i> 删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            // 代码高亮
+            document.querySelectorAll('pre code').forEach(function(block) {
+                hljs.highlightElement(block);
+            });
+
+            // 复制事件
+            document.querySelectorAll('.copy-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var code = this.getAttribute('data-code');
+                    navigator.clipboard.writeText(code).then(function() {
+                        btn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                        setTimeout(function() {
+                            btn.innerHTML = '<i class="far fa-copy"></i> 复制';
+                        }, 1500);
+                        showToast('✅ 已复制到剪贴板', 1500);
+                    }).catch(function() {
+                        // 降级方案
+                        var ta = document.createElement('textarea');
+                        ta.value = code;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                        btn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                        setTimeout(function() {
+                            btn.innerHTML = '<i class="far fa-copy"></i> 复制';
+                        }, 1500);
+                        showToast('✅ 已复制到剪贴板', 1500);
+                    });
+                });
+            });
+
+            // 删除事件
+            document.querySelectorAll('.delete-btn').forEach(function(btn) {
+                btn.addEventListener('click', async function() {
+                    if (!confirm('⚠️ 确定删除此代码吗？此操作不可恢复！')) return;
+                    var id = this.getAttribute('data-id');
+                    try {
+                        var res = await fetch('delete.asp', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: id })
+                        });
+                        if (res.ok) {
+                            showToast('🗑️ 删除成功', 1500);
+                            fetchSnippets();
+                        } else {
+                            showToast('❌ 删除失败，请重试', 2000);
+                        }
+                    } catch (e) {
+                        showToast('❌ 网络错误，请重试', 2000);
+                        console.error(e);
+                    }
+                });
+            });
+        }
+
+        // ---------- 工具函数 ----------
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        // ---------- 内容切换 ----------
+        function showContent(sectionId, el) {
+            // 隐藏所有
+            document.querySelectorAll('.content-section').forEach(function(s) {
+                s.style.display = 'none';
+            });
+            // 显示目标
+            var target = document.getElementById(sectionId + '-content');
+            if (target) target.style.display = 'block';
+            // 更新导航激活状态
+            document.querySelectorAll('.nav-links li a').forEach(function(a) {
+                a.classList.remove('active');
+            });
+            if (el) el.classList.add('active');
+            // 关闭移动端菜单
+            var navLinks = document.getElementById('navLinks');
+            if (navLinks) navLinks.classList.remove('active');
+            // 切换时重新加载列表
+            if (sectionId === 'home') fetchSnippets();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ---------- 上传表单 ----------
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            var title = document.getElementById('title').value.trim();
+            var author = document.getElementById('author').value.trim();
+            var lang = document.getElementById('lang').value;
+            var code = document.getElementById('code').value.trim();
+
+            if (!title) { showToast('⚠️ 请输入标题', 1500); return; }
+            if (!code) { showToast('⚠️ 请输入代码内容', 1500); return; }
+
+            var formData = new FormData();
+            formData.append('title', title);
+            formData.append('author', author || '热心交流者');
+            formData.append('language', lang);
+            formData.append('code', code);
+
+            try {
+                var res = await fetch('upload.asp', { method: 'POST', body: formData });
+                if (res.ok) {
+                    showToast('🎉 上传成功！', 2000);
+                    document.getElementById('uploadForm').reset();
+                    document.getElementById('author').value = '热心交流者';
+                    showContent('home', document.querySelector('.nav-links li a'));
+                } else {
+                    var err = await res.text();
+                    showToast('❌ 上传失败：' + err, 2500);
+                }
+            } catch (e) {
+                showToast('❌ 网络错误，请重试', 2000);
+                console.error(e);
+            }
+        });
+
+        // ---------- 移动端菜单 ----------
+        var toggleBtn = document.getElementById('mobileToggle');
+        var navLinks = document.getElementById('navLinks');
+        if (toggleBtn && navLinks) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                navLinks.classList.toggle('active');
+            });
+            // 点击页面其他位置关闭菜单
+            document.addEventListener('click', function(e) {
+                if (!navLinks.contains(e.target) && e.target !== toggleBtn) {
+                    navLinks.classList.remove('active');
+                }
+            });
+        }
+
+        // ---------- 导航栏滚动阴影 ----------
+        var navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', function() {
+            navbar.classList.toggle('scrolled', window.scrollY > 20);
+        }, { passive: true });
+
+        // ---------- 初始化 ----------
+        fetchSnippets();
+
+        console.log('%c💬 交流 · 代码共享空间已加载', 'color: #c7a27c; font-size: 14px;');
+        console.log('%c📌 所有代码存储在服务器 data/ 文件夹中', 'color: #6d6d6d; font-size: 12px;');
+
+        // 暴露全局
+        window.showContent = showContent;
+        window.showToast = showToast;
+        window.fetchSnippets = fetchSnippets;
+    </script>
+
+</body>
+</html>

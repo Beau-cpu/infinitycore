@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="图标/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>数据可视化工具 · InfinityCore</title>
+    <meta name="description" content="纯前端数据可视化工具，支持多种图表类型即输即显">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================================
+                   核心变量 & 重置
+                   ============================================================ */
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --secondary: #8a9b6e;
+            --dark: #2d2d2d;
+            --light: #f8f7f4;
+            --gray: #6d6d6d;
+            --border: #e0ded9;
+            --accent: #c7a27c;
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            --radius: 20px;
+            --transition: all 0.3s ease;
+            --font: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            --touch-target: 44px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(248, 247, 244, 0.92), rgba(248, 247, 244, 0.92)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path fill="rgba(199,162,124,0.03)" d="M20,20 Q40,5 60,20 T100,20 Q85,40 100,60 T100,100 Q60,85 20,100 T0,100 Q5,60 0,20 T20,20"/></svg>');
+            background-size: cover, 300px;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* ====== 粒子背景 ====== */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(199, 162, 124, 0.10);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            25% { transform: translate(10px, -10px) scale(1.1); opacity: 0.6; }
+            50% { transform: translate(-5px, 15px) scale(0.9); opacity: 0.3; }
+            75% { transform: translate(-10px, -5px) scale(1.05); opacity: 0.5; }
+        }
+
+        /* ====== 进度条 ====== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            z-index: 999;
+            background: transparent;
+        }
+        .progress-bar {
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        /* ====== 顶部导航 ====== */
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-top: 0.5rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            color: var(--dark);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .header h1 i {
+            color: var(--accent);
+        }
+        .header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.88rem;
+            margin-top: 0.6rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            color: var(--accent);
+            background: rgba(199, 162, 124, 0.06);
+        }
+
+        /* ====== 主布局容器 ====== */
+        .main-layout {
+            display: grid;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ====== 横屏布局 (≥ 900px)：左右两栏 ====== */
+        @media (min-width: 900px) {
+            .main-layout {
+                grid-template-columns: 380px 1fr;
+                align-items: start;
+            }
+
+            .panel {
+                background: var(--card-bg);
+                border-radius: var(--radius);
+                padding: 1.8rem 2rem;
+                box-shadow: var(--shadow);
+                border: 1px solid rgba(0, 0, 0, 0.04);
+                transition: var(--transition);
+            }
+            .panel:hover {
+                box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+            }
+
+            .panel-title {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--dark);
+                margin-bottom: 1.2rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .panel-title i {
+                color: var(--accent);
+            }
+
+            .preview-area {
+                min-height: 480px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border-radius: 16px;
+                padding: 1.5rem;
+                border: 1px dashed var(--border);
+                position: relative;
+            }
+            .preview-area canvas {
+                max-width: 100%;
+                max-height: 460px;
+            }
+
+            .chart-type-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                margin-bottom: 1rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .color-picker-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 1rem;
+            }
+
+            .preset-btns {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-bottom: 1rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                padding: 11px;
+                border-radius: 10px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.25s;
+                font-family: var(--font);
+                touch-action: manipulation;
+                min-height: var(--touch-target);
+            }
+            .btn-secondary {
+                margin-top: 8px;
+            }
+        }
+
+        /* ====== 竖屏布局 (< 900px)：上下排列 ====== */
+        @media (max-width: 899px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .panel {
+                background: var(--card-bg);
+                border-radius: 16px;
+                padding: 1.2rem 1rem;
+                box-shadow: var(--shadow);
+                border: 1px solid rgba(0, 0, 0, 0.04);
+            }
+
+            .panel-title {
+                font-size: 1rem;
+                font-weight: 700;
+                color: var(--dark);
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .panel-title i {
+                color: var(--accent);
+            }
+
+            .preview-area {
+                min-height: 320px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border-radius: 14px;
+                padding: 1rem;
+                border: 1px dashed var(--border);
+                position: relative;
+            }
+            .preview-area canvas {
+                max-width: 100%;
+                max-height: 300px;
+            }
+
+            .chart-type-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+                margin-bottom: 0.8rem;
+            }
+
+            .chart-type-btn {
+                padding: 8px 4px;
+                font-size: 0.72rem;
+                border-radius: 8px;
+                min-height: 50px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+            }
+            .chart-type-btn i {
+                font-size: 1rem;
+            }
+
+            .form-group {
+                margin-bottom: 0.8rem;
+            }
+            .form-label {
+                font-size: 0.75rem;
+                margin-bottom: 4px;
+            }
+            .form-input,
+            .form-textarea,
+            .form-select {
+                padding: 8px 10px;
+                font-size: 0.82rem;
+                border-radius: 8px;
+                min-height: 38px;
+            }
+            .form-textarea {
+                min-height: 80px;
+            }
+
+            .color-picker-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 0.8rem;
+            }
+            .color-picker-wrap label {
+                font-size: 0.7rem;
+            }
+            .color-input {
+                height: 28px;
+                border-radius: 6px;
+            }
+
+            .preset-btns {
+                display: flex;
+                gap: 4px;
+                flex-wrap: wrap;
+                margin-bottom: 0.8rem;
+            }
+            .preset-btn {
+                padding: 4px 10px;
+                font-size: 0.68rem;
+                border-radius: 12px;
+                min-height: 30px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                padding: 10px;
+                border-radius: 10px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.25s;
+                font-family: var(--font);
+                touch-action: manipulation;
+                min-height: var(--touch-target);
+            }
+            .btn-secondary {
+                margin-top: 6px;
+            }
+
+            /* 竖屏时右侧预览面板在下面 */
+            .right-panel {
+                order: 2;
+            }
+            .left-panel {
+                order: 1;
+            }
+        }
+
+        /* ====== 小屏手机 (≤ 480px) ====== */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            .header p {
+                font-size: 0.8rem;
+            }
+            .panel {
+                padding: 0.8rem 0.8rem;
+                border-radius: 14px;
+            }
+            .panel-title {
+                font-size: 0.9rem;
+                margin-bottom: 0.8rem;
+            }
+            .preview-area {
+                min-height: 240px;
+                padding: 0.8rem;
+                border-radius: 12px;
+            }
+            .preview-area canvas {
+                max-height: 220px;
+            }
+            .chart-type-grid {
+                gap: 4px;
+            }
+            .chart-type-btn {
+                padding: 6px 2px;
+                font-size: 0.62rem;
+                min-height: 40px;
+                border-radius: 6px;
+            }
+            .chart-type-btn i {
+                font-size: 0.85rem;
+            }
+            .form-input,
+            .form-textarea,
+            .form-select {
+                padding: 6px 8px;
+                font-size: 0.78rem;
+                min-height: 32px;
+                border-radius: 6px;
+            }
+            .form-textarea {
+                min-height: 60px;
+            }
+            .color-picker-row {
+                gap: 6px;
+            }
+            .color-input {
+                height: 24px;
+            }
+            .preset-btn {
+                padding: 3px 8px;
+                font-size: 0.6rem;
+                min-height: 24px;
+            }
+            .btn-primary,
+            .btn-secondary {
+                padding: 8px;
+                font-size: 0.8rem;
+                min-height: 38px;
+                border-radius: 8px;
+            }
+            .back-link {
+                font-size: 0.75rem;
+                padding: 4px 10px;
+            }
+            .back-to-top {
+                width: 36px;
+                height: 36px;
+                font-size: 0.85rem;
+                bottom: 16px;
+                right: 16px;
+            }
+            .form-label {
+                font-size: 0.7rem;
+            }
+            .color-picker-wrap label {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ====== 通用样式 ====== */
+        .panel {
+            transition: var(--transition);
+        }
+
+        .chart-type-btn {
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--gray);
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-family: var(--font);
+            touch-action: manipulation;
+            border-radius: 10px;
+            padding: 10px 4px;
+        }
+        .chart-type-btn i {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        .chart-type-btn.active {
+            border-color: var(--accent);
+            background: rgba(199, 162, 124, 0.08);
+            color: var(--accent);
+        }
+        .chart-type-btn.active i {
+            color: var(--accent);
+        }
+        .chart-type-btn:hover:not(.active) {
+            border-color: var(--primary);
+            background: rgba(74, 111, 165, 0.04);
+        }
+        .chart-type-btn:active {
+            transform: scale(0.94);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--gray);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-family: inherit;
+            color: var(--dark);
+            outline: none;
+            background: white;
+            transition: border-color 0.2s;
+            touch-action: manipulation;
+        }
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(199, 162, 124, 0.10);
+        }
+        .form-textarea {
+            resize: vertical;
+            line-height: 1.6;
+            min-height: 120px;
+        }
+
+        .color-picker-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+        .color-picker-wrap label {
+            font-size: 0.78rem;
+            color: var(--gray);
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .color-input {
+            width: 100%;
+            height: 32px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 2px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+        .color-input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .preset-btn {
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: transparent;
+            font-size: 0.76rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font);
+            touch-action: manipulation;
+        }
+        .preset-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(199, 162, 124, 0.05);
+        }
+        .preset-btn:active {
+            transform: scale(0.94);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 14px rgba(199, 162, 124, 0.35);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--gray);
+            border: 1.5px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(199, 162, 124, 0.04);
+        }
+        .btn-secondary:active {
+            transform: scale(0.96);
+        }
+
+        .placeholder-text {
+            text-align: center;
+            color: var(--gray);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .placeholder-text i {
+            font-size: 3rem;
+            color: rgba(199, 162, 124, 0.3);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* ====== Toast ====== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--dark);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-size: 0.88rem;
+            opacity: 0;
+            transition: all 0.35s ease;
+            z-index: 999;
+            pointer-events: none;
+            font-family: var(--font);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ====== 回到顶部 ====== */
+        .back-to-top {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: var(--card-bg);
+            color: var(--accent);
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            touch-action: manipulation;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(199, 162, 124, 0.30);
+        }
+
+        /* ====== 页脚 ====== */
+        .page-footer {
+            text-align: center;
+            padding: 2rem 0 0.5rem;
+            color: var(--gray);
+            font-size: 0.85rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        .page-footer p {
+            margin-bottom: 4px;
+        }
+
+        /* ====== 滚动条 ====== */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        /* ====== 加载动画 ====== */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10000;
+            transition: opacity 0.6s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loading-text {
+            margin-top: 16px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 加载动画 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">加载图表工具...</div>
+    </div>
+
+    <!-- 粒子背景 -->
+    <div class="particles" id="particles"></div>
+
+    <!-- 进度条 -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- 顶部 -->
+    <div class="header">
+        <h1><i class="fas fa-chart-pie"></i> 数据可视化工具</h1>
+        <p>纯前端图表生成 · 即输即显 · 无需后端</p>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回首页</a>
+    </div>
+
+    <!-- 主布局 -->
+    <div class="main-layout">
+
+        <!-- 左侧控制面板 -->
+        <div class="panel left-panel">
+            <div class="panel-title"><i class="fas fa-sliders-h"></i> 图表配置</div>
+
+            <!-- 图表类型 -->
+            <div class="form-group">
+                <label class="form-label">图表类型</label>
+                <div class="chart-type-grid">
+                    <button class="chart-type-btn active" data-type="bar"><i class="fas fa-chart-bar"></i>柱状图</button>
+                    <button class="chart-type-btn" data-type="line"><i class="fas fa-chart-line"></i>折线图</button>
+                    <button class="chart-type-btn" data-type="pie"><i class="fas fa-chart-pie"></i>饼图</button>
+                    <button class="chart-type-btn" data-type="radar"><i class="fas fa-spider"></i>雷达图</button>
+                    <button class="chart-type-btn" data-type="doughnut"><i class="fas fa-circle-notch"></i>环形图</button>
+                    <button class="chart-type-btn" data-type="polarArea"><i class="fas fa-sun"></i>极坐标</button>
+                </div>
+            </div>
+
+            <!-- 标题 -->
+            <div class="form-group">
+                <label class="form-label">图表标题</label>
+                <input type="text" class="form-input" id="chartTitle" placeholder="输入标题..." value="月度销售数据">
+            </div>
+
+            <!-- 数据标签 -->
+            <div class="form-group">
+                <label class="form-label">数据标签（逗号分隔）</label>
+                <input type="text" class="form-input" id="dataLabels" placeholder="一月, 二月, 三月..." value="一月,二月,三月,四月,五月,六月">
+            </div>
+
+            <!-- 数据值 -->
+            <div class="form-group">
+                <label class="form-label">数据值（逗号分隔）</label>
+                <input type="text" class="form-input" id="dataValues" placeholder="12, 19, 8, 15..." value="65,59,80,81,56,72">
+            </div>
+
+            <!-- 颜色方案 -->
+            <div class="color-picker-row">
+                <div class="color-picker-wrap">
+                    <label>主色调</label>
+                    <input type="color" class="color-input" id="primaryColor" value="#c7a27c">
+                </div>
+                <div class="color-picker-wrap">
+                    <label>辅助色</label>
+                    <input type="color" class="color-input" id="secondaryColor" value="#4a6fa5">
+                </div>
+            </div>
+
+            <!-- 预设数据 -->
+            <div class="form-group">
+                <label class="form-label">快速预设</label>
+                <div class="preset-btns">
+                    <button class="preset-btn" onclick="loadPreset('sales')">📊 销售数据</button>
+                    <button class="preset-btn" onclick="loadPreset('traffic')">🌐 流量统计</button>
+                    <button class="preset-btn" onclick="loadPreset('score')">📝 成绩分布</button>
+                    <button class="preset-btn" onclick="loadPreset('survey')">📋 调查结果</button>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="renderChart()"><i class="fas fa-magic"></i> 生成图表</button>
+            <button class="btn-secondary" onclick="downloadChart()"><i class="fas fa-download"></i> 下载图片</button>
+        </div>
+
+        <!-- 右侧预览面板 -->
+        <div class="panel right-panel">
+            <div class="panel-title"><i class="fas fa-eye"></i> 图表预览</div>
+            <div class="preview-area" id="previewArea">
+                <canvas id="chartCanvas"></canvas>
+                <div class="placeholder-text" id="placeholderText" style="display:none;">
+                    <i class="fas fa-chart-area"></i>
+                    <p>配置参数后点击「生成图表」</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="page-footer">
+        <p>InfinityCore · 数据可视化工具 · 即输即显</p>
+        <p style="margin-top:4px;">柱状图 · 折线图 · 饼图 · 雷达图 · 环形图 · 极坐标</p>
+    </footer>
+
+    <!-- 回到顶部 -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+
+    <script>
+        // ================================================================
+        //  数据可视化工具 — 完整功能
+        //  所有函数全局可用，确保 onclick 可调用
+        // ================================================================
+
+        var chartInstance = null;
+        var currentType = 'bar';
+
+        // ---------- Toast ----------
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(function() { t.classList.remove('show'); }, 2200);
+        }
+
+        // ---------- 图表类型切换 ----------
+        document.querySelectorAll('.chart-type-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.chart-type-btn').forEach(function(b) { b.classList.remove(
+                    'active'); });
+                btn.classList.add('active');
+                currentType = btn.dataset.type;
+                renderChart();
+            });
+        });
+
+        // ---------- 颜色插值 ----------
+        function interpolateColor(c1, c2, r) {
+            var r1 = parseInt(c1.slice(1, 3), 16),
+                g1 = parseInt(c1.slice(3, 5), 16),
+                b1 = parseInt(c1.slice(5, 7), 16);
+            var r2 = parseInt(c2.slice(1, 3), 16),
+                g2 = parseInt(c2.slice(3, 5), 16),
+                b2 = parseInt(c2.slice(5, 7), 16);
+            var rr = Math.round(r1 + (r2 - r1) * r),
+                gg = Math.round(g1 + (g2 - g1) * r),
+                bb = Math.round(b1 + (b2 - b1) * r);
+            return 'rgb(' + rr + ',' + gg + ',' + bb + ')';
+        }
+
+        function generateColors(count, primary, secondary) {
+            var colors = [];
+            for (var i = 0; i < count; i++) {
+                var ratio = i / (count - 1 || 1);
+                colors.push(interpolateColor(primary, secondary, ratio));
+            }
+            return colors;
+        }
+
+        // ---------- 渲染图表 ----------
+        function renderChart() {
+            var canvas = document.getElementById('chartCanvas');
+            var ctx = canvas.getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+
+            var title = document.getElementById('chartTitle').value || '未命名图表';
+            var labels = document.getElementById('dataLabels').value.split(',').map(function(s) { return s.trim(); })
+                .filter(Boolean);
+            var valuesStr = document.getElementById('dataValues').value.split(',').map(function(s) { return s.trim(); });
+            var values = valuesStr.map(function(v) { return parseFloat(v); }).filter(function(v) { return !isNaN(v); });
+            var primaryColor = document.getElementById('primaryColor').value;
+            var secondaryColor = document.getElementById('secondaryColor').value;
+
+            if (labels.length === 0 || values.length === 0) {
+                alert('请填写有效的标签和数据值！');
+                return;
+            }
+
+            // 针对饼图/环形图/极坐标，限制数据点数过多时提示
+            var pieTypes = ['pie', 'doughnut', 'polarArea'];
+            if (pieTypes.indexOf(currentType) !== -1 && values.length > 12) {
+                if (!confirm('当前图表类型数据点较多（' + values.length + '个），建议使用柱状图或折线图。是否继续？')) {
+                    return;
+                }
+            }
+
+            var bgColors = generateColors(values.length, primaryColor, secondaryColor);
+            var borderColors = bgColors.map(function(c) { return c.replace('rgb', 'rgba').replace(')', ',0.8)'); });
+
+            var isPieType = pieTypes.indexOf(currentType) !== -1;
+
+            var commonData = {
+                labels: labels,
+                datasets: [{
+                    label: title,
+                    data: values,
+                    backgroundColor: isPieType ?
+                        bgColors.map(function(c) { return c.replace('rgb', 'rgba').replace(')', ',0.7)'); }) :
+                        primaryColor + '33',
+                    borderColor: isPieType ?
+                        bgColors.map(function(c) { return c.replace('rgb', 'rgba').replace(')', ')'); }) :
+                        primaryColor,
+                    borderWidth: 2,
+                    fill: currentType === 'line',
+                    tension: 0.35,
+                    pointBackgroundColor: secondaryColor,
+                    pointBorderColor: '#fff',
+                    pointRadius: currentType === 'line' ? 5 : 0,
+                    pointHoverRadius: currentType === 'line' ? 7 : 0,
+                }]
+            };
+
+            var options = {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: isPieType,
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 8,
+                            font: { size: 11, family: "'Segoe UI',sans-serif" }
+                        }
+                    },
+                    title: {
+                        display: !!title,
+                        text: title,
+                        font: { size: 16, family: "'Segoe UI',sans-serif", weight: '600' },
+                        color: '#2d2d2d',
+                        padding: 16
+                    }
+                },
+                scales: ['bar', 'line', 'radar'].indexOf(currentType) !== -1 ? {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.04)' },
+                        ticks: { color: '#6d6d6d' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#6d6d6d', maxRotation: 30 }
+                    }
+                } : undefined
+            };
+
+            // 针对雷达图特殊处理
+            if (currentType === 'radar') {
+                options.scales = {
+                    r: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.06)' },
+                        pointLabels: { color: '#6d6d6d', font: { size: 10 } },
+                        ticks: { color: '#6d6d6d', backdropColor: 'transparent', stepSize: Math.ceil(Math.max(1, Math
+                                .max.apply(null, values) / 4)) }
+                    }
+                };
+            }
+
+            try {
+                chartInstance = new Chart(ctx, {
+                    type: currentType,
+                    data: commonData,
+                    options: options
+                });
+                showToast('✅ 图表已生成');
+            } catch (err) {
+                alert('图表生成失败：' + err.message);
+                console.error(err);
+            }
+        }
+
+        // ---------- 预设数据 ----------
+        function loadPreset(type) {
+            var presets = {
+                sales: { title: '月度销售数据', labels: '一月,二月,三月,四月,五月,六月', values: '65,59,80,81,56,72' },
+                traffic: { title: '周访问量趋势', labels: '周一,周二,周三,周四,周五,周六,周日', values: '1200,1900,1700,2100,2400,1800,1400' },
+                score: { title: '班级成绩分布', labels: '优秀,良好,中等,及格,不及格', values: '12,25,18,8,3' },
+                survey: { title: '用户满意度调查', labels: '非常满意,满意,一般,不满意,非常不满意', values: '42,38,15,4,1' }
+            };
+            var p = presets[type] || presets.sales;
+            document.getElementById('chartTitle').value = p.title;
+            document.getElementById('dataLabels').value = p.labels;
+            document.getElementById('dataValues').value = p.values;
+            renderChart();
+            showToast('📊 已加载「' + p.title + '」预设');
+        }
+
+        // ---------- 下载图表 ----------
+        function downloadChart() {
+            if (!chartInstance) {
+                alert('请先生成图表！');
+                return;
+            }
+            var link = document.createElement('a');
+            link.download = 'chart-' + currentType + '-' + Date.now() + '.png';
+            link.href = document.getElementById('chartCanvas').toDataURL('image/png');
+            link.click();
+            showToast('📥 图表已下载');
+        }
+
+        // ---------- 自动渲染（输入变化时自动更新） ----------
+        document.getElementById('chartTitle').addEventListener('input', renderChart);
+        document.getElementById('dataLabels').addEventListener('input', renderChart);
+        document.getElementById('dataValues').addEventListener('input', renderChart);
+        document.getElementById('primaryColor').addEventListener('input', renderChart);
+        document.getElementById('secondaryColor').addEventListener('input', renderChart);
+
+        // ---------- 粒子效果 ----------
+        function createParticles() {
+            var container = document.getElementById('particles');
+            if (!container) return;
+            var count = 20;
+            for (var i = 0; i < count; i++) {
+                var p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                var size = Math.random() * 3 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(p);
+            }
+        }
+
+        // ---------- 页面初始化 ----------
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // 加载动画
+            var overlay = document.getElementById('loadingOverlay');
+            setTimeout(function() {
+                overlay.classList.remove('active');
+            }, 400);
+
+            createParticles();
+
+            // 进度条
+            var progressBar = document.getElementById('progressBar');
+            window.addEventListener('scroll', function() {
+                var scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+                var scrollProgress = (window.scrollY / scrollTotal) * 100;
+                if (progressBar) {
+                    progressBar.style.width = scrollProgress + '%';
+                }
+            }, { passive: true });
+
+            // 回到顶部按钮
+            var backBtn = document.getElementById('backToTop');
+            window.addEventListener('scroll', function() {
+                backBtn.classList.toggle('visible', window.scrollY > 400);
+            }, { passive: true });
+
+            // 初始渲染
+            renderChart();
+
+            console.log('%c📊 数据可视化工具已加载 | InfinityCore', 'color: #8a9b6e;');
+        });
+
+        // 全局暴露
+        window.renderChart = renderChart;
+        window.loadPreset = loadPreset;
+        window.downloadChart = downloadChart;
+        window.showToast = showToast;
+    </script>
+</body>
+</html>

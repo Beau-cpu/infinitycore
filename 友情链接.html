@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>LiquidNav · 资源导航</title>
+    <meta name="description" content="精选资源导航站，整合AI工具、前端开发、设计素材、效率工具等优质链接，横竖屏自适应布局" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* ============================================================
+                   CSS 变量 & 基础重置
+                   ============================================================ */
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --accent: #c7a27c;
+            --dark: #1a1a2e;
+            --light: #f5f3f8;
+            --gray: #6d6d8a;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #8a8aaa;
+            --glass-bg: rgba(255, 255, 255, 0.10);
+            --glass-bg-hover: rgba(255, 255, 255, 0.20);
+            --glass-border: rgba(255, 255, 255, 0.20);
+            --glass-border-hover: rgba(255, 255, 255, 0.40);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+            --glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.30);
+            --radius: 20px;
+            --transition: 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+            --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            --touch-target: 44px;
+            --bg-start: #e8e4f3;
+            --bg-mid: #d4e1f5;
+            --bg-end: #f0e6f0;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --glass-bg: rgba(30, 30, 50, 0.35);
+                --glass-bg-hover: rgba(40, 40, 65, 0.50);
+                --glass-border: rgba(255, 255, 255, 0.10);
+                --glass-border-hover: rgba(255, 255, 255, 0.22);
+                --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+                --glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+                --text-primary: #f0f0f5;
+                --text-secondary: #b0b0c5;
+                --text-muted: #8080a0;
+                --bg-start: #0f0f1a;
+                --bg-mid: #1a1a2e;
+                --bg-end: #151525;
+                --dark: #f0f0f5;
+                --light: #0f0f1a;
+                --gray: #8080a0;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+            background-attachment: fixed;
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            transition: background 0.6s, color 0.4s;
+        }
+
+        /* ====== 环境光晕 ====== */
+        .ambient-light {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .ambient-light .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            animation: orbFloat 24s infinite ease-in-out;
+        }
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(74, 111, 165, 0.30), transparent 70%);
+            top: -10%;
+            right: -5%;
+            animation-delay: 0s;
+        }
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(199, 162, 124, 0.25), transparent 70%);
+            bottom: -10%;
+            left: -5%;
+            animation-delay: -8s;
+        }
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(138, 155, 110, 0.20), transparent 70%);
+            top: 40%;
+            left: 30%;
+            animation-delay: -16s;
+        }
+        @keyframes orbFloat {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(30px, -30px) scale(1.10);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.95);
+            }
+        }
+
+        /* ====== 玻璃态工具类 ====== */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--glass-shadow);
+            transition: var(--transition);
+        }
+        .glass:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            box-shadow: var(--glass-shadow-hover);
+        }
+        .glass-surface {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--glass-shadow);
+        }
+
+        /* ====== 容器 ====== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+                   顶部导航 — 横竖屏共用
+                   ============================================================ */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 24px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--glass-shadow);
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .nav-logo .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(74, 111, 165, 0.30);
+            flex-shrink: 0;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 180px;
+            max-width: 480px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            font-size: 0.92rem;
+            color: var(--text-primary);
+            outline: none;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: var(--transition);
+            font-family: var(--font);
+            min-height: var(--touch-target);
+        }
+        .search-box input:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--glass-border-hover);
+            box-shadow: 0 0 0 4px rgba(74, 111, 165, 0.08);
+        }
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+        .search-box .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .nav-actions .btn-icon {
+            width: var(--touch-target);
+            height: var(--touch-target);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .nav-actions .btn-icon:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            color: var(--accent);
+        }
+        .nav-actions .btn-icon .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-icon-wrap {
+            position: relative;
+        }
+
+        .nav-back {
+            padding: 8px 18px;
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            transition: var(--transition);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-back:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            color: var(--primary);
+        }
+
+        /* ============================================================
+                   统计栏 & 分类栏
+                   ============================================================ */
+        .stats-bar {
+            text-align: center;
+            padding: 14px 20px;
+            margin-top: 16px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+        .stats-bar strong {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin: 0 4px;
+        }
+        .stats-bar .sep {
+            margin: 0 12px;
+            opacity: 0.3;
+        }
+
+        .category-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 14px 18px;
+            margin-top: 14px;
+            justify-content: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+        .cat-tab {
+            padding: 8px 18px;
+            border: 1px solid transparent;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            white-space: nowrap;
+            font-family: var(--font);
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .cat-tab:hover {
+            background: var(--glass-bg-hover);
+            color: var(--text-primary);
+        }
+        .cat-tab.active {
+            background: linear-gradient(135deg, rgba(199, 162, 124, 0.30), rgba(74, 111, 165, 0.30));
+            border-color: var(--glass-border-hover);
+            color: var(--text-primary);
+            box-shadow: 0 2px 12px rgba(74, 111, 165, 0.12);
+        }
+        .cat-tab .count {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-left: 4px;
+            font-weight: 400;
+        }
+
+        /* ============================================================
+                   横屏布局 (≥ 900px) —— 左侧分类树 + 右侧内容
+                   ============================================================ */
+        @media (min-width: 900px) {
+            .main-layout {
+                display: grid;
+                grid-template-columns: 240px 1fr;
+                gap: 24px;
+                margin-top: 20px;
+                align-items: start;
+            }
+            /* 左侧分类侧边栏 */
+            .sidebar-cats {
+                position: sticky;
+                top: 20px;
+                padding: 16px 12px;
+                max-height: calc(100vh - 120px);
+                overflow-y: auto;
+                background: var(--glass-bg);
+                backdrop-filter: blur(20px);
+                border: 1px solid var(--glass-border);
+                border-radius: var(--radius);
+                box-shadow: var(--glass-shadow);
+            }
+            .sidebar-cats::-webkit-scrollbar {
+                width: 3px;
+            }
+            .sidebar-cats::-webkit-scrollbar-thumb {
+                background: var(--glass-border);
+                border-radius: 4px;
+            }
+            .sidebar-cats .cat-group-title {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: var(--text-muted);
+                padding: 8px 10px 4px;
+                font-weight: 600;
+            }
+            .sidebar-cats .cat-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 12px;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: var(--transition);
+                color: var(--text-secondary);
+                font-size: 0.88rem;
+                border: none;
+                background: transparent;
+                width: 100%;
+                font-family: var(--font);
+                text-align: left;
+            }
+            .sidebar-cats .cat-item:hover {
+                background: var(--glass-bg-hover);
+                color: var(--text-primary);
+            }
+            .sidebar-cats .cat-item.active {
+                background: rgba(74, 111, 165, 0.12);
+                color: var(--primary);
+                font-weight: 500;
+            }
+            .sidebar-cats .cat-item .cat-icon {
+                width: 28px;
+                height: 28px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.8rem;
+                color: #fff;
+                flex-shrink: 0;
+            }
+            .sidebar-cats .cat-item .cat-count {
+                margin-left: auto;
+                font-size: 0.7rem;
+                color: var(--text-muted);
+                background: rgba(0, 0, 0, 0.04);
+                padding: 0 8px;
+                border-radius: 10px;
+            }
+            .sidebar-cats .cat-divider {
+                height: 1px;
+                background: var(--glass-border);
+                margin: 6px 12px;
+                opacity: 0.4;
+            }
+            /* 右侧内容区 */
+            .content-area {
+                display: flex;
+                flex-direction: column;
+                gap: 28px;
+            }
+            .section-header {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 14px 20px;
+                margin-bottom: 4px;
+            }
+            .section-header .sec-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-size: 1rem;
+                flex-shrink: 0;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            }
+            .section-header .sec-title {
+                font-size: 1.15rem;
+                font-weight: 700;
+                color: var(--text-primary);
+            }
+            .section-header .sec-count {
+                margin-left: auto;
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                padding: 4px 14px;
+                border-radius: 20px;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid var(--glass-border);
+            }
+            .links-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 16px;
+            }
+        }
+
+        /* ============================================================
+                   竖屏布局 (< 900px) —— 顶部分类标签 + 单栏内容
+                   ============================================================ */
+        @media (max-width: 899px) {
+            .main-layout {
+                display: flex;
+                flex-direction: column;
+                margin-top: 16px;
+                gap: 20px;
+            }
+            .sidebar-cats {
+                display: none;
+            }
+            .content-area {
+                display: flex;
+                flex-direction: column;
+                gap: 24px;
+            }
+            .section-header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                margin-bottom: 2px;
+            }
+            .section-header .sec-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-size: 0.9rem;
+                flex-shrink: 0;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+            }
+            .section-header .sec-title {
+                font-size: 1.05rem;
+                font-weight: 700;
+                color: var(--text-primary);
+            }
+            .section-header .sec-count {
+                margin-left: auto;
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                padding: 4px 12px;
+                border-radius: 20px;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid var(--glass-border);
+            }
+            .links-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .top-nav {
+                padding: 10px 16px;
+                gap: 10px;
+            }
+            .nav-logo {
+                font-size: 1.05rem;
+            }
+            .nav-logo .logo-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+            .search-box {
+                min-width: 120px;
+                order: 10;
+                flex-basis: 100%;
+                max-width: 100%;
+            }
+            .search-box input {
+                padding: 8px 14px 8px 38px;
+                font-size: 0.85rem;
+                min-height: 38px;
+            }
+            .search-box .search-icon {
+                left: 14px;
+                font-size: 0.8rem;
+            }
+            .category-bar {
+                padding: 10px 12px;
+                gap: 6px;
+            }
+            .cat-tab {
+                padding: 6px 14px;
+                font-size: 0.78rem;
+                min-height: 34px;
+            }
+            .stats-bar {
+                font-size: 0.82rem;
+                padding: 10px 16px;
+            }
+            .stats-bar .sep {
+                margin: 0 8px;
+            }
+        }
+
+        /* 小屏手机 (< 480px) 调整为单列 */
+        @media (max-width: 480px) {
+            .links-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .container {
+                padding: 0 12px 30px;
+            }
+            .top-nav {
+                padding: 8px 12px;
+                border-radius: 16px;
+            }
+            .section-header {
+                padding: 10px 12px;
+            }
+            .section-header .sec-title {
+                font-size: 0.95rem;
+            }
+            .cat-tab {
+                padding: 5px 12px;
+                font-size: 0.72rem;
+                min-height: 30px;
+            }
+            .category-bar {
+                padding: 8px 10px;
+                gap: 4px;
+                border-radius: 14px;
+            }
+            .stats-bar {
+                font-size: 0.75rem;
+                padding: 8px 12px;
+                border-radius: 14px;
+            }
+        }
+
+        /* ============================================================
+                   链接卡片 (横竖屏共用)
+                   ============================================================ */
+        .link-card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            padding: 18px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: var(--glass-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .link-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        .link-card:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            box-shadow: var(--glass-shadow-hover);
+            transform: translateY(-3px);
+        }
+        .link-card:hover::after {
+            transform: scaleX(1);
+        }
+        .link-card .card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .link-card .card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+        }
+        .link-card .card-title {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+        }
+        .link-card .card-title .fav-star {
+            color: var(--accent);
+            font-size: 0.7rem;
+            margin-left: 6px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .link-card:hover .card-title .fav-star {
+            opacity: 1;
+        }
+        .link-card .card-title .fav-star.active {
+            opacity: 1;
+        }
+        .link-card .card-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .link-card .card-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .link-card .card-tag {
+            font-size: 0.68rem;
+            padding: 2px 10px;
+            border-radius: 8px;
+            background: rgba(74, 111, 165, 0.08);
+            color: var(--primary);
+            font-weight: 500;
+            border: 1px solid rgba(74, 111, 165, 0.10);
+        }
+        .link-card .card-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        /* ====== 空状态 ====== */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            opacity: 0.3;
+        }
+        .no-results p {
+            font-size: 1rem;
+        }
+
+        /* ====== 回到顶部 ====== */
+        .back-to-top {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--accent);
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: var(--glass-shadow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: var(--transition);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--glass-shadow-hover);
+        }
+
+        /* ====== 页脚 ====== */
+        .page-footer {
+            text-align: center;
+            padding: 30px 20px 10px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            opacity: 0.7;
+        }
+        .page-footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .page-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ====== 加载动画 ====== */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-mid));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.8s ease;
+        }
+        .loader-glass {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--glass-shadow);
+            animation: loaderPulse 2s infinite ease-in-out;
+        }
+        .loader-glass i {
+            font-size: 2rem;
+            color: var(--accent);
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes loaderPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== 环境光 ====== -->
+    <div class="ambient-light">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- ====== 加载遮罩 ====== -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader-glass"><i class="fas fa-infinity"></i></div>
+    </div>
+
+    <!-- ====== 主容器 ====== -->
+    <div class="container">
+
+        <!-- ====== 顶部导航 ====== -->
+        <nav class="top-nav">
+            <a href="#" class="nav-logo">
+                <div class="logo-icon"><i class="fas fa-infinity"></i></div>
+                <span>LiquidNav</span>
+            </a>
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="搜索资源名称、描述或标签..." oninput="filterLinks()">
+            </div>
+            <div class="nav-actions">
+                <div class="btn-icon-wrap">
+                    <button class="btn-icon" id="favToggle" title="显示收藏" onclick="toggleFavView()">
+                        <i class="fas fa-star"></i>
+                        <span class="badge" id="favBadge" style="display:none;">0</span>
+                    </button>
+                </div>
+                <a href="index.html" class="nav-back"><i class="fas fa-arrow-left"></i> 返回</a>
+            </div>
+        </nav>
+
+        <!-- ====== 统计栏 ====== -->
+        <div class="stats-bar">
+            共收录 <strong id="totalCount">0</strong> 个优质资源
+            <span class="sep">·</span>
+            <span id="favStats">❤️ 收藏 <strong id="favCount">0</strong> 个</span>
+            <span class="sep">·</span>
+            最近访问 <strong id="recentCount">0</strong> 个
+        </div>
+
+        <!-- ====== 分类栏（竖屏可见，横屏隐藏） ====== -->
+        <div class="category-bar" id="categoryBarMobile"></div>
+
+        <!-- ====== 主体布局 ====== -->
+        <div class="main-layout">
+
+            <!-- ====== 左侧分类侧边栏（横屏显示） ====== -->
+            <aside class="sidebar-cats" id="sidebarCats"></aside>
+
+            <!-- ====== 右侧内容区 ====== -->
+            <main class="content-area" id="contentArea">
+                <!-- 由 JS 渲染 -->
+            </main>
+
+        </div>
+
+        <!-- ====== 页脚 ====== -->
+        <footer class="page-footer">
+            <p>LiquidNav · 资源导航 | 整合自图钉AI导航 &amp; 菜鸟工具 &amp; 精选收录</p>
+            <p style="margin-top:4px;">数据来源：<a href="https://www.tudingai.com/" target="_blank">图钉AI导航</a> · <a href="https://www.jyshare.com/" target="_blank">菜鸟工具</a></p>
+        </footer>
+    </div>
+
+    <!-- ====== 回到顶部 ====== -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        // ================================================================
+        //  数据：资源列表（与原版保持一致，保留全部条目）
+        // ================================================================
+        const RESOURCES = [
+            { name: '百度', desc: '全球最大的中文搜索引擎', url: 'https://www.baidu.com', icon: 'fas fa-search',
+                color: '#2932E1', tags: ['搜索', '中文'], category: 'search' },
+            { name: '谷歌', desc: '全球最流行的搜索引擎', url: 'https://www.google.com', icon: 'fab fa-google',
+                color: '#4285F4', tags: ['搜索', '全球'], category: 'search' },
+            { name: '必应', desc: '微软推出的搜索引擎', url: 'https://www.bing.com', icon: 'fab fa-microsoft',
+                color: '#0078D4', tags: ['搜索', '微软'], category: 'search' },
+            { name: '搜狗', desc: '中文搜索引擎之一', url: 'https://www.sogou.com', icon: 'fas fa-paw', color: '#FF6A00',
+                tags: ['搜索', '中文'], category: 'search' },
+            { name: '360搜索', desc: '奇虎360推出的搜索引擎', url: 'https://www.so.com', icon: 'fas fa-shield-alt',
+                color: '#19B5FE', tags: ['搜索', '安全'], category: 'search' },
+            { name: 'DuckDuckGo', desc: '注重隐私的搜索引擎，不追踪用户', url: 'https://duckduckgo.com',
+                icon: 'fas fa-duck', color: '#DE5833', tags: ['搜索', '隐私'], category: 'search' },
+            { name: '图钉AI导航', desc: '精选真正实用的AI工具，分享AI编程、内容创作、图像视频等教程',
+                url: 'https://www.tudingai.com/', icon: 'fas fa-thumbtack', color: '#FF6B35', tags: ['AI', '导航',
+                    '精选'
+                ], category: 'featured' },
+            { name: '菜鸟工具', desc: '不止于工具，提供各类在线开发工具集合', url: 'https://www.jyshare.com/',
+                icon: 'fas fa-toolbox', color: '#1FAFFF', tags: ['工具箱', '在线'], category: 'featured' },
+            { name: 'ChatGPT', desc: 'OpenAI推出的AI对话助手', url: 'https://chat.openai.com/', icon: 'fas fa-robot',
+                color: '#10A37F', tags: ['AI', '对话'], category: 'ai-chat' },
+            { name: 'Claude', desc: 'Anthropic新一代AI助手，长文本处理能力强', url: 'https://claude.ai/',
+                icon: 'fas fa-comment-dots', color: '#D97757', tags: ['AI', '对话'], category: 'ai-chat' },
+            { name: 'DeepSeek', desc: '国产高性能AI助手，速度快、效果好、成本低', url: 'https://chat.deepseek.com/',
+                icon: 'fas fa-bolt', color: '#4D6BFE', tags: ['AI', '对话', '国产'], category: 'ai-chat' },
+            { name: '通义千问', desc: '阿里推出的AI大模型对话工具', url: 'https://tongyi.aliyun.com/',
+                icon: 'fas fa-comments', color: '#FF6A00', tags: ['AI', '对话', '国产'], category: 'ai-chat' },
+            { name: 'Kimi', desc: '月之暗面出品的长文本AI助手', url: 'https://kimi.moonshot.cn/', icon: 'fas fa-moon',
+                color: '#6948F4', tags: ['AI', '长文本'], category: 'ai-chat' },
+            { name: '腾讯元宝', desc: '双模型架构集成混元T1与DeepSeek-R1', url: 'https://yuanbao.tencent.com/',
+                icon: 'fab fa-weixin', color: '#12B7F5', tags: ['AI', '对话'], category: 'ai-chat' },
+            { name: '智谱清言', desc: '清华大学和智谱AI联合研发的GLM系列对话模型', url: 'https://chatglm.cn/',
+                icon: 'fas fa-brain', color: '#4A90D9', tags: ['AI', '对话'], category: 'ai-chat' },
+            { name: 'Gemini', desc: 'Google推出的人工智能大模型系列', url: 'https://gemini.google.com/',
+                icon: 'fas fa-gem', color: '#4285F4', tags: ['AI', 'Google'], category: 'ai-chat' },
+            { name: '文心一言', desc: '百度全新一代知识增强大语言模型', url: 'https://yiyan.baidu.com/',
+                icon: 'fas fa-feather-alt', color: '#3370FF', tags: ['AI', '对话', '国产'], category: 'ai-chat' },
+            { name: '豆包AI', desc: '抖音旗下AI助手，能聊天能画图', url: 'https://www.doubao.com/', icon: 'fas fa-seedling',
+                color: '#00D4AA', tags: ['AI', '对话'], category: 'ai-chat' },
+            { name: '讯飞星火', desc: '科大讯飞星火认知智能大模型', url: 'https://xinghuo.xfyun.cn/',
+                icon: 'fas fa-star', color: '#FF6B35', tags: ['AI', '对话', '语音'], category: 'ai-chat' },
+            { name: 'Grok', desc: '马斯克旗下AI旗舰大模型Grok 3', url: 'https://grok.com/', icon: 'fab fa-x-twitter',
+                color: '#000000', tags: ['AI', 'X平台'], category: 'ai-chat' },
+            { name: 'Copilot', desc: '微软推出的AI助手，集成在Bing和Edge中', url: 'https://copilot.microsoft.com/',
+                icon: 'fab fa-microsoft', color: '#0078D4', tags: ['AI', '微软'], category: 'ai-chat' },
+            { name: 'Perplexity', desc: '对话式搜索引擎，AI驱动的智能问答', url: 'https://www.perplexity.ai/',
+                icon: 'fas fa-search-location', color: '#20808D', tags: ['AI', '搜索'], category: 'ai-chat' },
+            { name: '海螺AI', desc: '可以生成音乐、视频、文案创作的全能AI助手', url: 'https://hailuoai.com/',
+                icon: 'fas fa-water', color: '#6C5CE7', tags: ['AI', '多模态'], category: 'ai-chat' },
+            { name: 'Notion AI', desc: '人工智能写作助手，集成在Notion中', url: 'https://www.notion.so/product/ai',
+                icon: 'fas fa-sticky-note', color: '#000000', tags: ['AI', '写作', '笔记'], category: 'ai-write' },
+            { name: '笔灵AI写作', desc: '国内领先的AI写作助手', url: 'https://ibiling.cn/', icon: 'fas fa-pen-fancy',
+                color: '#FF6B6B', tags: ['AI', '写作'], category: 'ai-write' },
+            { name: 'WPS AI', desc: '基于WPS办公套件的AI应用', url: 'https://ai.wps.cn/', icon: 'fas fa-file-word',
+                color: '#F44336', tags: ['AI', '办公'], category: 'ai-write' },
+            { name: 'DeepL Write', desc: '英语写作助手，AI帮你修复语法和标点错误', url: 'https://www.deepl.com/write',
+                icon: 'fas fa-language', color: '#0F2B46', tags: ['AI', '翻译', '写作'], category: 'ai-write' },
+            { name: '橙篇AI', desc: '百度出品的长文本AI，支持最高10万字长文生成',
+                url: 'https://orangeportal.baidu.com/', icon: 'fas fa-book-open', color: '#2932E1', tags: ['AI',
+                    '长文本', '百度'
+                ], category: 'ai-write' },
+            { name: '讯飞智文', desc: 'AI在线一键生成PPT文档、WORD文档', url: 'https://zhiwen.xfyun.cn/',
+                icon: 'fas fa-file-powerpoint', color: '#FF6B35', tags: ['AI', 'PPT', '文档'], category: 'ai-write' },
+            { name: 'Quillbot', desc: '人工智能驱动的转述工具，增强写作能力', url: 'https://quillbot.com/',
+                icon: 'fas fa-exchange-alt', color: '#F44336', tags: ['AI', '改写'], category: 'ai-write' },
+            { name: 'ChatExcel', desc: '通过AI处理Excel数据', url: 'https://chatexcel.com/', icon: 'fas fa-table',
+                color: '#00BCD4', tags: ['AI', 'Excel'], category: 'ai-write' },
+            { name: 'Midjourney', desc: '顶级AI绘画工具，通过文字描述生成精美图像', url: 'https://www.midjourney.com/',
+                icon: 'fas fa-paint-brush', color: '#000000', tags: ['AI', '绘画', '顶级'], category: 'ai-image' },
+            { name: 'Stable Diffusion', desc: '开源AI绘画模型，可本地部署', url: 'https://stability.ai/',
+                icon: 'fas fa-image', color: '#9B59B6', tags: ['AI', '绘画', '开源'], category: 'ai-image' },
+            { name: 'DALL·E 3', desc: 'OpenAI文本生成图像系统', url: 'https://openai.com/dall-e-3',
+                icon: 'fas fa-magic', color: '#10A37F', tags: ['AI', '绘画', 'OpenAI'], category: 'ai-image' },
+            { name: '通义万相', desc: '阿里旗下开源免费的图像视频生成大模型', url: 'https://tongyi.aliyun.com/wanxiang',
+                icon: 'fas fa-images', color: '#FF6A00', tags: ['AI', '绘画', '阿里'], category: 'ai-image' },
+            { name: '即梦AI', desc: '字节跳动一站式AI创作平台', url: 'https://jimeng.jianying.com/',
+                icon: 'fas fa-wand-magic', color: '#25F4EE', tags: ['AI', '绘画', '字节'], category: 'ai-image' },
+            { name: 'Vega AI', desc: '国产免费AI绘画工具，支持在线训练模型风格', url: 'https://www.vegaai.net/',
+                icon: 'fas fa-palette', color: '#FF6B6B', tags: ['AI', '绘画', '免费'], category: 'ai-image' },
+            { name: 'Adobe Firefly', desc: 'Adobe旗下的生成式AI工具', url: 'https://firefly.adobe.com/',
+                icon: 'fab fa-adobe', color: '#FF0000', tags: ['AI', '绘画', 'Adobe'], category: 'ai-image' },
+            { name: '可灵AI', desc: '快手团队研发的视频与图像生成大模型', url: 'https://klingai.kuaishou.com/',
+                icon: 'fas fa-film', color: '#FF4D4F', tags: ['AI', '图像', '快手'], category: 'ai-image' },
+            { name: 'RemoveBG', desc: 'AI一键去除图片背景，效果出色且完全免费', url: 'https://www.remove.bg/',
+                icon: 'fas fa-eraser', color: '#2C82C9', tags: ['AI', '抠图', '免费'], category: 'ai-image' },
+            { name: 'PhotoRoom', desc: '移除背景并创建产品图片', url: 'https://www.photoroom.com/',
+                icon: 'fas fa-camera-retro', color: '#00D4AA', tags: ['AI', '抠图'], category: 'ai-image' },
+            { name: 'AutoDraw', desc: '人工智能绘画工具，快速绘制图形', url: 'https://www.autodraw.com/',
+                icon: 'fas fa-pencil-alt', color: '#FF6B35', tags: ['AI', '绘画'], category: 'ai-image' },
+            { name: 'Sora', desc: 'OpenAI推出的视频生成模型，支持生成60秒一镜到底视频', url: 'https://openai.com/sora',
+                icon: 'fas fa-video', color: '#10A37F', tags: ['AI', '视频', 'OpenAI'], category: 'ai-media' },
+            { name: 'Pika AI', desc: 'AI生成视频，同时支持为视频生成声音', url: 'https://pika.art/', icon: 'fas fa-film',
+                color: '#FF6B6B', tags: ['AI', '视频'], category: 'ai-media' },
+            { name: 'Luma AI', desc: '免费生成逼真的高质量视频Dream Machine', url: 'https://lumalabs.ai/dream-machine',
+                icon: 'fas fa-cloud', color: '#6C63FF', tags: ['AI', '视频', '免费'], category: 'ai-media' },
+            { name: 'HeyGen', desc: 'AI虚拟数字人口播视频在线生成网站', url: 'https://www.heygen.com/',
+                icon: 'fas fa-user-tie', color: '#6366F1', tags: ['AI', '数字人', '视频'], category: 'ai-media' },
+            { name: 'Suno V3', desc: 'AI生成精美歌曲', url: 'https://suno.com/', icon: 'fas fa-music',
+                color: '#5271FF', tags: ['AI', '音乐'], category: 'ai-media' },
+            { name: 'TTSMaker', desc: '免费文本转语音', url: 'https://ttsmaker.com/', icon: 'fas fa-volume-up',
+                color: '#4CAF50', tags: ['AI', '语音', '免费'], category: 'ai-media' },
+            { name: 'Fish Audio', desc: '文本转语音和声音克隆AI工具', url: 'https://fish.audio/',
+                icon: 'fas fa-fish', color: '#00BCD4', tags: ['AI', '语音', '克隆'], category: 'ai-media' },
+            { name: '网易天音', desc: '一站式AI音乐创作工具', url: 'https://tianyin.music.163.com/',
+                icon: 'fab fa-netease', color: '#C20C0C', tags: ['AI', '音乐', '网易'], category: 'ai-media' },
+            { name: '万兴喵影', desc: '易上手且功能强大的国产AIGC视频剪辑软件', url: 'https://miaoying.wondershare.cn/',
+                icon: 'fas fa-cat', color: '#FF6B35', tags: ['AI', '视频', '剪辑'], category: 'ai-media' },
+            { name: 'Cursor', desc: 'AI代码编辑器，使用GPT-4编写代码', url: 'https://cursor.sh/', icon: 'fas fa-code',
+                color: '#000000', tags: ['AI', '编程', '编辑器'], category: 'ai-dev' },
+            { name: 'GitHub Copilot', desc: 'GitHub人工智能编程助手', url: 'https://github.com/features/copilot',
+                icon: 'fab fa-github', color: '#181717', tags: ['AI', '编程', 'GitHub'], category: 'ai-dev' },
+            { name: 'Trae', desc: '国内首个AI IDE，字节跳动旗下产品', url: 'https://trae.ai/',
+                icon: 'fas fa-terminal', color: '#25F4EE', tags: ['AI', 'IDE', '字节'], category: 'ai-dev' },
+            { name: 'Qoder', desc: '代理式编程平台，自然语言描述需求即可编码', url: 'https://qoder.com/',
+                icon: 'fas fa-laptop-code', color: '#6366F1', tags: ['AI', '编程', '阿里'], category: 'ai-dev' },
+            { name: 'CodeArts Snap', desc: '华为云开发的AI编程助手',
+                url: 'https://www.huaweicloud.com/devidev/codearts/snap.html', icon: 'fab fa-huawei',
+                color: '#CF0A2C', tags: ['AI', '编程', '华为'], category: 'ai-dev' },
+            { name: 'Codex', desc: 'OpenAI最新推出的云端AI编程智能体', url: 'https://openai.com/index/codex',
+                icon: 'fas fa-cube', color: '#10A37F', tags: ['AI', '编程', 'OpenAI'], category: 'ai-dev' },
+            { name: 'Claude Code', desc: 'Anthropic推出的命令行编程助手', url: 'https://claude.ai/code',
+                icon: 'fas fa-terminal', color: '#D97757', tags: ['AI', 'CLI', '编程'], category: 'ai-dev' },
+            { name: 'MarsCode', desc: '豆包旗下的编程助手', url: 'https://www.marscode.com/', icon: 'fas fa-rocket',
+                color: '#00D4AA', tags: ['AI', '编程', '豆包'], category: 'ai-dev' },
+            { name: 'Gemini Code Assist', desc: '基于Gemini 2.0大模型的免费AI编程助手',
+                url: 'https://gemini.google.com/code-assist', icon: 'fas fa-wand-magic-sparkles',
+                color: '#4285F4', tags: ['AI', 'Google', '编程'], category: 'ai-dev' },
+            { name: 'MetaGPT X', desc: '世界首个AI开发团队', url: 'https://www.metagpt.io/', icon: 'fas fa-users',
+                color: '#6366F1', tags: ['AI', '团队', '编程'], category: 'ai-dev' },
+            { name: '秘塔AI搜索', desc: '深入理解问题的AI搜索引擎，已接入DeepSeek-R1', url: 'https://metaso.com/',
+                icon: 'fas fa-search', color: '#6C5CE7', tags: ['AI', '搜索'], category: 'ai-search' },
+            { name: '夸克AI搜索', desc: '阿里自研深度思考推理模型已上线夸克AI搜索', url: 'https://quark.cn/',
+                icon: 'fas fa-compass', color: '#00CFFF', tags: ['AI', '搜索', '阿里'], category: 'ai-search' },
+            { name: '纳米AI搜索', desc: '360推出的AI答案引擎，已接入DeepSeek-R1', url: 'https://so.360.com/',
+                icon: 'fas fa-atom', color: '#19B5FE', tags: ['AI', '搜索', '360'], category: 'ai-search' },
+            { name: 'Devv', desc: '最懂程序员的新一代AI搜索引擎', url: 'https://devv.ai/', icon: 'fas fa-code-branch',
+                color: '#6366F1', tags: ['AI', '搜索', '程序员'], category: 'ai-search' },
+            { name: 'OpenClaw', desc: '开源、可自托管的个人AI助手，能替你操作网页', url: 'https://openclaw.com/',
+                icon: 'fas fa-robot', color: '#FF6B35', tags: ['AI', 'Agent', '开源'], category: 'ai-search' },
+            { name: 'Comet浏览器', desc: '不只是搜索，还能替你下单、比价、写邮件', url: 'https://comet.com/',
+                icon: 'fab fa-chrome', color: '#4285F4', tags: ['AI', '浏览器', 'Agent'], category: 'ai-search' },
+            { name: 'OpenRouter', desc: 'AI大模型的统一接口平台，300+AI大模型轻松调用', url: 'https://openrouter.ai/',
+                icon: 'fas fa-route', color: '#30A14E', tags: ['API', '聚合'], category: 'ai-search' },
+            { name: 'Ollama', desc: 'AI大模型本地部署工具', url: 'https://ollama.com/', icon: 'fas fa-server',
+                color: '#000000', tags: ['AI', '本地部署'], category: 'ai-search' },
+            { name: '硅基流动', desc: '集合顶尖大模型的一站式云服务平台', url: 'https://siliconflow.cn/',
+                icon: 'fas fa-cloud', color: '#4A90D9', tags: ['云服务', 'AI'], category: 'ai-search' },
+            { name: 'Hugging Face', desc: 'AI大模型资源平台，提供预训练模型和数据集', url: 'https://huggingface.co/',
+                icon: 'fas fa-smile', color: '#FFCC00', tags: ['AI', '社区', '模型'], category: 'ai-search' },
+            { name: '魔搭ModelScope', desc: '中国最大的AI开源社区', url: 'https://modelscope.cn/',
+                icon: 'fas fa-cubes', color: '#FF6B35', tags: ['AI', '开源', '国产'], category: 'ai-search' },
+            { name: 'N站', desc: '年轻活泼的社区，可创建话题、AIGC梦幻工厂', url: 'https://www.n.cn/?fromsou=1',
+                icon: 'fas fa-fire', color: '#FF6A00', tags: ['社区', 'AI'], category: 'ai-search' },
+            { name: 'MDN Web Docs', desc: 'Mozilla出品的Web技术权威文档',
+                url: 'https://developer.mozilla.org/zh-CN/', icon: 'fab fa-firefox-browser', color: '#FF7139',
+                tags: ['文档', '官方'], category: 'frontend' },
+            { name: 'W3School', desc: '最全面的中文Web技术在线教程', url: 'https://www.w3school.com.cn/',
+                icon: 'fas fa-book', color: '#04AA6D', tags: ['教程', '入门'], category: 'frontend' },
+            { name: '菜鸟教程', desc: '国内最全的技术教程网站，涵盖各种编程语言和框架', url: 'https://www.runoob.com/',
+                icon: 'fas fa-graduation-cap', color: '#1FAFFF', tags: ['教程', '全面'], category: 'frontend' },
+            { name: 'CSS-Tricks', desc: '前端开发技巧博客，大量实用的CSS和前端解决方案', url: 'https://css-tricks.com/',
+                icon: 'fab fa-css3-alt', color: '#1572B6', tags: ['CSS', '技巧'], category: 'frontend' },
+            { name: 'JavaScript.info', desc: '现代JavaScript教程，从基础到高级的完整学习路径',
+                url: 'https://javascript.info/', icon: 'fab fa-js-square', color: '#F7DF1E', tags: ['JS',
+                    '教程'], category: 'frontend' },
+            { name: 'Can I Use', desc: '浏览器兼容性查询工具', url: 'https://caniuse.com/',
+                icon: 'fas fa-check-circle', color: '#E34C26', tags: ['兼容性', '查询'], category: 'frontend' },
+            { name: 'Stack Overflow', desc: '全球最大的程序员问答社区', url: 'https://stackoverflow.com/',
+                icon: 'fab fa-stack-overflow', color: '#F48024', tags: ['问答', '社区'], category: 'frontend' },
+            { name: '掘金', desc: '面向技术人的社区平台，大量优质技术文章', url: 'https://juejin.cn/',
+                icon: 'fas fa-shovel', color: '#1E80FF', tags: ['社区', '文章'], category: 'frontend' },
+            { name: 'CodePen', desc: '在线前端代码编辑器，分享和展示代码作品', url: 'https://codepen.io/',
+                icon: 'fab fa-codepen', color: '#000000', tags: ['编辑器', '演示'], category: 'frontend' },
+            { name: 'DevDocs', desc: '开源免费文档查询工具', url: 'https://devdocs.io/', icon: 'fas fa-book-open',
+                color: '#03A9F4', tags: ['文档', '查询'], category: 'frontend' },
+            { name: 'JSON Editor Online', desc: '在线JSON格式化、验证、编辑工具', url: 'https://jsoneditoronline.org/',
+                icon: 'fas fa-brackets-curly', color: '#2979FF', tags: ['JSON', '格式化'], category: 'devtools' },
+            { name: 'Regex101', desc: '正则表达式在线测试和学习工具', url: 'https://regex101.com/',
+                icon: 'fas fa-asterisk', color: '#D00000', tags: ['正则', '测试'], category: 'devtools' },
+            { name: 'TinyPNG', desc: '智能图片压缩工具', url: 'https://tinypng.com/', icon: 'fas fa-compress-arrows-alt',
+                color: '#A5D6A7', tags: ['图片', '压缩'], category: 'devtools' },
+            { name: 'Git官方文档', desc: 'Git版本控制系统的完整中文文档', url: 'https://git-scm.com/doc',
+                icon: 'fab fa-git-alt', color: '#F05032', tags: ['Git', '版本控制'], category: 'devtools' },
+            { name: 'VS Code', desc: '微软开发且跨平台的免费源代码编辑器', url: 'https://code.visualstudio.com/',
+                icon: 'fas fa-code', color: '#007ACC', tags: ['编辑器', '微软'], category: 'devtools' },
+            { name: 'Postman', desc: '接口调试与测试工具', url: 'https://www.postman.com/',
+                icon: 'fas fa-paper-plane', color: '#FF6C37', tags: ['API', '调试'], category: 'devtools' },
+            { name: 'Insomnia', desc: '开源、轻量、界面极简的API客户端', url: 'https://insomnia.rest/',
+                icon: 'fas fa-bed', color: '#674AF9', tags: ['API', '开源'], category: 'devtools' },
+            { name: 'DrawDB', desc: '好用的数据库设计工具', url: 'https://drawdb.app/', icon: 'fas fa-database',
+                color: '#4A90D9', tags: ['数据库', '设计'], category: 'devtools' },
+            { name: 'Codesandbox', desc: '在线代码编辑器和协作开发平台', url: 'https://codesandbox.io/',
+                icon: 'fas fa-sandbox', color: '#1DBF73', tags: ['在线IDE', '前端'], category: 'devtools' },
+            { name: 'Stackblitz', desc: '基于云的集成开发环境', url: 'https://stackblitz.com/',
+                icon: 'fas fa-cloud', color: '#1389FD', tags: ['在线IDE', '云'], category: 'devtools' },
+            { name: 'Unsplash', desc: '高质量免费可商用图片库，海量摄影作品', url: 'https://unsplash.com/',
+                icon: 'fas fa-image', color: '#111111', tags: ['图片', '免费'], category: 'design' },
+            { name: 'Pexels', desc: '免费高清图片和视频素材库，支持中文搜索', url: 'https://www.pexels.com/',
+                icon: 'fas fa-camera', color: '#05A081', tags: ['图片', '视频'], category: 'design' },
+            { name: 'Font Awesome', desc: '最流行的图标字体库，数千个矢量图标免费使用', url: 'https://fontawesome.com/',
+                icon: 'fab fa-font-awesome', color: '#538DD7', tags: ['图标', '字体'], category: 'design' },
+            { name: 'Coolors', desc: '配色方案生成器，一键获取好看的配色灵感', url: 'https://coolors.co/',
+                icon: 'fas fa-palette', color: '#00CCB0', tags: ['配色', '灵感'], category: 'design' },
+            { name: 'Figma', desc: '强大的在线协作UI设计工具', url: 'https://www.figma.com/', icon: 'fab fa-figma',
+                color: '#F24E1E', tags: ['UI', '协作'], category: 'design' },
+            { name: 'ProcessOn', desc: '免费在线作图工具，支持流程图、思维导图、UML等', url: 'https://www.processon.com/',
+                icon: 'fas fa-project-diagram', color: '#F5A623', tags: ['作图', '流程图'], category: 'design' },
+            { name: 'Excalidraw', desc: '手绘风格的在线白板工具', url: 'https://excalidraw.com/',
+                icon: 'fas fa-pencil-alt', color: '#6965DB', tags: ['白板', '绘图'], category: 'design' },
+            { name: 'Canva', desc: '功能强大的在线设计协作平台', url: 'https://www.canva.com/',
+                icon: 'fas fa-paint-brush', color: '#00C4CC', tags: ['设计', '协作'], category: 'design' },
+            { name: '即时设计', desc: '可实时协作的专业UI设计工具', url: 'https://js.design/', icon: 'fas fa-pen-ruler',
+                color: '#FF6B6B', tags: ['UI', '国产'], category: 'design' },
+            { name: 'Pixabay', desc: '免费可商用的图片和视频素材库', url: 'https://pixabay.com/',
+                icon: 'fas fa-photo-video', color: '#00AB6B', tags: ['图片', '免费'], category: 'design' },
+            { name: 'Color Hunt', desc: '漂亮的配色方案收集分享', url: 'https://colorhunt.co/',
+                icon: 'fas fa-eye-dropper', color: '#FF6B6B', tags: ['配色', '灵感'], category: 'design' },
+            { name: 'Adobe Color', desc: 'Adobe出品的配色工具', url: 'https://color.adobe.com/',
+                icon: 'fab fa-adobe', color: '#FF0000', tags: ['配色', 'Adobe'], category: 'design' },
+            { name: '阿里巴巴图标库', desc: '提供海量矢量图标，支持自定义下载', url: 'https://www.iconfont.cn/',
+                icon: 'fas fa-icons', color: '#FF6A00', tags: ['图标', '阿里'], category: 'design' },
+            { name: 'PNGPIX', desc: '提供高质量的PNG图片素材', url: 'https://www.pngpix.com/', icon: 'fas fa-image',
+                color: '#00BCD4', tags: ['PNG', '素材'], category: 'design' },
+            { name: 'CleanPNG', desc: '提供免费的PNG图片下载', url: 'https://www.cleanpng.com/',
+                icon: 'fas fa-image', color: '#4CAF50', tags: ['PNG', '免费'], category: 'design' },
+            { name: 'Unsplash', desc: '高质量免费可商用图片库', url: 'https://unsplash.com/', icon: 'fas fa-image',
+                color: '#111111', tags: ['图片', '免费'], category: 'images' },
+            { name: 'Pexels', desc: '免费高清图片和视频素材库', url: 'https://www.pexels.com/', icon: 'fas fa-camera',
+                color: '#05A081', tags: ['图片', '视频'], category: 'images' },
+            { name: 'Pixabay', desc: '免费可商用的图片和视频素材库', url: 'https://pixabay.com/',
+                icon: 'fas fa-photo-video', color: '#00AB6B', tags: ['图片', '免费'], category: 'images' },
+            { name: 'StockSnap', desc: '每周更新的免费高分辨率图片库', url: 'https://stocksnap.io/',
+                icon: 'fas fa-camera-retro', color: '#2E86DE', tags: ['图片', '免费'], category: 'images' },
+            { name: 'Kaboompics', desc: '免费商用图片素材', url: 'https://kaboompics.com/', icon: 'fas fa-burst',
+                color: '#FF6B6B', tags: ['图片', '免费'], category: 'images' },
+            { name: 'Foodiesfeed', desc: '美食摄影免费图片', url: 'https://foodiesfeed.com/', icon: 'fas fa-utensils',
+                color: '#FF6B35', tags: ['图片', '美食'], category: 'images' },
+            { name: 'Wallhaven', desc: '超高质量壁纸下载站', url: 'https://wallhaven.cc/', icon: 'fas fa-desktop',
+                color: '#00BCD4', tags: ['壁纸', '高清'], category: 'images' },
+            { name: '流体背景', desc: '生成动态流体背景WebGL效果',
+                url: 'https://paveldogreat.github.io/WebGL-Fluid-Simulation/', icon: 'fas fa-water',
+                color: '#2196F3', tags: ['背景', '动态'], category: 'images' },
+            { name: 'RUSSFUSS', desc: '提供高质量的纹理背景', url: 'https://russfuss.com/', icon: 'fas fa-texture',
+                color: '#795548', tags: ['纹理', '背景'], category: 'images' },
+            { name: '液态渐变星球', desc: '生成液态渐变星球效果',
+                url: 'https://alteredqualia.com/xg/examples/nebula_artefact.html', icon: 'fas fa-globe',
+                color: '#9C27B0', tags: ['渐变', '星球'], category: 'images' },
+            { name: 'Mesh Gradient', desc: '生成渐变色背景', url: 'https://meshgradient.com/',
+                icon: 'fas fa-gradient', color: '#E91E63', tags: ['渐变', '背景'], category: 'images' },
+            { name: 'Color Hunt', desc: '漂亮的配色方案收集分享', url: 'https://colorhunt.co/',
+                icon: 'fas fa-eye-dropper', color: '#FF6B6B', tags: ['配色', '灵感'], category: 'colors-fonts' },
+            { name: 'Adobe Color', desc: 'Adobe出品的配色工具', url: 'https://color.adobe.com/',
+                icon: 'fab fa-adobe', color: '#FF0000', tags: ['配色', 'Adobe'], category: 'colors-fonts' },
+            { name: 'Coolors', desc: '配色方案生成器', url: 'https://coolors.co/', icon: 'fas fa-palette',
+                color: '#00CCB0', tags: ['配色', '生成'], category: 'colors-fonts' },
+            { name: 'MaterialUI ColorDrop', desc: 'Material Design配色工具', url: 'https://materialui.co/',
+                icon: 'fas fa-fill-drip', color: '#1E88E5', tags: ['配色', 'Material'], category: 'colors-fonts' },
+            { name: 'DaFont', desc: '免费英文字体下载', url: 'https://www.dafont.com/', icon: 'fas fa-font',
+                color: '#333333', tags: ['字体', '英文'], category: 'colors-fonts' },
+            { name: 'Google Fonts', desc: 'Google开源字体库', url: 'https://fonts.google.com/',
+                icon: 'fab fa-google', color: '#4285F4', tags: ['字体', 'Google'], category: 'colors-fonts' },
+            { name: 'Iconfont', desc: '阿里巴巴矢量图标库', url: 'https://www.iconfont.cn/', icon: 'fas fa-icons',
+                color: '#FF6A00', tags: ['图标', '阿里'], category: 'colors-fonts' },
+            { name: '字由', desc: '字体管理工具', url: 'https://www.hellofont.com/', icon: 'fas fa-font',
+                color: '#1890FF', tags: ['字体', '管理'], category: 'colors-fonts' },
+            { name: '站长素材', desc: '提供丰富的字体下载资源', url: 'https://sc.chinaz.com/', icon: 'fas fa-font',
+                color: '#FF6B35', tags: ['字体', '素材'], category: 'colors-fonts' },
+            { name: '模版王', desc: '提供各种字体下载和预览', url: 'http://fonts.mobanwang.com/', icon: 'fas fa-font',
+                color: '#4CAF50', tags: ['字体', '预览'], category: 'colors-fonts' },
+            { name: '剪映', desc: '全能易用的桌面端剪辑软件', url: 'https://www.capcut.cn/', icon: 'fas fa-film',
+                color: '#000000', tags: ['视频', '剪辑'], category: 'media' },
+            { name: 'Convertio', desc: '在线转换文件的简单工具，支持超过300种格式', url: 'https://convertio.co/',
+                icon: 'fas fa-exchange-alt', color: '#4A90D9', tags: ['转换', '多格式'], category: 'media' },
+            { name: 'PDF24', desc: '免费且易于使用的在线PDF工具', url: 'https://tools.pdf24.org/zh/',
+                icon: 'fas fa-file-pdf', color: '#E53935', tags: ['PDF', '工具'], category: 'media' },
+            { name: '草料二维码', desc: '免费制作出能高效解决业务问题的二维码', url: 'https://cli.im/',
+                icon: 'fas fa-qrcode', color: '#1890FF', tags: ['二维码'], category: 'media' },
+            { name: 'XMind', desc: '全功能的思维导图和头脑风暴软件', url: 'https://xmind.app/',
+                icon: 'fas fa-project-diagram', color: '#FF6B35', tags: ['思维导图'], category: 'media' },
+            { name: '幕布', desc: '大纲笔记与思维导图可以一键转换', url: 'https://mubu.com/', icon: 'fas fa-list-ul',
+                color: '#FF6B35', tags: ['笔记', '导图'], category: 'media' },
+            { name: 'Mermaid', desc: '图表工具，基于纯文本描述来创建图表', url: 'https://mermaid.js.org/',
+                icon: 'fas fa-chart-area', color: '#FF6B35', tags: ['图表', '开发者'], category: 'media' },
+            { name: 'DeepL', desc: '全世界最准确的翻译', url: 'https://www.deepl.com/translator',
+                icon: 'fas fa-language', color: '#0F2B46', tags: ['翻译', '精准'], category: 'media' },
+            { name: 'Snipaste', desc: '截图贴图工具', url: 'https://snipaste.com/', icon: 'fas fa-camera',
+                color: '#FF6B35', tags: ['截图'], category: 'media' },
+            { name: 'ACONVERT', desc: '支持多种文本格式的在线转换', url: 'https://www.aconvert.com/',
+                icon: 'fas fa-exchange-alt', color: '#607D8B', tags: ['转换', '文本'], category: 'media' },
+            { name: 'Videvo', desc: '提供免费视频素材', url: 'https://www.videvo.net/', icon: 'fas fa-video',
+                color: '#9C27B0', tags: ['视频', '素材'], category: 'media' },
+            { name: '音频下载', desc: '提供音频下载工具推荐', url: 'https://music.liuzhijin.cn/', icon: 'fas fa-music',
+                color: '#E91E63', tags: ['音频', '下载'], category: 'media' },
+            { name: 'PPT超级市场', desc: '提供丰富的PPT模板', url: 'https://www.pptsupermarket.com/ppts',
+                icon: 'fas fa-file-powerpoint', color: '#FF6B35', tags: ['PPT', '模板'], category: 'ppt' },
+            { name: 'OfficePlus', desc: '提供免费的PPT模板', url: 'https://www.officeplus.cn/',
+                icon: 'fab fa-microsoft', color: '#0078D4', tags: ['PPT', '免费'], category: 'ppt' },
+            { name: 'Just Free Slide', desc: '提供免费的PPT模板', url: 'https://justfreeslide.com/',
+                icon: 'fas fa-file-powerpoint', color: '#4CAF50', tags: ['PPT', '免费'], category: 'ppt' },
+            { name: '51PPT模板', desc: '提供丰富的PPT模板', url: 'https://www.51pptmoban.com/',
+                icon: 'fas fa-file-powerpoint', color: '#E91E63', tags: ['PPT', '模板'], category: 'ppt' },
+            { name: 'PPTfans', desc: '提供高质量的PPT模板', url: 'https://www.pptfans.cn/',
+                icon: 'fas fa-file-powerpoint', color: '#9C27B0', tags: ['PPT', '高质量'], category: 'ppt' },
+            { name: '优品PPT', desc: '提供免费的PPT模板', url: 'https://www.ypppt.com/', icon: 'fas fa-file-powerpoint',
+                color: '#FF9800', tags: ['PPT', '免费'], category: 'ppt' },
+            { name: '第一PPT', desc: '提供丰富的PPT模板', url: 'https://www.1ppt.com/', icon: 'fas fa-file-powerpoint',
+                color: '#F44336', tags: ['PPT', '模板'], category: 'ppt' },
+            { name: 'PPT宝藏', desc: '提供免费的PPT模板', url: 'http://www.pptbz.com/', icon: 'fas fa-file-powerpoint',
+                color: '#00BCD4', tags: ['PPT', '免费'], category: 'ppt' },
+            { name: 'PPT之家', desc: '提供高质量的PPT模板', url: 'https://www.52ppt.com/',
+                icon: 'fas fa-file-powerpoint', color: '#3F51B5', tags: ['PPT', '高质量'], category: 'ppt' },
+            { name: '500TPPT', desc: '提供丰富的PPT模板', url: 'https://www.woodo.cn/design/template/',
+                icon: 'fas fa-file-powerpoint', color: '#795548', tags: ['PPT', '模板'], category: 'ppt' },
+            { name: '镝数图表', desc: '提供在线图表制作工具', url: 'https://dycharts.com/', icon: 'fas fa-chart-bar',
+                color: '#FF5722', tags: ['图表', '在线'], category: 'ppt' },
+            { name: 'Notion', desc: '全能笔记和知识管理工具，支持团队协作', url: 'https://www.notion.so/',
+                icon: 'fas fa-sticky-note', color: '#000000', tags: ['笔记', '协作'], category: 'productivity' },
+            { name: 'Trello', desc: '看板式项目管理工具', url: 'https://trello.com/', icon: 'fab fa-trello',
+                color: '#0079BF', tags: ['项目管理', '看板'], category: 'productivity' },
+            { name: 'Obsidian', desc: '知识管理和笔记应用，强大的双向链接和知识图谱', url: 'https://obsidian.md/',
+                icon: 'fas fa-ghost', color: '#7C3AED', tags: ['笔记', '本地'], category: 'productivity' },
+            { name: 'Gamma', desc: 'AI一键生成PPT、文档和网页，效率神器', url: 'https://gamma.app/',
+                icon: 'fas fa-magic', color: '#6D48FF', tags: ['AI', 'PPT'], category: 'productivity' },
+            { name: 'iSlide AIPPT', desc: 'AI一键设计PPT，支持输入主题、导入文件生成', url: 'https://www.islide.cc/',
+                icon: 'fas fa-file-powerpoint', color: '#FF6B35', tags: ['PPT', 'AI'], category: 'productivity' },
+            { name: 'WPS AIPPT', desc: 'WPS推出的在线AI做PPT工具', url: 'https://ai.wps.cn/ppt',
+                icon: 'fas fa-presentation', color: '#F44336', tags: ['PPT', 'WPS'], category: 'productivity' },
+            { name: '牛客网', desc: '程序员笔试面试练习平台，海量真题和模拟题', url: 'https://www.nowcoder.com/',
+                icon: 'fas fa-laptop-code', color: '#2196F3', tags: ['面试', '刷题'], category: 'productivity' },
+            { name: 'LeetCode', desc: '算法刷题平台，准备技术面试必备', url: 'https://leetcode.cn/',
+                icon: 'fas fa-code', color: '#FFA116', tags: ['算法', '面试'], category: 'productivity' },
+            { name: 'freeCodeCamp', desc: '完全免费的编程学习平台，从零基础到就业的全套课程',
+                url: 'https://www.freecodecamp.org/chinese/', icon: 'fab fa-free-code-camp', color: '#0A0A23',
+                tags: ['免费', '课程'], category: 'learn' },
+            { name: 'GitHub', desc: '全球最大开源代码托管平台', url: 'https://github.com/', icon: 'fab fa-github',
+                color: '#181717', tags: ['开源', '代码'], category: 'learn' },
+            { name: '慕课网', desc: 'IT技能在线学习平台，大量优质实战课程', url: 'https://www.imooc.com/',
+                icon: 'fas fa-play-circle', color: '#F9F9F9', tags: ['课程', '实战'], category: 'learn' },
+            { name: '中国大学MOOC', desc: '精品课程在线学习平台', url: 'https://www.icourse163.org/',
+                icon: 'fas fa-university', color: '#E03A3E', tags: ['大学', 'MOOC'], category: 'learn' },
+            { name: 'V2EX', desc: '汇集各类奇妙好玩的话题和流行动向的网站', url: 'https://www.v2ex.com/',
+                icon: 'fas fa-comments', color: '#333333', tags: ['社区', '技术'], category: 'learn' },
+            { name: 'CSDN', desc: '专业开发者社区', url: 'https://www.csdn.net/', icon: 'fab fa-csdn',
+                color: '#FC5531', tags: ['社区', '文章'], category: 'learn' },
+            { name: 'InfoQ', desc: '以社区为中心的技术媒体平台', url: 'https://www.infoq.cn/',
+                icon: 'fas fa-info-circle', color: '#D02D55', tags: ['媒体', '技术'], category: 'learn' },
+            { name: 'Hello算法', desc: '动画图解、一键运行的数据结构与算法教程', url: 'https://www.hello-algo.com/',
+                icon: 'fas fa-project-diagram', color: '#00BCD4', tags: ['算法', '动画'], category: 'learn' },
+            { name: '博客园', desc: '开发者的网上家园', url: 'https://www.cnblogs.com/', icon: 'fas fa-blog',
+                color: '#C5E22C', tags: ['博客', '社区'], category: 'learn' },
+            { name: '开源中国', desc: '中文开源技术交流社区', url: 'https://www.oschina.net/', icon: 'fas fa-code-branch',
+                color: '#EEE', tags: ['开源', '社区'], category: 'learn' },
+            { name: 'Bilibili', desc: '视频分享平台，大量技术教程', url: 'https://www.bilibili.com/',
+                icon: 'fab fa-bilibili', color: '#00A1D6', tags: ['视频', '学习'], category: 'learn' },
+            { name: '抖音', desc: '短视频分享平台', url: 'https://www.douyin.com/', icon: 'fab fa-tiktok',
+                color: '#000000', tags: ['短视频', '娱乐'], category: 'learn' },
+            { name: '36氪', desc: '科技创业媒体平台', url: 'https://36kr.com/', icon: 'fas fa-rocket',
+                color: '#0089FF', tags: ['科技', '创投'], category: 'tech-media' },
+            { name: '少数派', desc: '高效工作生活方式', url: 'https://sspai.com/', icon: 'fas fa-user-ninja',
+                color: '#DA3327', tags: ['效率', '生活'], category: 'tech-media' },
+            { name: '极客公园', desc: '关注产品和科技的创新者社区', url: 'https://www.geekpark.net/',
+                icon: 'fas fa-flask', color: '#00BCD4', tags: ['科技', '创新'], category: 'tech-media' },
+            { name: 'IT之家', desc: 'IT科技资讯门户', url: 'https://www.ithome.com/', icon: 'fas fa-home',
+                color: '#FF6B35', tags: ['IT', '资讯'], category: 'tech-media' },
+            { name: '虎嗅网', desc: '优质的科技资讯平台', url: 'https://www.huxiu.com/', icon: 'fas fa-tiger',
+                color: '#F53F3F', tags: ['科技', '商业'], category: 'tech-media' },
+            { name: '爱范儿', desc: '让未来触手可及', url: 'https://www.ifanr.com/', icon: 'fas fa-hand-point-up',
+                color: '#FF6B35', tags: ['科技', '未来'], category: 'tech-media' },
+            { name: '钛媒体', desc: '科技财经新媒体', url: 'https://www.tmtpost.com/', icon: 'fas fa-titan',
+                color: '#00BCD4', tags: ['科技', '财经'], category: 'tech-media' },
+            { name: 'Product Hunt', desc: '发现新的数字产品、创意项目和创新技术', url: 'https://www.producthunt.com/',
+                icon: 'fab fa-product-hunt', color: '#DA552F', tags: ['产品', '发现'], category: 'tech-media' },
+            { name: 'Hacker News', desc: '计算机黑客和创业公司的社会化新闻网站', url: 'https://news.ycombinator.com/',
+                icon: 'fab fa-y-combinator', color: '#FF6600', tags: ['黑客', '创业'], category: 'tech-media' },
+            { name: 'TechCrunch', desc: '美国科技媒体', url: 'https://techcrunch.com/', icon: 'fas fa-newspaper',
+                color: '#00BCD4', tags: ['科技', '国际'], category: 'tech-media' },
+            { name: '菜鸟工具', desc: '不止于工具，提供各类在线开发工具集合', url: 'https://www.jyshare.com/',
+                icon: 'fas fa-toolbox', color: '#1FAFFF', tags: ['工具箱', '在线'], category: 'tools' },
+            { name: 'HTML压缩', desc: 'HTML代码压缩/解压工具', url: 'https://tool.chinaz.com/tools/htmlformat.aspx',
+                icon: 'fab fa-html5', color: '#E44D26', tags: ['HTML', '压缩'], category: 'tools' },
+            { name: 'JS压缩', desc: 'JavaScript代码压缩/解压工具', url: 'https://tool.chinaz.com/tools/jsformat.aspx',
+                icon: 'fab fa-js-square', color: '#F7DF1E', tags: ['JS', '压缩'], category: 'tools' },
+            { name: 'CSS压缩', desc: 'CSS样式表压缩/解压工具', url: 'https://tool.chinaz.com/tools/cssformat.aspx',
+                icon: 'fab fa-css3-alt', color: '#1572B6', tags: ['CSS', '压缩'], category: 'tools' },
+            { name: 'JSON解析', desc: '在线JSON解析和格式化工具', url: 'https://www.json.cn/',
+                icon: 'fas fa-brackets-curly', color: '#2979FF', tags: ['JSON', '格式化'], category: 'tools' },
+            { name: '时间戳转换', desc: 'Unix时间戳与日期互转', url: 'https://tool.lu/timestamp/',
+                icon: 'fas fa-clock', color: '#4CAF50', tags: ['时间戳', '转换'], category: 'tools' },
+            { name: 'Base64编解码', desc: 'Base64编码解码工具', url: 'https://base64.us/', icon: 'fas fa-lock',
+                color: '#9C27B0', tags: ['Base64', '编解码'], category: 'tools' },
+            { name: 'MD5加密', desc: '在线MD5加密工具', url: 'https://md5jiami.51240.com/', icon: 'fas fa-key',
+                color: '#607D8B', tags: ['MD5', '加密'], category: 'tools' },
+            { name: 'UUID生成', desc: '在线UUID/GUID生成器', url: 'https://www.uuidgenerator.net/',
+                icon: 'fas fa-fingerprint', color: '#3F51B5', tags: ['UUID', '生成'], category: 'tools' },
+            { name: '二维码生成', desc: '在线二维码生成器', url: 'https://cli.im/', icon: 'fas fa-qrcode',
+                color: '#1890FF', tags: ['二维码'], category: 'tools' },
+            { name: '正则测试', desc: '在线正则表达式测试工具', url: 'https://regex101.com/', icon: 'fas fa-asterisk',
+                color: '#D00000', tags: ['正则', '测试'], category: 'tools' },
+            { name: '颜色选择器', desc: '在线取色器和颜色转换工具', url: 'https://htmlcolorcodes.com/color-picker',
+                icon: 'fas fa-eye-dropper', color: '#FF6B6B', tags: ['颜色', '取色'], category: 'tools' },
+            { name: 'ITellyou', desc: '包含各种IT软件的网站，提供系统镜像、服务器软件、办公软件等',
+                url: 'https://msdn.itellyou.cn/', icon: 'fas fa-compact-disc', color: '#2196F3', tags: ['系统',
+                    '镜像'
+                ], category: 'software' },
+            { name: 'HelloWindows', desc: '专注于Windows资源分享的社区', url: 'https://hellowindows.cn/',
+                icon: 'fab fa-windows', color: '#0078D4', tags: ['Windows', '资源'], category: 'software' },
+            { name: 'VMware', desc: '提供虚拟机安装', url: 'https://www.vmware.com/', icon: 'fas fa-server',
+                color: '#607D8B', tags: ['虚拟机'], category: 'software' },
+            { name: 'Office Tool Plus', desc: '提供Office激活工具', url: 'https://otp.landian.vip/zh-cn/',
+                icon: 'fas fa-key', color: '#FF6B35', tags: ['Office', '激活'], category: 'software' },
+            { name: 'Mocreak', desc: '一键安装office', url: 'https://www.mocreak.com/', icon: 'fas fa-download',
+                color: '#4CAF50', tags: ['Office', '安装'], category: 'software' },
+            { name: 'LKY OfficeTools', desc: 'Office工具集', url: 'https://github.com/OdysseusYuan/LKY_OfficeTools',
+                icon: 'fab fa-github', color: '#181717', tags: ['Office', '工具'], category: 'software' },
+            { name: 'CCleaner', desc: '系统优化和清理工具', url: 'https://www.ccleaner.com/zh-cn',
+                icon: 'fas fa-broom', color: '#F44336', tags: ['优化', '清理'], category: 'software' },
+            { name: 'Mem Reduct', desc: '内存清理工具', url: 'https://memreduct.org/mem-reduct-download/',
+                icon: 'fas fa-memory', color: '#2196F3', tags: ['内存', '清理'], category: 'software' },
+            { name: 'Gopeed', desc: '高速下载工具', url: 'https://gopeed.com/zh-CN', icon: 'fas fa-download',
+                color: '#FF6B35', tags: ['下载', '高速'], category: 'software' },
+            { name: 'Motrix', desc: '全功能下载工具', url: 'https://motrix.app/zh-CN/download',
+                icon: 'fas fa-cloud-download-alt', color: '#4A90D9', tags: ['下载', '全功能'], category: 'software' },
+            { name: 'Easinote', desc: '希沃白板工具', url: 'https://easinote.seewo.com/', icon: 'fas fa-chalkboard',
+                color: '#00BCD4', tags: ['白板', '教学'], category: 'software' },
+            { name: 'EV录屏', desc: '屏幕录制工具', url: 'https://www.ieway.cn/evcapture.html', icon: 'fas fa-video',
+                color: '#FF6B35', tags: ['录屏', '视频'], category: 'software' },
+            { name: '火绒安全', desc: '提供安全防护服务', url: 'https://www.huorong.cn/', icon: 'fas fa-shield-alt',
+                color: '#E53935', tags: ['安全', '防护'], category: 'software' },
+            { name: 'Rainmeter', desc: '桌面美化工具', url: 'https://www.rainmeter.net/', icon: 'fas fa-desktop',
+                color: '#2196F3', tags: ['桌面', '美化'], category: 'software' },
+            { name: 'Bandizip', desc: '压缩解压工具', url: 'https://www.bandisoft.com/bandizip/',
+                icon: 'fas fa-file-archive', color: '#4CAF50', tags: ['压缩', '解压'], category: 'software' },
+            { name: 'BoosterX', desc: '系统加速工具', url: 'https://boosterx.org/zh/', icon: 'fas fa-rocket',
+                color: '#FF6B35', tags: ['加速', '优化'], category: 'software' },
+            { name: 'CapCut', desc: '视频编辑工具（国际剪映）', url: 'https://capcut.en.lo4d.com/windows',
+                icon: 'fas fa-cut', color: '#000000', tags: ['剪辑', '视频'], category: 'software' },
+            { name: 'Everything', desc: '文件搜索工具，极速查找', url: 'https://www.voidtools.com/zh-cn/downloads/',
+                icon: 'fas fa-search', color: '#FF6B35', tags: ['搜索', '文件'], category: 'software' },
+            { name: 'Geek Uninstaller', desc: '软件卸载工具，彻底清理残留', url: 'https://geekuninstaller.com/',
+                icon: 'fas fa-trash-alt', color: '#F44336', tags: ['卸载', '清理'], category: 'software' },
+            { name: 'Microsoft Edge', desc: '微软浏览器', url: 'https://www.microsoft.com/zh-cn/edge/download',
+                icon: 'fab fa-edge', color: '#0078D4', tags: ['浏览器', '微软'], category: 'software' },
+            { name: 'PotPlayer', desc: '视频播放器', url: 'http://www.potplayercn.com/download',
+                icon: 'fas fa-play-circle', color: '#4A90D9', tags: ['播放器', '视频'], category: 'software' },
+            { name: '夸克', desc: '提供云存储服务', url: 'https://www.quark.cn/', icon: 'fas fa-cloud',
+                color: '#00BCD4', tags: ['云盘', '存储'], category: 'software' },
+            { name: 'CloudDrive2', desc: '云存储管理工具', url: 'https://www.clouddrive2.com/', icon: 'fas fa-hdd',
+                color: '#607D8B', tags: ['云盘', '管理'], category: 'software' },
+            { name: '金山打字通', desc: '打字练习软件', url: 'https://www.51dzt.com/rubik-ssr/51dzt',
+                icon: 'fas fa-keyboard', color: '#FF6B35', tags: ['打字', '练习'], category: 'software' },
+            { name: '蘑菇下载器', desc: '游戏下载工具', url: 'https://www.pcstory.fun/', icon: 'fas fa-gamepad',
+                color: '#9C27B0', tags: ['下载', '游戏'], category: 'software' },
+            { name: 'AlgerMusicPlayer', desc: '开源音乐播放器', url: 'https://github.com/algerkong/AlgerMusicPlayer',
+                icon: 'fas fa-music', color: '#E91E63', tags: ['音乐', '开源'], category: 'software' },
+            { name: '冰点还原', desc: '系统还原保护工具',
+                url: 'https://www.bingdiancn.com/docs/deepfreeze-standard/install/install-deepfreeze-standard',
+                icon: 'fas fa-snowflake', color: '#00BCD4', tags: ['还原', '系统'], category: 'software' },
+            { name: 'SDxitong', desc: '系统工具和资源（深度装机）', url: 'http://www.sdxitong.com/',
+                icon: 'fas fa-windows', color: '#0078D4', tags: ['系统', '装机'], category: 'software' },
+            { name: 'IT天空', desc: '提供系统工具和资源', url: 'https://www.itsk.com/', icon: 'fas fa-cloud',
+                color: '#4A90D9', tags: ['系统', '工具'], category: 'software' },
+            { name: '腾讯云', desc: '腾讯旗下云计算服务平台', url: 'https://cloud.tencent.com/', icon: 'fab fa-qcloud',
+                color: '#006EFF', tags: ['云服务', '腾讯'], category: 'cloud' },
+            { name: '阿里云', desc: '阿里巴巴云计算平台', url: 'https://www.aliyun.com/', icon: 'fab fa-alipay',
+                color: '#FF6A00', tags: ['云服务', '阿里'], category: 'cloud' },
+            { name: '华为云', desc: '华为云计算平台', url: 'https://www.huaweicloud.com/', icon: 'fab fa-huawei',
+                color: '#CF0A2C', tags: ['云服务', '华为'], category: 'cloud' },
+            { name: '七牛云', desc: '云存储和CDN服务', url: 'https://www.qiniu.com/', icon: 'fas fa-cloud-upload-alt',
+                color: '#0EBFD8', tags: ['云存储', 'CDN'], category: 'cloud' },
+            { name: 'Cloudflare', desc: 'CDN、DNS和安全服务', url: 'https://www.cloudflare.com/',
+                icon: 'fab fa-cloudflare', color: '#F38020', tags: ['CDN', '安全'], category: 'cloud' },
+            { name: 'Vercel', desc: '前端部署和托管平台', url: 'https://vercel.com/', icon: 'fas fa-triangle',
+                color: '#000000', tags: ['部署', '前端'], category: 'cloud' },
+            { name: 'Netlify', desc: '静态网站自动化部署平台', url: 'https://www.netlify.com/',
+                icon: 'fas fa-network-wired', color: '#00C7B7', tags: ['部署', '静态站'], category: 'cloud' },
+            { name: 'GitHub Pages', desc: 'GitHub免费静态网站托管', url: 'https://pages.github.com/',
+                icon: 'fab fa-github', color: '#181717', tags: ['托管', '免费'], category: 'cloud' },
+            { name: 'Namecheap', desc: '域名注册服务商', url: 'https://www.namecheap.com/', icon: 'fas fa-globe',
+                color: '#FF5500', tags: ['域名', '注册'], category: 'cloud' },
+        ];
+
+        // ================================================================
+        //  分类定义（与数据 category 字段匹配）
+        // ================================================================
+        const CATEGORY_DEFS = {
+            all: { name: '全部', icon: 'fas fa-globe', color: 'linear-gradient(135deg,#c7a27c,#4a6fa5)' },
+            featured: { name: '⭐ 精选推荐', icon: 'fas fa-star', color: '#FFD700' },
+            search: { name: '🔍 搜索引擎', icon: 'fas fa-search', color: '#2932E1' },
+            'ai-chat': { name: '🤖 AI 对话', icon: 'fas fa-comments', color: '#10A37F' },
+            'ai-write': { name: '✍️ AI 写作', icon: 'fas fa-pen-fancy', color: '#E74C3C' },
+            'ai-image': { name: '🎨 AI 绘画', icon: 'fas fa-palette', color: '#9B59B6' },
+            'ai-media': { name: '🎬 AI 音视频', icon: 'fas fa-film', color: '#E67E22' },
+            'ai-dev': { name: '💻 AI 编程', icon: 'fas fa-code', color: '#3498DB' },
+            'ai-search': { name: '🔎 AI 搜索/API', icon: 'fas fa-search-plus', color: '#1ABC9C' },
+            frontend: { name: '🌐 前端开发', icon: 'fab fa-html5', color: '#E44D26' },
+            devtools: { name: '🔧 开发工具', icon: 'fas fa-tools', color: '#4a6fa5' },
+            design: { name: '🎯 设计素材', icon: 'fas fa-palette', color: '#c7a27c' },
+            images: { name: '🖼️ 图片资源', icon: 'fas fa-image', color: '#00BCD4' },
+            'colors-fonts': { name: '🎨 配色字体', icon: 'fas fa-font', color: '#FF6B6B' },
+            media: { name: '📦 多媒体', icon: 'fas fa-photo-video', color: '#E91E63' },
+            ppt: { name: '📊 PPT模板', icon: 'fas fa-file-powerpoint', color: '#FF6B35' },
+            productivity: { name: '⚡ 效率办公', icon: 'fas fa-bolt', color: '#F39C12' },
+            learn: { name: '📚 学习社区', icon: 'fas fa-graduation-cap', color: '#27AE60' },
+            'tech-media': { name: '📰 科技媒体', icon: 'fas fa-newspaper', color: '#607D8B' },
+            tools: { name: '🛠️ 实用工具', icon: 'fas fa-wrench', color: '#795548' },
+            software: { name: '💾 软件下载', icon: 'fas fa-download', color: '#2196F3' },
+            cloud: { name: '☁️ 云服务', icon: 'fas fa-cloud', color: '#2196F3' },
+        };
+
+        // ================================================================
+        //  状态管理
+        // ================================================================
+        const state = {
+            currentCat: 'all',
+            searchKeyword: '',
+            showFavOnly: false,
+            favorites: JSON.parse(localStorage.getItem('liquidnav_favs') || '[]'),
+            recent: JSON.parse(localStorage.getItem('liquidnav_recent') || '[]'),
+        };
+
+        // 获取分类下的资源数量
+        function getCategoryCount(catId) {
+            if (catId === 'all') return RESOURCES.length;
+            return RESOURCES.filter(r => r.category === catId).length;
+        }
+
+        // 获取所有分类（用于侧边栏和移动端分类栏）
+        function getAllCategories() {
+            const ids = new Set(RESOURCES.map(r => r.category));
+            return ['all', ...Array.from(ids)];
+        }
+
+        // ================================================================
+        //  渲染函数
+        // ================================================================
+
+        // 渲染侧边分类栏（横屏）
+        function renderSidebar() {
+            const sidebar = document.getElementById('sidebarCats');
+            const cats = getAllCategories();
+            let html = `<div style="padding:4px 8px 8px;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;">分类导航</div>`;
+            cats.forEach(catId => {
+                const def = CATEGORY_DEFS[catId] || { name: catId, icon: 'fas fa-folder', color: '#999' };
+                const count = getCategoryCount(catId);
+                const active = state.currentCat === catId ? 'active' : '';
+                const iconColor = typeof def.color === 'string' && def.color.startsWith('linear') ? '#fff' : def
+                .color;
+                html += `
+                        <button class="cat-item ${active}" data-cat="${catId}" onclick="selectCategory('${catId}')">
+                            <span class="cat-icon" style="background:${def.color};"><i class="${def.icon}"></i></span>
+                            <span>${def.name}</span>
+                            <span class="cat-count">${count}</span>
+                        </button>
+                    `;
+            });
+            sidebar.innerHTML = html;
+        }
+
+        // 渲染移动端分类栏（竖屏）
+        function renderMobileCats() {
+            const bar = document.getElementById('categoryBarMobile');
+            const cats = getAllCategories();
+            let html = '';
+            cats.forEach(catId => {
+                const def = CATEGORY_DEFS[catId] || { name: catId, icon: 'fas fa-folder', color: '#999' };
+                const count = getCategoryCount(catId);
+                const active = state.currentCat === catId ? 'active' : '';
+                html += `
+                        <button class="cat-tab ${active}" data-cat="${catId}" onclick="selectCategory('${catId}')">
+                            ${def.name} <span class="count">${count}</span>
+                        </button>
+                    `;
+            });
+            bar.innerHTML = html;
+        }
+
+        // 渲染内容区
+        function renderContent() {
+            const area = document.getElementById('contentArea');
+            let filtered = [...RESOURCES];
+
+            // 收藏过滤
+            if (state.showFavOnly) {
+                filtered = filtered.filter(r => state.favorites.includes(r.url));
+            }
+
+            // 搜索过滤
+            const kw = state.searchKeyword.trim().toLowerCase();
+            if (kw) {
+                filtered = filtered.filter(r =>
+                    r.name.toLowerCase().includes(kw) ||
+                    r.desc.toLowerCase().includes(kw) ||
+                    (r.tags && r.tags.some(t => t.toLowerCase().includes(kw)))
+                );
+            }
+
+            // 分类过滤
+            if (state.currentCat !== 'all') {
+                filtered = filtered.filter(r => r.category === state.currentCat);
+            }
+
+            if (filtered.length === 0) {
+                area.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <p>没有找到匹配的资源<br><small style="opacity:0.6;">试试其他关键词或分类吧</small></p>
+                        </div>
+                    `;
+                return;
+            }
+
+            // 按分类分组
+            const groups = {};
+            filtered.forEach(r => {
+                if (!groups[r.category]) groups[r.category] = [];
+                groups[r.category].push(r);
+            });
+
+            let html = '';
+            // 按照分类定义顺序排列
+            const orderedCats = getAllCategories().filter(c => c !== 'all' && groups[c]);
+            // 如果当前是 'all'，显示所有有内容的分组
+            const displayCats = state.currentCat === 'all' ? orderedCats : [state.currentCat];
+
+            displayCats.forEach(catId => {
+                const items = groups[catId] || [];
+                if (items.length === 0) return;
+                const def = CATEGORY_DEFS[catId] || { name: catId, icon: 'fas fa-folder',
+                color: '#999' };
+                html += `
+                        <section class="category-section">
+                            <div class="section-header glass-surface">
+                                <div class="sec-icon" style="background:${def.color};"><i class="${def.icon}"></i></div>
+                                <h2 class="sec-title">${def.name}</h2>
+                                <span class="sec-count">${items.length} 个资源</span>
+                            </div>
+                            <div class="links-grid">
+                                ${items.map(item => renderCard(item)).join('')}
+                            </div>
+                        </section>
+                    `;
+            });
+
+            area.innerHTML = html;
+
+            // 更新统计
+            document.getElementById('totalCount').textContent = RESOURCES.length;
+            document.getElementById('favCount').textContent = state.favorites.length;
+            document.getElementById('favBadge').textContent = state.favorites.length;
+            document.getElementById('favBadge').style.display = state.favorites.length > 0 ? 'flex' : 'none';
+            document.getElementById('recentCount').textContent = state.recent.length;
+        }
+
+        // 渲染单个卡片
+        function renderCard(item) {
+            const isFav = state.favorites.includes(item.url);
+            return `
+                    <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="link-card" onclick="recordRecent('${item.url}')">
+                        <div class="card-top">
+                            <div class="card-icon" style="background:${item.color};"><i class="${item.icon}"></i></div>
+                            <span class="card-title">
+                                ${item.name}
+                                <span class="fav-star ${isFav ? 'active' : ''}" onclick="event.preventDefault();event.stopPropagation();toggleFav('${item.url}')">
+                                    <i class="fas fa-star"></i>
+                                </span>
+                            </span>
+                        </div>
+                        <p class="card-desc">${item.desc}</p>
+                        ${item.tags ? `<div class="card-tags">${item.tags.map(t => `<span class="card-tag">${t}</span>`).join('')}</div>` : ''}
+                        <div class="card-footer">
+                            <span>${isFav ? '❤️ 已收藏' : '点击访问'}</span>
+                        </div>
+                    </a>
+                `;
+        }
+
+        // ================================================================
+        //  交互函数
+        // ================================================================
+
+        // 选择分类
+        function selectCategory(catId) {
+            state.currentCat = catId;
+            // 更新高亮
+            document.querySelectorAll('.cat-item, .cat-tab').forEach(el => {
+                el.classList.toggle('active', el.dataset.cat === catId);
+            });
+            renderContent();
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 搜索过滤
+        function filterLinks() {
+            const input = document.getElementById('searchInput');
+            state.searchKeyword = input.value;
+            renderContent();
+        }
+
+        // 切换收藏视图
+        function toggleFavView() {
+            state.showFavOnly = !state.showFavOnly;
+            document.getElementById('favToggle').style.color = state.showFavOnly ? 'var(--accent)' : '';
+            renderContent();
+        }
+
+        // 切换单个收藏
+        function toggleFav(url) {
+            const idx = state.favorites.indexOf(url);
+            if (idx > -1) {
+                state.favorites.splice(idx, 1);
+            } else {
+                state.favorites.push(url);
+            }
+            localStorage.setItem('liquidnav_favs', JSON.stringify(state.favorites));
+            renderContent();
+        }
+
+        // 记录最近访问
+        function recordRecent(url) {
+            // 移除已有
+            const idx = state.recent.indexOf(url);
+            if (idx > -1) state.recent.splice(idx, 1);
+            // 添加到开头
+            state.recent.unshift(url);
+            // 最多保留 20 个
+            if (state.recent.length > 20) state.recent.pop();
+            localStorage.setItem('liquidnav_recent', JSON.stringify(state.recent));
+            // 更新统计
+            document.getElementById('recentCount').textContent = state.recent.length;
+        }
+
+        // ================================================================
+        //  初始化
+        // ================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载完成后隐藏加载遮罩
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.display = 'none'; }, 600);
+            }, 800);
+
+            // 渲染所有
+            renderSidebar();
+            renderMobileCats();
+            renderContent();
+
+            // 统计初始化
+            document.getElementById('totalCount').textContent = RESOURCES.length;
+            document.getElementById('favCount').textContent = state.favorites.length;
+            document.getElementById('favBadge').textContent = state.favorites.length;
+            document.getElementById('favBadge').style.display = state.favorites.length > 0 ? 'flex' : 'none';
+            document.getElementById('recentCount').textContent = state.recent.length;
+
+            // 回到顶部按钮
+            const backBtn = document.getElementById('backToTop');
+            window.addEventListener('scroll', () => {
+                backBtn.classList.toggle('visible', window.scrollY > 400);
+            }, { passive: true });
+
+            console.log('🔗 LiquidNav 已加载 | 共 ' + RESOURCES.length + ' 个资源');
+        });
+
+        // 暴露全局
+        window.selectCategory = selectCategory;
+        window.filterLinks = filterLinks;
+        window.toggleFavView = toggleFavView;
+        window.toggleFav = toggleFav;
+        window.recordRecent = recordRecent;
+    </script>
+
+</body>
+</html>

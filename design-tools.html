@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="图标/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>设计工具箱 · InfinityCore</title>
+    <meta name="description" content="前端设计辅助工具集合，包含颜色选择、渐变生成、阴影效果、圆角预览等功能">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ====== 核心变量 ====== */
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --secondary: #8a9b6e;
+            --dark: #2d2d2d;
+            --light: #f8f7f4;
+            --gray: #6d6d6d;
+            --border: #e0ded9;
+            --accent: #c7a27c;
+            --card-bg: rgba(255,255,255,0.88);
+            --shadow: 0 8px 30px rgba(0,0,0,0.05);
+            --radius: 20px;
+            --transition: all 0.3s ease;
+            --font: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            --touch-target: 44px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(248,247,244,0.92), rgba(248,247,244,0.92)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path fill="rgba(199,162,124,0.03)" d="M20,20 Q40,5 60,20 T100,20 Q85,40 100,60 T100,100 Q60,85 20,100 T0,100 Q5,60 0,20 T20,20"/></svg>');
+            background-size: cover, 300px;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* ====== 粒子背景 ====== */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(199,162,124,0.10);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%,100% { transform: translate(0,0) scale(1); opacity:0.4; }
+            25% { transform: translate(10px,-10px) scale(1.1); opacity:0.6; }
+            50% { transform: translate(-5px,15px) scale(0.9); opacity:0.3; }
+            75% { transform: translate(-10px,-5px) scale(1.05); opacity:0.5; }
+        }
+
+        /* ====== 进度条 ====== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            z-index: 999;
+            background: transparent;
+        }
+        .progress-bar {
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        /* ====== 顶部导航 ====== */
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-top: 0.5rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            color: var(--dark);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .header h1 i { color: var(--accent); }
+        .header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.88rem;
+            margin-top: 0.6rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            color: var(--accent);
+            background: rgba(199,162,124,0.06);
+        }
+
+        /* ====== 工具导航 ====== */
+        .tool-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            padding: 12px 16px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--shadow);
+        }
+        .tool-nav-btn {
+            padding: 8px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            background: transparent;
+            color: var(--gray);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font);
+            touch-action: manipulation;
+            min-height: 38px;
+        }
+        .tool-nav-btn:hover,
+        .tool-nav-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(199,162,124,0.25);
+        }
+        .tool-nav-btn:active { transform: scale(0.94); }
+
+        /* ====== 工具面板容器 ====== */
+        .tool-panels {
+            display: block;
+        }
+        .tool-panel {
+            display: none;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.8rem;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            max-height: none;
+            overflow: visible;
+        }
+        .tool-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-title i { color: var(--accent); }
+        .copy-btn {
+            padding: 6px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font);
+            touch-action: manipulation;
+            min-height: 34px;
+        }
+        .copy-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(199,162,124,0.04);
+        }
+        .copy-btn:active { transform: scale(0.94); }
+
+        .panel-desc {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* ====== 横屏布局 (≥ 900px) ====== */
+        @media (min-width: 900px) {
+            .tool-panel { padding: 2.2rem 2.4rem; }
+            .color-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 16px;
+                margin-bottom: 1.5rem;
+            }
+            .gradient-controls {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                margin-bottom: 1.2rem;
+            }
+            .shadow-sliders {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+                margin-bottom: 1.2rem;
+            }
+            .corner-inputs {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 1.2rem;
+            }
+            .font-controls {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+                margin-bottom: 1.2rem;
+            }
+            .css-output {
+                background: rgba(45,45,45,0.95);
+                color: #f8f8f2;
+                border-radius: 12px;
+                padding: 14px 18px;
+                font-family: 'Consolas','Monaco',monospace;
+                font-size: 0.84em;
+                line-height: 1.65;
+                word-break: break-all;
+                overflow-x: auto;
+            }
+            .border-preview {
+                height: 200px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.2rem;
+                background: rgba(74,111,165,0.04);
+                border-radius: 14px;
+            }
+            .font-preview-area {
+                padding: 2rem;
+                background: white;
+                border-radius: 14px;
+                margin-bottom: 1.2rem;
+                text-align: center;
+                border: 1px solid rgba(0,0,0,0.05);
+            }
+            .font-sample { font-size: 2.8rem; font-weight:700; color:var(--dark); line-height:1.4; }
+            .shadow-preview {
+                height: 160px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.2rem;
+                background: white;
+                border-radius: 12px;
+                border: 1px dashed var(--border);
+            }
+            .shadow-box {
+                width: 150px;
+                height: 100px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, var(--accent), var(--primary));
+                transition: box-shadow 0.3s ease;
+            }
+            .gradient-preview {
+                height: 120px;
+                border-radius: 14px;
+                margin-bottom: 1.2rem;
+                box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+            }
+            .border-box {
+                width: 160px;
+                height: 110px;
+                background: linear-gradient(135deg, var(--accent), var(--primary));
+                transition: border-radius 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ====== 竖屏布局 (< 900px) ====== */
+        @media (max-width: 899px) {
+            .container { padding: 0 4px; }
+            .tool-panel {
+                padding: 1.2rem 1rem;
+                border-radius: 16px;
+                max-height: none;
+                overflow: visible;
+            }
+            .panel-title { font-size: 1rem; }
+            .color-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 10px;
+                margin-bottom: 1rem;
+            }
+            .gradient-controls {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 1rem;
+            }
+            .shadow-sliders {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 1rem;
+            }
+            .corner-inputs {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 1rem;
+            }
+            .font-controls {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 1rem;
+            }
+            .css-output {
+                background: rgba(45,45,45,0.95);
+                color: #f8f8f2;
+                border-radius: 10px;
+                padding: 12px 14px;
+                font-family: 'Consolas','Monaco',monospace;
+                font-size: 0.78em;
+                line-height: 1.6;
+                word-break: break-all;
+                overflow-x: auto;
+                max-width: 100%;
+            }
+            .border-preview {
+                height: 160px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1rem;
+                background: rgba(74,111,165,0.04);
+                border-radius: 12px;
+            }
+            .font-preview-area {
+                padding: 1.2rem;
+                background: white;
+                border-radius: 12px;
+                margin-bottom: 1rem;
+                text-align: center;
+                border: 1px solid rgba(0,0,0,0.05);
+            }
+            .font-sample { font-size: 2rem; font-weight:700; color:var(--dark); line-height:1.4; }
+            .shadow-preview {
+                height: 130px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1rem;
+                background: white;
+                border-radius: 12px;
+                border: 1px dashed var(--border);
+            }
+            .shadow-box {
+                width: 120px;
+                height: 80px;
+                border-radius: 10px;
+                background: linear-gradient(135deg, var(--accent), var(--primary));
+                transition: box-shadow 0.3s ease;
+            }
+            .gradient-preview {
+                height: 90px;
+                border-radius: 12px;
+                margin-bottom: 1rem;
+                box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+            }
+            .border-box {
+                width: 130px;
+                height: 90px;
+                background: linear-gradient(135deg, var(--accent), var(--primary));
+                transition: border-radius 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 600;
+                font-size: 0.8rem;
+            }
+            .tool-nav {
+                padding: 8px 10px;
+                gap: 4px;
+            }
+            .tool-nav-btn {
+                padding: 6px 12px;
+                font-size: 0.78rem;
+                min-height: 32px;
+                border-radius: 16px;
+            }
+            .header h1 { font-size: 1.6rem; }
+            .header p { font-size: 0.88rem; }
+        }
+
+        /* ====== 小屏手机 (≤ 480px) ====== */
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .header h1 { font-size: 1.4rem; }
+            .header p { font-size: 0.8rem; }
+            .tool-panel { padding: 0.8rem 0.8rem; }
+            .color-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 8px;
+            }
+            .color-swatch-wrap { height: 50px; }
+            .color-hex { font-size: 0.65rem; }
+            .color-label { font-size: 0.6rem; }
+            .gradient-controls { grid-template-columns: 1fr; gap: 8px; }
+            .shadow-sliders { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .corner-inputs { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .corner-input { padding: 4px 6px; }
+            .corner-input label { font-size: 0.65rem; min-width: 30px; }
+            .corner-input input { padding: 4px 6px; font-size: 0.7rem; }
+            .font-controls { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .font-control label { font-size: 0.65rem; }
+            .font-control input,
+            .font-control select { padding: 4px 6px; font-size: 0.7rem; min-height: 30px; }
+            .font-sample { font-size: 1.6rem; }
+            .font-sub { font-size: 0.8rem; }
+            .css-output { font-size: 0.65rem; padding: 8px 10px; }
+            .panel-title { font-size: 0.9rem; }
+            .copy-btn { font-size: 0.65rem; padding: 4px 8px; min-height: 28px; }
+            .back-link { font-size: 0.75rem; padding: 4px 10px; }
+            .tool-nav-btn {
+                padding: 4px 8px;
+                font-size: 0.65rem;
+                min-height: 28px;
+                gap: 3px;
+            }
+            .tool-nav { padding: 4px 6px; gap: 3px; }
+            .shadow-box { width: 90px; height: 60px; }
+            .border-box { width: 100px; height: 65px; font-size: 0.65rem; }
+            .gradient-preview { height: 60px; }
+            .border-preview { height: 110px; }
+            .shadow-preview { height: 100px; }
+            .font-preview-area { padding: 0.8rem; }
+            .back-to-top { width: 36px; height: 36px; font-size: 0.85rem; bottom: 16px; right: 16px; }
+        }
+
+        /* ====== 通用组件样式 ====== */
+        .color-item { text-align: center; }
+        .color-label {
+            font-size: 0.78rem;
+            color: var(--gray);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .color-swatch-wrap {
+            position: relative;
+            width: 100%;
+            height: 70px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .color-swatch-wrap:hover { border-color: var(--accent); }
+        .color-swatch { width: 100%; height: 100%; }
+        .color-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .color-hex {
+            font-family: 'Consolas',monospace;
+            font-size: 0.8rem;
+            color: var(--dark);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .control-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            outline: none;
+            background: white;
+            transition: border-color 0.2s;
+            font-family: var(--font);
+            min-height: 38px;
+        }
+        .control-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(199,162,124,0.10);
+        }
+        .direction-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            outline: none;
+            background: white;
+            cursor: pointer;
+            font-family: var(--font);
+            min-height: 38px;
+        }
+        .direction-select:focus { border-color: var(--accent); }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: var(--gray);
+            margin-bottom: 4px;
+        }
+        .slider-val {
+            font-weight: 600;
+            color: var(--dark);
+            font-family: 'Consolas',monospace;
+        }
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .corner-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 10px;
+        }
+        .corner-input label {
+            font-size: 0.78rem;
+            color: var(--gray);
+            min-width: 45px;
+            font-weight: 500;
+        }
+        .corner-input input {
+            flex: 1;
+            padding: 5px 8px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+            text-align: center;
+            font-family: 'Consolas',monospace;
+            background: white;
+            min-height: 34px;
+        }
+        .corner-input input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(199,162,124,0.10);
+        }
+
+        .font-control {
+            display: flex;
+            flex-direction: column;
+        }
+        .font-control label {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--gray);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .font-control select,
+        .font-control input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            outline: none;
+            background: white;
+            font-family: var(--font);
+            min-height: 38px;
+        }
+        .font-control select:focus,
+        .font-control input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(199,162,124,0.10);
+        }
+        .font-control input[type="color"] {
+            width: 100%;
+            height: 38px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 2px;
+            background: white;
+        }
+
+        .lock-row {
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+        .lock-row label {
+            font-size: 0.82rem;
+            color: var(--gray);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .lock-row input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        /* ====== Toast ====== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--dark);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-size: 0.88rem;
+            opacity: 0;
+            transition: all 0.35s ease;
+            z-index: 999;
+            pointer-events: none;
+            font-family: var(--font);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ====== 回到顶部 ====== */
+        .back-to-top {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: var(--card-bg);
+            color: var(--accent);
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.35s cubic-bezier(0.23,1,0.32,1);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0,0,0,0.04);
+            touch-action: manipulation;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(199,162,124,0.30);
+        }
+
+        /* ====== 页脚 ====== */
+        .page-footer {
+            text-align: center;
+            padding: 2rem 0 0.5rem;
+            color: var(--gray);
+            font-size: 0.85rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        .page-footer p { margin-bottom: 4px; }
+
+        /* ====== 滚动条 ====== */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+    </style>
+</head>
+<body>
+
+    <!-- 粒子背景 -->
+    <div class="particles" id="particles"></div>
+
+    <!-- 进度条 -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- 顶部 -->
+    <div class="header">
+        <h1><i class="fas fa-palette"></i> 设计工具箱</h1>
+        <p>前端设计辅助工具 · 即时预览 · 一键复制 CSS</p>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回首页</a>
+    </div>
+
+    <!-- 工具导航 -->
+    <nav class="tool-nav">
+        <button class="tool-nav-btn active" data-tool="color"><i class="fas fa-eye-dropper"></i> 调色板</button>
+        <button class="tool-nav-btn" data-tool="gradient"><i class="fas fa-brush"></i> 渐变</button>
+        <button class="tool-nav-btn" data-tool="shadow"><i class="fas fa-cloud"></i> 阴影</button>
+        <button class="tool-nav-btn" data-tool="radius"><i class="fas fa-vector-square"></i> 圆角</button>
+        <button class="tool-nav-btn" data-tool="font"><i class="fas fa-font"></i> 字体</button>
+    </nav>
+
+    <!-- ====== 工具面板 ====== -->
+    <div class="tool-panels">
+
+        <!-- 调色板 -->
+        <div class="tool-panel active" id="panel-color">
+            <div class="panel-header">
+                <span class="panel-title"><i class="fas fa-palette"></i> 调色板</span>
+                <button class="copy-btn" onclick="copyColorPalette()"><i class="fas fa-copy"></i> 复制全部</button>
+            </div>
+            <p class="panel-desc">点击色块可自定义颜色，自动生成 CSS 变量代码。</p>
+            <div class="color-grid" id="colorGrid"></div>
+            <div class="css-output" id="colorOutput"></div>
+        </div>
+
+        <!-- 渐变 -->
+        <div class="tool-panel" id="panel-gradient">
+            <div class="panel-header">
+                <span class="panel-title"><i class="fas fa-brush"></i> 渐变生成器</span>
+                <button class="copy-btn" onclick="copyGradientCSS()"><i class="fas fa-copy"></i> 复制 CSS</button>
+            </div>
+            <div class="gradient-preview" id="gradientPreview"></div>
+            <div class="gradient-controls">
+                <div class="control-group">
+                    <label>起始颜色</label>
+                    <input type="color" class="control-input" id="gradFrom" value="#c7a27c" oninput="updateGradient()">
+                </div>
+                <div class="control-group">
+                    <label>结束颜色</label>
+                    <input type="color" class="control-input" id="gradTo" value="#4a6fa5" oninput="updateGradient()">
+                </div>
+                <div class="control-group">
+                    <label>渐变方向</label>
+                    <select class="direction-select" id="gradDir" onchange="updateGradient()">
+                        <option value="135deg">对角线 ↘</option>
+                        <option value="90deg">水平 →</option>
+                        <option value="180deg">水平 ←</option>
+                        <option value="0deg">垂直 ↓</option>
+                        <option value="to right">向右</option>
+                        <option value="to bottom">向下</option>
+                        <option value="radial">径向 ◉</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>预设方案</label>
+                    <select class="direction-select" id="gradPreset" onchange="applyGradPreset()">
+                        <option value="">-- 选择预设 --</option>
+                        <option value="sunset">🌅 日落橙红</option>
+                        <option value="ocean">🌊 海洋蓝绿</option>
+                        <option value="forest">🌲 森林翠绿</option>
+                        <option value="lavender">💜 薰衣紫</option>
+                        <option value="fire">🔥 火焰渐变</option>
+                        <option value="aurora">✨ 极光幻彩</option>
+                    </select>
+                </div>
+            </div>
+            <div class="css-output" id="gradientOutput"></div>
+        </div>
+
+        <!-- 阴影 -->
+        <div class="tool-panel" id="panel-shadow">
+            <div class="panel-header">
+                <span class="panel-title"><i class="fas fa-cloud"></i> 阴影效果</span>
+                <button class="copy-btn" onclick="copyShadowCSS()"><i class="fas fa-copy"></i> 复制 CSS</button>
+            </div>
+            <div class="shadow-preview">
+                <div class="shadow-box" id="shadowBox"></div>
+            </div>
+            <div class="shadow-sliders">
+                <div class="slider-group">
+                    <div class="slider-label"><span>X 偏移</span><span class="slider-val" id="sxVal">0</span></div>
+                    <input type="range" min="-40" max="40" value="0" id="shX" oninput="updateShadow()">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>Y 偏移</span><span class="slider-val" id="syVal">8</span></div>
+                    <input type="range" min="-40" max="40" value="8" id="shY" oninput="updateShadow()">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>模糊半径</span><span class="slider-val" id="sbVal">24</span></div>
+                    <input type="range" min="0" max="80" value="24" id="shBlur" oninput="updateShadow()">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>扩散半径</span><span class="slider-val" id="spVal">0</span></div>
+                    <input type="range" min="-30" max="30" value="0" id="shSpread" oninput="updateShadow()">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>透明度</span><span class="slider-val" id="soVal">15%</span></div>
+                    <input type="range" min="0" max="100" value="15" id="shOpacity" oninput="updateShadow()">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>阴影颜色</span></div>
+                    <input type="color" value="#000000" id="shColor" oninput="updateShadow()" style="width:100%;height:38px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:white;">
+                </div>
+            </div>
+            <div class="css-output" id="shadowOutput"></div>
+        </div>
+
+        <!-- 圆角 -->
+        <div class="tool-panel" id="panel-radius">
+            <div class="panel-header">
+                <span class="panel-title"><i class="fas fa-vector-square"></i> 圆角预览</span>
+                <button class="copy-btn" onclick="copyRadiusCSS()"><i class="fas fa-copy"></i> 复制 CSS</button>
+            </div>
+            <div class="border-preview">
+                <div class="border-box" id="borderBox">圆角预览</div>
+            </div>
+            <div class="corner-inputs">
+                <div class="corner-input"><label>左上 TL</label><input type="number" id="rtl" value="28" min="0" max="100" oninput="updateRadius()"></div>
+                <div class="corner-input"><label>右上 TR</label><input type="number" id="rtr" value="28" min="0" max="100" oninput="updateRadius()"></div>
+                <div class="corner-input"><label>右下 BR</label><input type="number" id="rbr" value="28" min="0" max="100" oninput="updateRadius()"></div>
+                <div class="corner-input"><label>左下 BL</label><input type="number" id="rbl" value="28" min="0" max="100" oninput="updateRadius()"></div>
+            </div>
+            <div class="lock-row">
+                <label><input type="checkbox" id="lockRadius" checked onchange="updateRadius()"> 🔒 锁定四角同步</label>
+            </div>
+            <div class="css-output" id="radiusOutput"></div>
+        </div>
+
+        <!-- 字体 -->
+        <div class="tool-panel" id="panel-font">
+            <div class="panel-header">
+                <span class="panel-title"><i class="fas fa-font"></i> 字体预览</span>
+            </div>
+            <div class="font-preview-area">
+                <div class="font-sample" id="fontSample">InfinityCore v1.3.0</div>
+                <div class="font-sub" id="fontSub" style="font-size:1rem;color:var(--gray);margin-top:0.8rem;line-height:1.65;">探索无限可能，创造美好未来。<br>The quick brown fox jumps over the lazy dog. 1234567890</div>
+            </div>
+            <div class="font-controls">
+                <div class="font-control">
+                    <label>字体族</label>
+                    <select id="fontFamily" onchange="updateFont()">
+                        <option value="'Segoe UI',Roboto,'Helvetica Neue',sans-serif">Segoe UI</option>
+                        <option value="system-ui,-apple-system,sans-serif">System UI</option>
+                        <option value="'PingFang SC','Microsoft YaHei',sans-serif">苹方 / 微软雅黑</option>
+                        <option value="Georgia,'Times New Roman',serif">Georgia (衬线)</option>
+                        <option value="'Courier New',Consolas,monospace">Consolas (等宽)</option>
+                        <option value="'Trebuchet MS',sans-serif">Trebuchet MS</option>
+                        <option value="Verdana,sans-serif">Verdana</option>
+                        <option value="Impact,sans-serif">Impact</option>
+                        <option value="'Comic Sans MS',cursive">Comic Sans MS</option>
+                    </select>
+                </div>
+                <div class="font-control">
+                    <label>字号 (px)</label>
+                    <input type="number" id="fontSize" value="42" min="12" max="120" step="2" onchange="updateFont()">
+                </div>
+                <div class="font-control">
+                    <label>字重</label>
+                    <select id="fontWeight" onchange="updateFont()">
+                        <option value="300">Light (300)</option>
+                        <option value="400">Regular (400)</option>
+                        <option value="500">Medium (500)</option>
+                        <option value="600" selected>SemiBold (600)</option>
+                        <option value="700">Bold (700)</option>
+                        <option value="800">ExtraBold (800)</option>
+                        <option value="900">Black (900)</option>
+                    </select>
+                </div>
+                <div class="font-control">
+                    <label>行高</label>
+                    <input type="number" id="lineHeight" value="1.4" min="1" max="3" step="0.1" onchange="updateFont()">
+                </div>
+                <div class="font-control">
+                    <label>字间距</label>
+                    <input type="number" id="letterSpacing" value="0" min="-5" max="20" step="0.5" onchange="updateFont()">
+                </div>
+                <div class="font-control">
+                    <label>文字颜色</label>
+                    <input type="color" id="fontColor" value="#2d2d2d" oninput="updateFont()">
+                </div>
+            </div>
+            <div class="css-output" id="fontOutput"></div>
+        </div>
+
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="page-footer">
+        <p>InfinityCore · 设计工具箱 · 即时预览</p>
+        <p style="margin-top:4px;">调色板 · 渐变 · 阴影 · 圆角 · 字体</p>
+    </footer>
+
+    <!-- 回到顶部 -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ================================================================
+        //  所有功能函数全局可用，确保 onclick 可调用
+        // ================================================================
+
+        // ---------- Toast ----------
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(function() { t.classList.remove('show'); }, 2200);
+        }
+
+        // ---------- 工具导航切换 ----------
+        document.querySelectorAll('.tool-nav-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tool-nav-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                document.querySelectorAll('.tool-panel').forEach(function(p) { p.classList.remove('active'); });
+                document.getElementById('panel-' + btn.dataset.tool).classList.add('active');
+            });
+        });
+
+        // ================================================================
+        //  调色板
+        // ================================================================
+        var defaultColors = [
+            { name: '主色调', key: '--primary', hex: '#4a6fa5' },
+            { name: '强调色', key: '--accent', hex: '#c7a27c' },
+            { name: '深色文字', key: '--dark', hex: '#2d2d2d' },
+            { name: '浅色背景', key: '--light', hex: '#f8f7f4' },
+            { name: '次要色', key: '--secondary', hex: '#8a9b6e' },
+            { name: '灰色', key: '--gray', hex: '#6d6d6d' },
+            { name: '边框色', key: '--border', hex: '#e0ded9' },
+            { name: '成功', key: '--success', hex: '#5cb85c' },
+            { name: '警告', key: '--warning', hex: '#F0AD4E' },
+            { name: '危险', key: '--danger', hex: '#d9534f' },
+            { name: '信息', key: '--info', hex: '#5bc0de' },
+            { name: '主色调深', key: '--primary-dark', hex: '#3a5a8a' },
+        ];
+        var colorData = JSON.parse(JSON.stringify(defaultColors));
+
+        function renderColors() {
+            var grid = document.getElementById('colorGrid');
+            grid.innerHTML = '';
+            colorData.forEach(function(c, i) {
+                var div = document.createElement('div');
+                div.className = 'color-item';
+                div.innerHTML =
+                    '<div class="color-label">' + c.name + ' (' + c.key + ')</div>' +
+                    '<div class="color-swatch-wrap">' +
+                    '<div class="color-swatch" style="background:' + c.hex + '" id="swatch' + i + '"></div>' +
+                    '<input type="color" class="color-input" value="' + c.hex + '" onchange="changeColor(' + i +
+                    ',this.value)">' +
+                    '</div>' +
+                    '<div class="color-hex" id="hex' + i + '">' + c.hex.toUpperCase() + '</div>';
+                grid.appendChild(div);
+            });
+            updateColorOutput();
+        }
+
+        function changeColor(i, hex) {
+            colorData[i].hex = hex;
+            document.getElementById('swatch' + i).style.background = hex;
+            document.getElementById('hex' + i).textContent = hex.toUpperCase();
+            updateColorOutput();
+        }
+
+        function updateColorOutput() {
+            var css = ':root {\n' + colorData.map(function(c) { return '    ' + c.key + ': ' + c.hex + ';'; }).join('\n') +
+                '\n}';
+            document.getElementById('colorOutput').textContent = css;
+        }
+
+        function copyColorPalette() {
+            navigator.clipboard.writeText(document.getElementById('colorOutput').textContent);
+            showToast('已复制调色板 CSS 变量！');
+        }
+        renderColors();
+
+        // ================================================================
+        //  渐变
+        // ================================================================
+        function updateGradient() {
+            var from = document.getElementById('gradFrom').value;
+            var to = document.getElementById('gradTo').value;
+            var dir = document.getElementById('gradDir').value;
+            var css;
+            if (dir === 'radial') {
+                css = 'radial-gradient(circle, ' + from + ', ' + to + ')';
+            } else {
+                css = 'linear-gradient(' + dir + ', ' + from + ', ' + to + ')';
+            }
+            document.getElementById('gradientPreview').style.background = css;
+            document.getElementById('gradientOutput').textContent = 'background: ' + css + ';';
+        }
+
+        var gradPresets = {
+            sunset: ['#FF512F', '#DD2476'],
+            ocean: ['#00C9FF', '#92FE9D'],
+            forest: ['#11998E', '#38EF7D'],
+            lavender: ['#A18CD1', '#FBC2EB'],
+            fire: ['#F12711', '#F5AF19'],
+            aurora: ['#00F260', '#0575E6']
+        };
+
+        function applyGradPreset() {
+            var preset = document.getElementById('gradPreset').value;
+            if (!preset || !gradPresets[preset]) return;
+            var colors = gradPresets[preset];
+            document.getElementById('gradFrom').value = colors[0];
+            document.getElementById('gradTo').value = colors[1];
+            updateGradient();
+        }
+
+        function copyGradientCSS() {
+            navigator.clipboard.writeText(document.getElementById('gradientOutput').textContent);
+            showToast('已复制渐变 CSS！');
+        }
+        updateGradient();
+
+        // ================================================================
+        //  阴影
+        // ================================================================
+        function updateShadow() {
+            var x = document.getElementById('shX').value;
+            var y = document.getElementById('shY').value;
+            var blur = document.getElementById('shBlur').value;
+            var spread = document.getElementById('shSpread').value;
+            var opacity = document.getElementById('shOpacity').value / 100;
+            var colorHex = document.getElementById('shColor').value;
+            var r = parseInt(colorHex.slice(1, 3), 16);
+            var g = parseInt(colorHex.slice(3, 5), 16);
+            var b = parseInt(colorHex.slice(5, 7), 16);
+            var color = 'rgba(' + r + ',' + g + ',' + b + ',' + opacity + ')';
+            var css = x + 'px ' + y + 'px ' + blur + 'px ' + spread + 'px ' + color;
+            document.getElementById('shadowBox').style.boxShadow = css;
+            document.getElementById('shadowOutput').textContent = 'box-shadow: ' + css + ';';
+            document.getElementById('sxVal').textContent = x;
+            document.getElementById('syVal').textContent = y;
+            document.getElementById('sbVal').textContent = blur;
+            document.getElementById('spVal').textContent = spread;
+            document.getElementById('soVal').textContent = Math.round(opacity * 100) + '%';
+        }
+
+        function copyShadowCSS() {
+            navigator.clipboard.writeText(document.getElementById('shadowOutput').textContent);
+            showToast('已复制阴影 CSS！');
+        }
+        updateShadow();
+
+        // ================================================================
+        //  圆角
+        // ================================================================
+        function updateRadius() {
+            var tl = document.getElementById('rtl').value;
+            if (document.getElementById('lockRadius').checked) {
+                document.getElementById('rtr').value = tl;
+                document.getElementById('rbr').value = tl;
+                document.getElementById('rbl').value = tl;
+            }
+            var rtl2 = document.getElementById('rtl').value;
+            var rtr2 = document.getElementById('rtr').value;
+            var rbr2 = document.getElementById('rbr').value;
+            var rbl2 = document.getElementById('rbl').value;
+            var css = rtl2 + 'px ' + rtr2 + 'px ' + rbr2 + 'px ' + rbl2 + 'px';
+            document.getElementById('borderBox').style.borderRadius = css;
+            document.getElementById('radiusOutput').textContent = 'border-radius: ' + css + ';';
+        }
+
+        function copyRadiusCSS() {
+            navigator.clipboard.writeText(document.getElementById('radiusOutput').textContent);
+            showToast('已复制圆角 CSS！');
+        }
+        updateRadius();
+
+        // ================================================================
+        //  字体
+        // ================================================================
+        function updateFont() {
+            var family = document.getElementById('fontFamily').value;
+            var size = document.getElementById('fontSize').value;
+            var weight = document.getElementById('fontWeight').value;
+            var lH = document.getElementById('lineHeight').value;
+            var lS = document.getElementById('letterSpacing').value;
+            var color = document.getElementById('fontColor').value;
+            var sample = document.getElementById('fontSample');
+            sample.style.fontFamily = family;
+            sample.style.fontSize = size + 'px';
+            sample.style.fontWeight = weight;
+            sample.style.lineHeight = lH;
+            sample.style.letterSpacing = lS + 'px';
+            sample.style.color = color;
+            document.getElementById('fontSub').style.fontFamily = family;
+            document.getElementById('fontSub').style.color = color;
+            document.getElementById('fontOutput').textContent =
+                'font-family: ' + family + ';\n' +
+                'font-size: ' + size + 'px;\n' +
+                'font-weight: ' + weight + ';\n' +
+                'line-height: ' + lH + ';\n' +
+                'letter-spacing: ' + lS + 'px;\n' +
+                'color: ' + color + ';';
+        }
+        updateFont();
+
+        // ================================================================
+        //  粒子效果
+        // ================================================================
+        function createParticles() {
+            var container = document.getElementById('particles');
+            if (!container) return;
+            var count = 20;
+            for (var i = 0; i < count; i++) {
+                var p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                var size = Math.random() * 3 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(p);
+            }
+        }
+
+        // ================================================================
+        //  页面初始化
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+
+            var progressBar = document.getElementById('progressBar');
+            window.addEventListener('scroll', function() {
+                var scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+                var scrollProgress = (window.scrollY / scrollTotal) * 100;
+                if (progressBar) { progressBar.style.width = scrollProgress + '%'; }
+            }, { passive: true });
+
+            var backBtn = document.getElementById('backToTop');
+            window.addEventListener('scroll', function() {
+                backBtn.classList.toggle('visible', window.scrollY > 400);
+            }, { passive: true });
+
+            console.log('%c🎨 设计工具箱已加载 | InfinityCore', 'color: #c7a27c;');
+        });
+
+        // 全局暴露
+        window.changeColor = changeColor;
+        window.updateColorOutput = updateColorOutput;
+        window.copyColorPalette = copyColorPalette;
+        window.updateGradient = updateGradient;
+        window.applyGradPreset = applyGradPreset;
+        window.copyGradientCSS = copyGradientCSS;
+        window.updateShadow = updateShadow;
+        window.copyShadowCSS = copyShadowCSS;
+        window.updateRadius = updateRadius;
+        window.copyRadiusCSS = copyRadiusCSS;
+        window.updateFont = updateFont;
+        window.showToast = showToast;
+    </script>
+</body>
+</html>
