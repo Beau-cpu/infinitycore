@@ -285,9 +285,10 @@
   .mnav button:hover{background:var(--btn-bg);border-color:var(--btn-line)}
   .mnav button.on{background:var(--accent-soft);border-color:rgba(10,107,255,.22);color:var(--accent-ink);font-weight:600;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
-  .mpanel{flex:1;overflow-y:auto;padding:24px;position:relative}
+  .setblock{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:12px;}
+    .mpanel{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding:24px;position:relative;min-height:0;min-width:0;height:min(520px,88vh);max-height:88vh;box-sizing:border-box}
   .mpanel h3{font-size:var(--fs-2);margin:0 0 16px;font-weight:600;letter-spacing:-.2px}
-  .close{position:absolute;right:16px;top:14px;border:1px solid var(--btn-line);background:var(--btn-bg);
+  .close{position:absolute;right:20px;top:20px;border:1px solid var(--btn-line);background:var(--btn-bg);
     font-size:17px;color:var(--ink-2);width:34px;height:34px;border-radius:12px;
     display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 var(--btn-hi);
     transition:transform .16s cubic-bezier(.22,.61,.36,1),filter .18s}
@@ -382,7 +383,7 @@
   .tip.on{transform:none}
   @keyframes turnIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .turn.enter{animation:turnIn 180ms var(--ease-out) both}
-  .tobottom{position:absolute;left:50%;bottom:104px;width:44px;height:44px;border-radius:50%;
+  .tobottom{position:absolute;left:50%;bottom:210px;width:44px;height:44px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;border:1px solid var(--edge);
     background:var(--glass-3);color:var(--ink-2);z-index:30;
     -webkit-backdrop-filter:var(--blur-lg);backdrop-filter:var(--blur-lg);
@@ -462,6 +463,7 @@
   .mgroup{background:var(--glass-2);border:1px solid var(--edge);border-radius:16px;overflow:hidden;
     margin:0 0 18px;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
     box-shadow:inset 0 1px 0 var(--hi),var(--sh-1)}
+    .setplain{background:transparent;border:none;border-radius:0;overflow:visible;margin:0 0 10px;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;}
   .mlabel{font-size:13px;color:var(--ink-3);margin:0 0 8px 4px;letter-spacing:.3px}
   .mrow{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:12px 14px;
     border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);
@@ -1225,7 +1227,6 @@ input:focus,input:focus-visible,textarea:focus,textarea:focus-visible{outline:no
   html.mobile .composerwrap.center .chip.on{background:#eaf1ff;border-color:#d3e0ff;color:#0a4fd6}
   html.mobile .composerwrap.center #chipSearch{color:#222}
   html.mobile .composerwrap.center #chipSearch .icn{color:#0a4fd6}
-  html.mobile .composerwrap.center #chipLevel{display:none}
   /* 手机首页回形针：像截图那样是 plain 黑色回形针，不是灰圆；发送是浅蓝圆 */
   html.mobile .composerwrap.center .cbar .icobtn{border:none;background:transparent;box-shadow:none;color:var(--ink);width:40px;height:40px}
   html.mobile .composerwrap.center .cbar .icobtn .icn{width:20px;height:20px}
@@ -1648,7 +1649,7 @@ input:focus,input:focus-visible,textarea:focus,textarea:focus-visible{outline:no
 
 <style>
   /* 手机端回到底部箭头：原来它在屏幕底部 104px、居中，正好压在输入框的 pill 那一排中间，把思考档位都盖住了。改成手机端移到右边、输入框上方（bottom 180px，清出整个输入框高度），不再压 pill，像参考图里右边那个箭头一样浮在对话区 */
-  html.mobile .tobottom{left:auto !important;right:16px !important;bottom:180px !important;transform:none !important}
+  html.mobile .tobottom{left:auto !important;right:16px !important;bottom:210px !important;transform:none !important}
   html.mobile .tobottom.on{transform:none !important}
   /* 手机端 pill 一行装下：原来 pill 字 13px、左右 padding 14px、间距 6px，三个 pill 加回形针和发送超宽，pill 里面的字就换行成两行。改成字 12px、间距 0、左右 padding 10px、间距 4px，pill 本身不换行、不压缩，超宽了就横滑，不再换行 */
   html.mobile .chip{font-size:12px !important;letter-spacing:0 !important;padding:0 10px !important;gap:4px !important;white-space:nowrap !important;flex-shrink:0 !important}
@@ -1760,6 +1761,36 @@ input:focus,input:focus-visible,textarea:focus,textarea:focus-visible{outline:no
     0%,100%{transform:scale(1);opacity:.94;box-shadow:inset 2px 3px 5px rgba(255,255,255,.95),inset -3px -4px 8px rgba(99,102,241,.18),0 2px 6px rgba(100,116,180,.22),0 0 12px rgba(190,205,255,.50),0 0 22px rgba(180,195,255,.28)}
     50%{transform:scale(1.22);opacity:1;box-shadow:inset 2px 3px 5px rgba(255,255,255,.95),inset -3px -4px 8px rgba(99,102,241,.18),0 4px 12px rgba(100,116,180,.32),0 0 22px rgba(190,205,255,.80),0 0 40px rgba(180,195,255,.50)}
   }
+</style>
+<style>
+/* 头里设置修复：窗口不滚、左边固定、右边固定高度自己滚、X 右上角、行不撑破、附件卡片改小 */
+.modal{height:min(520px,88vh) !important; max-height:88vh !important; overflow:hidden !important; display:flex !important; position:relative !important;}
+.mnav{height:min(520px,88vh) !important; flex:0 0 190px !important; overflow:hidden !important; flex-shrink:0 !important;}
+.mpanel{height:min(520px,88vh) !important; max-height:88vh !important; min-height:0 !important; min-width:0 !important; flex:1 1 auto !important; overflow-y:auto !important; overflow-x:hidden !important; box-sizing:border-box !important;}
+.mpanel .pane{width:100% !important; box-sizing:border-box !important;}
+.mpanel .rowline{display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px !important; flex-wrap:nowrap !important; width:100% !important; box-sizing:border-box !important;}
+.mpanel .rowline > .grew{flex:1 1 auto !important; min-width:0 !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important;}
+.mpanel .rowline > span:not(.grew), .mpanel .rowline > button{flex:0 0 auto !important; white-space:nowrap !important;}
+.mpanel .rowline > button.btn2{display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:6px !important;}
+.mpanel .close{position:absolute !important; top:20px !important; right:20px !important; margin:0 !important; z-index:30 !important;}
+.mpanel .pane h3{padding-right:44px !important;}
+.mpanel .setblock .mact{display:flex !important; flex-wrap:wrap !important; gap:8px !important; padding:10px 0 0 0 !important; border-bottom:0 !important;}
+.mpanel .setblock .mact button{flex:0 0 auto !important; white-space:nowrap !important; border:1px solid var(--btn-line) !important; background:var(--btn-bg) !important; color:var(--ink) !important; border-radius:12px !important; padding:8px 14px !important; font-size:var(--fs-5) !important; box-shadow:inset 0 1px 0 var(--btn-hi) !important;}
+.mpanel .setblock .mact button.danger{color:var(--danger) !important; border-color:rgba(198,47,47,.28) !important;}
+#attachlist .achip.fcard, .fcards .fcard{max-width:220px !important; padding:6px 10px !important; gap:8px !important; border-radius:12px !important; box-shadow:none !important; border:1px solid #e5e7eb !important; background:#fff !important; position:relative !important; overflow:visible !important;}
+#attachlist .achip.fcard .icn, .fcards .fcard .icn{width:20px !important; height:20px !important; flex:0 0 20px !important;}
+.fcard-name{font-size:13px !important;} .fcard-meta{font-size:11px !important;}
+#attachlist .achip.fcard b{position:static !important; width:20px !important; height:20px !important; min-width:20px !important; min-height:20px !important; margin-left:2px !important; flex:0 0 20px !important; background:transparent !important; color:#888 !important; border:none !important; box-shadow:none !important; border-radius:50% !important; opacity:1 !important; visibility:visible !important; display:flex !important; align-items:center !important; justify-content:center !important; padding:0 !important;}
+#attachlist .achip.fcard b:hover{background:#fdecea !important; color:#c62f2f !important;}
+#attachlist .achip.fcard b .icn{width:11px !important; height:11px !important;}
+</style>
+<style>
+/* 设置窗口改高：数据那页内容约 680px，原来 520px 窗口初始画面必然切掉下面，现在窗口改到 min(760px, 92vh)，数据页不用滚就能看全，生成参数等更长的页右边仍可单独滚，左边不动、X 还在右上角 */
+.mask .modal{height:min(760px, 92vh) !important; max-height:92vh !important; overflow:hidden !important; display:flex !important; position:relative !important;}
+.mask .modal .mnav{height:min(760px, 92vh) !important; flex:0 0 190px !important; overflow:hidden !important; flex-shrink:0 !important;}
+.mask .modal .mpanel{height:min(760px, 92vh) !important; max-height:92vh !important; min-height:0 !important; min-width:0 !important; flex:1 1 auto !important; overflow-y:auto !important; overflow-x:hidden !important; box-sizing:border-box !important; scrollbar-width:thin !important;}
+.mpanel::-webkit-scrollbar{width:10px !important;}
+.mpanel::-webkit-scrollbar-thumb{background:var(--line-2) !important; border-radius:5px !important;}
 </style>
 </head>
 <body>
@@ -1881,7 +1912,7 @@ input:focus,input:focus-visible,textarea:focus,textarea:focus-visible{outline:no
         <div class="chips">
           <button class="chip on" id="chipThink" aria-pressed="true"><span aria-hidden="true"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sparkles"/></svg></span><span id="chipThinkLabel">深度思考</span></button>
           <button class="chip" id="chipSearch" aria-pressed="false"><span aria-hidden="true"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg></span><span>智能搜索</span></button>
-          <button class="chip" id="chipLevel" aria-label="思考档位：标准，点击切换"><span aria-hidden="true"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gauge"/></svg></span><span id="chipLevelLabel">思考：标准</span></button>
+          
         </div>
         <span class="grow"></span>
         <button class="icobtn" id="btnAttach" title="上传文件" aria-label="上传文件"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-paperclip"/></svg></button>
@@ -1912,7 +1943,7 @@ input:focus,input:focus-visible,textarea:focus,textarea:focus-visible{outline:no
                     stroke-linecap="round" stroke-dasharray="97.4" stroke-dashoffset="97.4"></circle>
           </svg>
           <span class="ringcap" id="ringCap">0%</span>
-          <div class="ringtip" id="ringTip">0% · 0 / 0 上下文已使用</div>
+          <div class="ringtip" id="ringTip"><b>上下文已使用</b><span>0.0%</span><span>0 / 0 tokens</span><span>剩余 0 tokens</span></div>
         </div>
         </div>
         <div class="feedback">
@@ -1933,8 +1964,6 @@ input:focus,input:focus-visible,textarea:focus,textarea:focus-visible{outline:no
       <button class="mnav-close" id="mCloseTop" aria-label="关闭设置" title="关闭" style="display:none"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-xmark"/></svg></button>
       <button data-pane="general" class="on"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-settings"/></svg><span>通用设置</span></button>
       <button data-pane="gen"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sliders"/></svg><span>生成参数</span></button>
-      <button data-pane="data"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tray"/></svg><span>对话与数据</span></button>
-      <button data-pane="about"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-info"/></svg><span>关于</span></button>
     </div>
     <div class="mpanel">
       <button class="close" id="mClose" aria-label="关闭设置" title="关闭"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-xmark"/></svg></button>
@@ -1978,27 +2007,10 @@ input:focus,input:focus-visible,textarea:focus,textarea:focus-visible{outline:no
           <div class="d" id="sCtx" style="font-size:13px;color:var(--text)">—</div>
           <div class="d">由服务启动参数 <code>-c</code> 决定，改完重启服务生效。</div>
         </div>
+        </div>
       </div>
 
-      <div class="pane" data-pane="data" style="display:none">
-        <h3>对话与数据</h3>
-        <div class="rowline"><span class="grew">对话数量</span><span id="dCount">0</span></div>
-        <div class="rowline"><span class="grew">累计生成 tokens</span><span id="dTokens">0</span></div>
-        <div class="rowline"><span class="grew">导出全部对话（JSON）</span><button class="btn2" id="dExport"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-export"/></svg><span>导出</span></button></div>
-        <div class="rowline"><span class="grew">清空全部对话</span><button class="btn2 danger" id="dClear"><svg class="icn" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trash"/></svg><span>清空</span></button></div>
-        <div class="d" style="margin-top:12px">数据只保存在本机浏览器（localStorage），不上传任何地方。</div>
-      </div>
-
-      <div class="pane" data-pane="about" style="display:none">
-        <h3>关于</h3>
-        <div class="kv"><i>模型</i><span id="aModel">—</span></div>
-        <div class="kv"><i>量化等级</i><span id="aQuant">—</span></div>
-        <div class="kv"><i>上下文</i><span id="aCtx">—</span></div>
-        <div class="kv"><i>视觉（图片）</i><span id="aVision">—</span></div>
-        <div class="kv"><i>服务地址</i><span id="aHost">—</span></div>
-        <div class="kv"><i>后端</i><span id="aBuild">—</span></div>
-        <div class="kv"><i>联网搜索</i><span id="aSearch">—</span></div>
-      </div>
+      
     </div>
   </div>
 </div>
@@ -2018,6 +2030,272 @@ input:focus,input:focus-visible,textarea:focus,textarea:focus-visible{outline:no
 <div class="sheet" id="sheet" aria-hidden="true"><div class="card" id="sheetCard"></div></div>
 <div class="toast" id="toast"></div>
 
+
+<style>
+/* DeepSeek 式附件卡片：白底圆角卡片，文件名一行省略，第二行是类型 + 大小，删除 X 在右上角 */
+.fcards{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px}
+.fcard{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:10px 14px;min-width:0;max-width:280px;box-shadow:0 2px 10px rgba(16,24,40,.06)}
+.fcard .icn{width:28px;height:28px;flex:0 0 auto;color:#2563eb}
+.fcard-tx{min-width:0}
+.fcard-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:#111}
+.fcard-meta{font-size:12px;color:#888;white-space:nowrap}
+#attachlist .achip.fcard{max-width:280px;padding:10px 14px;border-radius:16px;background:#fff;box-shadow:0 2px 10px rgba(16,24,40,.06);position:relative}
+#attachlist .achip.fcard .icn{width:28px;height:28px;color:#2563eb}
+#attachlist .achip b{position:absolute;top:-8px;right:-8px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:#6b7280;color:#fff;border-radius:50%;padding:0}
+#attachlist .achip b:hover{background:#111;color:#fff}
+#attachlist .achip b .icn{width:12px;height:12px}
+#attachlist .achip.img-only b{position:absolute;top:-8px;right:-8px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:#6b7280;color:#fff;border-radius:50%;padding:0}
+</style>
+<style>
+.ring .ringtip, .crail .ringtip{
+  left:calc(100% + 10px) !important; right:auto !important;
+  top:50% !important; bottom:auto !important;
+  transform:translateY(-50%) !important;
+  white-space:normal !important; width:172px !important;
+  text-align:left !important; line-height:1.5 !important;
+}
+.ring .ringtip b, .crail .ringtip b{display:block; font-size:12px;}
+.ring .ringtip span, .crail .ringtip span{display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-variant-numeric:tabular-nums;}
+.ring.tip-left .ringtip, .crail .ring.tip-left .ringtip{
+  left:auto !important; right:calc(100% + 10px) !important;
+}
+</style>
+<style>
+/* 圆环提示改到圆环左边：右栏本身就在屏幕最右边，往右一定会被屏幕/面板边缘裁掉，往左才有空间完整显示，仍是旁边竖着，不压模型选择器 */
+.crail .ringtip{
+  left:auto !important; right:calc(100% + 10px) !important;
+  top:50% !important; bottom:auto !important;
+  transform:translateY(-50%) !important;
+  white-space:normal !important; width:172px !important;
+  text-align:left !important; line-height:1.5 !important;
+}
+</style>
+<style>
+/* 圆环提示回到圆环右边：右边空间不够时把提示收窄、换行显示，仍在右边，不再挪到左边，也不被屏幕边缘裁掉 */
+.crail .ringtip{
+  left:calc(100% + 10px) !important; right:auto !important;
+  top:50% !important; bottom:auto !important;
+  transform:translateY(-50%) !important;
+  white-space:normal !important; width:172px !important; max-width:172px !important;
+  text-align:left !important; line-height:1.5 !important; z-index:999 !important;
+}
+.crail .ringtip span{white-space:normal !important; overflow:visible !important; text-overflow:clip !important; word-break:break-all !important;}
+.crail, .crail .rmeter, .crail .ringblock{overflow:visible !important;}
+</style>
+<style>
+/* 设置页下面那些区段改成上面正常排版：不再是白色浮层卡片，就是普通列表，往下滚也不会像弹出来一块 */
+.mpanel .setblock .mgroup{
+  background:transparent !important; border:none !important; border-radius:0 !important;
+  box-shadow:none !important; overflow:visible !important; margin:0 0 18px !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+.mpanel .setblock .mgroup .mrow{background:transparent !important;}
+</style>
+<style>
+/* 设置下面那些区段不再是白色副页卡片：直接就是普通行，每行下面一根横线，和上面“对话数量、累计生成”那种排版一样，滚到底也不会被窗口底切掉一半 */
+.mpanel .setblock .mgroup{
+  background:transparent !important; border:none !important; border-radius:0 !important;
+  box-shadow:none !important; overflow:visible !important; margin:0 0 12px !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+.mpanel .setblock .mgroup .mrow{background:transparent !important; border-bottom:1px solid var(--line) !important;}
+.mpanel .setblock .mgroup .mrow:last-child{border-bottom:1px solid var(--line) !important;}
+.mpanel .setblock{border-bottom:1px solid var(--line) !important; padding-bottom:12px !important; margin-bottom:12px !important;}
+.mpanel{padding-bottom:32px !important;}
+/* 主界面不再出现底部横向滚动条：隐藏的模型菜单不占横向空间，页面容器不横向溢出 */
+.modmenu:not(.on){display:none !important; visibility:hidden !important;}
+html, body{overflow-x:hidden !important;}
+</style>
+<style>
+/* 设置右边那块滚不动的根因：.modal 是 flex，.mpanel 默认 min-height:auto，内容一高它就不肯缩回窗口内，窗口 overflow:hidden 就直接把下面切掉，自己的滚动条永远触发不了。现在强制它能缩，滚动就回来了，电脑和手机版都一样，关于页也是同一块 */
+.mpanel{min-height:0 !important; min-width:0 !important; flex:1 1 auto !important; overflow-y:auto !important; overflow-x:hidden !important;}
+.modal{min-height:0 !important;}
+html.mobile .modal{height:88vh !important; flex-direction:column !important;}
+html.mobile .mpanel{min-height:0 !important; flex:1 1 auto !important; overflow-y:auto !important;}
+/* 下面那些区段仍是普通行，不再是白色副页卡片 */
+.mpanel .setblock .mgroup{background:transparent !important; border:none !important; border-radius:0 !important; box-shadow:none !important; overflow:visible !important; margin:0 0 12px !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important;}
+.mpanel .setblock .mgroup .mrow, .mpanel .setblock .mgroup .swrap{background:transparent !important;}
+.mpanel .setblock{border-bottom:1px solid var(--line) !important; padding-bottom:12px !important; margin-bottom:12px !important;}
+.mpanel{padding-bottom:32px !important;}
+.modmenu:not(.on){display:none !important; visibility:hidden !important;}
+</style>
+<style>
+/* 设置窗口本身也能滚：右边那块就算内部滚动失效，滚整个窗口也能看到最下面，不会再被窗口底切掉一半看不到 */
+.modal{overflow-y:auto !important; overflow-x:hidden !important;}
+html.mobile .modal{overflow-y:auto !important; overflow-x:hidden !important;}
+.mpanel{min-height:0 !important; min-width:0 !important; flex:1 1 auto !important; overflow-y:auto !important; overflow-x:hidden !important; height:100% !important; max-height:100% !important;}
+.mnav{flex-shrink:0 !important; min-height:0 !important;}
+</style>
+<style>
+/* 左边固定、右边自己滚、X 钉在右上角：窗口本身不再滚，左边不会跟着滑，X 也不会跟着滑没 */
+.modal{overflow:hidden !important; display:flex !important; height:520px !important; max-height:88vh !important; position:relative !important;}
+.mnav{flex:0 0 190px !important; height:100% !important; overflow:hidden !important; flex-shrink:0 !important;}
+.mpanel{flex:1 1 auto !important; height:100% !important; max-height:100% !important; min-height:0 !important; min-width:0 !important; overflow-y:auto !important; overflow-x:hidden !important; position:relative !important;}
+.mpanel .close, .close{position:sticky !important; top:14px !important; display:flex !important; align-items:center !important; justify-content:center !important; margin-left:auto !important; margin-bottom:-34px !important; z-index:30 !important; float:none !important;}
+html.mobile .modal{height:88vh !important; flex-direction:column !important; overflow:hidden !important;}
+html.mobile .mnav{height:auto !important; flex:0 0 auto !important; overflow-x:auto !important;}
+html.mobile .mpanel{height:auto !important; max-height:none !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important;}
+</style>
+<style>
+/* ===== 修复“对话与数据”面板的排版问题 ===== */
+.mpanel {
+  box-sizing: border-box !important;
+}
+
+.mpanel .pane {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 1. 修复行布局，防止右侧溢出和文字截断 */
+.mpanel .rowline {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.mpanel .rowline > .grew {
+  flex: 1 1 auto !important;
+  min-width: 0 !important; /* 关键：允许文字截断 */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.mpanel .rowline > span:not(.grew),
+.mpanel .rowline > button {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+/* 2. 修复按钮折行变成方块的问题 */
+.mpanel .rowline > button.btn2 {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+/* 3. 修复右上角关闭按钮 (X) 的位置 */
+.mpanel .close {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  margin: 0 !important;
+  z-index: 30 !important;
+}
+
+.mpanel .pane h3 {
+  padding-right: 44px !important; /* 防止标题被 X 遮挡 */
+}
+
+/* 4. 修复下方动态生成的“数据”区块按钮样式与间距 */
+.mpanel .setblock .mact {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 10px 0 0 0 !important;
+  border-bottom: 0 !important;
+}
+
+.mpanel .setblock .mact button {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+  border: 1px solid var(--btn-line) !important;
+  background: var(--btn-bg) !important;
+  color: var(--ink) !important; /* 原来蓝色小标签样式，现改回默认黑字 */
+  border-radius: 12px !important;
+  padding: 8px 14px !important;
+  font-size: var(--fs-5) !important;
+  box-shadow: inset 0 1px 0 var(--btn-hi) !important;
+  transition: transform .16s cubic-bezier(.22,.61,.36,1), filter .18s !important;
+}
+
+.mpanel .setblock .mact button:hover {
+  filter: brightness(1.05) !important;
+}
+
+.mpanel .setblock .mact button:active {
+  transform: scale(.97) !important;
+}
+
+.mpanel .setblock .mact button.danger {
+  color: var(--danger) !important;
+  border-color: rgba(198,47,47,.28) !important;
+}
+
+.mpanel .setblock .mact button.danger:hover {
+  background: #fdecea !important;
+}
+</style>
+<style>
+/* 附件卡片改小、改好看：卡片不再又大又白又厚，X 不再压在卡片角上、也不用悬停才出现，是一直显示的小按钮，放在卡片右边 */
+#attachlist .achip.fcard, .fcards .fcard{
+  max-width:220px !important; padding:6px 10px !important; gap:8px !important;
+  border-radius:12px !important; box-shadow:none !important; border:1px solid #e5e7eb !important;
+  background:#fff !important; position:relative !important; overflow:visible !important;
+}
+#attachlist .achip.fcard .icn, .fcards .fcard .icn{width:20px !important; height:20px !important; flex:0 0 20px !important; color:#2563eb !important;}
+.fcard-name{font-size:13px !important;}
+.fcard-meta{font-size:11px !important;}
+#attachlist .achip.fcard b{
+  position:static !important; top:auto !important; right:auto !important;
+  width:20px !important; height:20px !important; min-width:20px !important; min-height:20px !important;
+  margin-left:2px !important; flex:0 0 20px !important;
+  background:transparent !important; color:#888 !important; border:none !important; box-shadow:none !important;
+  border-radius:50% !important; opacity:1 !important; visibility:visible !important; display:flex !important;
+  align-items:center !important; justify-content:center !important; padding:0 !important;
+}
+#attachlist .achip.fcard b:hover{background:#fdecea !important; color:#c62f2f !important;}
+#attachlist .achip.fcard b .icn{width:11px !important; height:11px !important;}
+#attachlist .achip.img-only b{position:static !important;}
+</style>
+<style>
+/* 设置右边那块用固定高度，不再靠 flex 缩放来触发滚动：窗口和右边都是 min(520px, 88vh)，内容一高右边自己就出滚动条，左边不动，X 还在右上角 */
+.modal{height:min(520px, 88vh) !important; max-height:88vh !important; overflow:hidden !important; display:flex !important; position:relative !important;}
+.mnav{height:min(520px, 88vh) !important; flex:0 0 190px !important; overflow:hidden !important; flex-shrink:0 !important;}
+.mpanel{height:min(520px, 88vh) !important; max-height:88vh !important; min-height:0 !important; min-width:0 !important; flex:1 1 auto !important; overflow-y:auto !important; overflow-x:hidden !important; position:relative !important; box-sizing:border-box !important;}
+.mpanel .close{position:absolute !important; top:20px !important; right:20px !important; margin:0 !important; z-index:30 !important;}
+.mpanel .pane h3{padding-right:44px !important;}
+</style>
+<style>
+.mask .modal{height:min(760px, 92vh) !important; max-height:92vh !important; overflow:hidden !important; display:flex !important; position:relative !important;}
+.mask .modal .mnav{height:min(760px, 92vh) !important; flex:0 0 190px !important; overflow:hidden !important; flex-shrink:0 !important;}
+.mask .modal .mpanel{height:min(760px, 92vh) !important; max-height:92vh !important; min-height:0 !important; min-width:0 !important; flex:1 1 auto !important; overflow-y:auto !important; overflow-x:hidden !important; box-sizing:border-box !important;}
+.mask .modal .mpanel .close{position:absolute !important; top:20px !important; right:20px !important; margin:0 !important; z-index:30 !important;}
+</style>
+<style>
+/* 设置窗口大小改成 DeepSeek 那种：居中大卡片，宽约 960px、高约 640px，左边导航 210px、右边内容更宽、内边距 32px，左边固定、右边自己滚、X 还在右上角 */
+.mask .modal{width:960px !important; max-width:92vw !important; height:min(640px, 88vh) !important; max-height:88vh !important; overflow:hidden !important; display:flex !important; position:relative !important; border-radius:24px !important;}
+.mask .modal .mnav{width:210px !important; flex:0 0 210px !important; height:min(640px, 88vh) !important; overflow:hidden !important; flex-shrink:0 !important; padding:24px 16px !important;}
+.mask .modal .mpanel{height:min(640px, 88vh) !important; max-height:88vh !important; min-height:0 !important; min-width:0 !important; flex:1 1 auto !important; overflow-y:auto !important; overflow-x:hidden !important; box-sizing:border-box !important; padding:32px !important;}
+.mask .modal .mpanel .close{position:absolute !important; top:20px !important; right:20px !important; margin:0 !important; z-index:30 !important;}
+</style>
+<style>
+/* 附件 X 统一：不管是文档还是图片，发送前卡片上的 X 都是同一个样式——一直显示、20px、透明底灰字、在卡片右边流内、不压角、不悬停才出现，悬停浅红底变红。发出去后对话里的文件卡片本来就没有 X，因为已经发了，删卡片也收不回。 */
+#attachlist .achip b, #attachlist .achip.fcard b, #attachlist .achip.img-only b, .achip b{
+  position:static !important; top:auto !important; right:auto !important; left:auto !important; bottom:auto !important;
+  width:20px !important; height:20px !important; min-width:20px !important; flex:0 0 20px !important;
+  display:inline-flex !important; align-items:center !important; justify-content:center !important;
+  background:transparent !important; color:#9ca3af !important; border-radius:50% !important; padding:0 !important; margin-left:4px !important;
+  opacity:1 !important; visibility:visible !important; box-shadow:none !important;
+}
+#attachlist .achip b:hover, #attachlist .achip.fcard b:hover, #attachlist .achip.img-only b:hover, .achip b:hover{ background:#fee2e2 !important; color:#dc2626 !important; }
+#attachlist .achip b .icn, #attachlist .achip.fcard b .icn, #attachlist .achip.img-only b .icn{ width:12px !important; height:12px !important; }
+</style>
+<style>
+/* 发出去的照片不再超出窗口：宽度不超过气泡本身，高度不超过 360px，等比缩放，宽图、高图都不会撑出窗口。发送前的小缩略图仍是 56px 不动。 */
+.ububble img, .turn.user img, #thread .ububble img{
+  max-width:100% !important; width:auto !important; height:auto !important; max-height:360px !important;
+  object-fit:contain !important; display:block !important; margin-top:8px !important;
+}
+.ububble, .turn.user{ min-width:0 !important; max-width:88% !important; overflow:hidden !important; }
+#thread{ overflow-x:hidden !important; }
+</style>
 <script>
 const API = "";
 const SEARCH = "";
@@ -2071,12 +2349,12 @@ function applyCustomModelUI(cm){
   modelVision = !!cm.vision; modelLoaded = true;
   el('dot').className = 'dot on'; el('conn').textContent = '已连接 · 第三方';
   el('modName').textContent = cm.model; el('modName').title = cm.model;
-  el('aModel').textContent = cm.model; el('aQuant').textContent = '第三方';
-  el('aCtx').textContent = cm.ctxIn ? Number(cm.ctxIn).toLocaleString() + ' tokens' : '供应商默认';
+  (el('aModel')||{}).textContent = cm.model; (el('aQuant')||{}).textContent = '第三方';
+  (el('aCtx')||{}).textContent = cm.ctxIn ? Number(cm.ctxIn).toLocaleString() + ' tokens' : '供应商默认';
   el('sCtx').textContent = cm.ctxIn ? Number(cm.ctxIn).toLocaleString() + ' tokens' : '供应商默认';
-  el('aVision').textContent = cm.vision ? '已启用' : '未启用';
-  if (el('aBuild')) el('aBuild').textContent = '第三方';
-  try{ el('aHost').textContent = new URL(cm.endpoint).origin; }catch(e){ el('aHost').textContent = cm.endpoint; }
+  (el('aVision')||{}).textContent = cm.vision ? '已启用' : '未启用';
+  if (el('aBuild')) (el('aBuild')||{}).textContent = '第三方';
+  try{ (el('aHost')||{}).textContent = new URL(cm.endpoint).origin; }catch(e){ (el('aHost')||{}).textContent = cm.endpoint; }
   const _oldThink = cfg.think, _oldSearch = cfg.search;
   cfg.think = !!cm.thinking; cfg.search = !!cm.tools;
   if (_oldThink !== cfg.think || _oldSearch !== cfg.search){ save(); syncUI(); }
@@ -2119,9 +2397,10 @@ function customPayload(cm, sess){
   const extra = _noThink ? '你已经完成了思考，请直接输出最终答案，不要再输出任何思考过程。' : (thinkAllowed ? levelHint() : '请直接输出最终答案，不要输出思考过程。');
   const sys = [sysBase, extra, currentTimeLine()].filter(x => typeof x === 'string' && x).join('\n');
   const msgs = [{role: 'system', content: sys}];
-  s.msgs.forEach(m => {
+  let _lastUserIdx2 = -1; s.msgs.forEach((mm, ii) => { if (mm.role === 'user') _lastUserIdx2 = ii; });
+  s.msgs.forEach((m, _idx) => {
     if (m.role !== 'user') return;
-    let text = (m.content || '') + (cm.tools ? searchBlock(m.search) : '');
+    let text = (m.content || '') + ((_idx === _lastUserIdx2 && cm.tools) ? searchBlock(m.search) : '');
     if (m.images && m.images.length && cm.vision){
       const parts = [];
       if (text) parts.push({type: 'text', text: text});
@@ -2135,9 +2414,9 @@ function customPayload(cm, sess){
     model: cm.model, stream: MSET.stream !== false,
     temperature: cfg.temp, top_p: cfg.top_p,
     max_tokens: cm.ctxOut ? Math.min(cfg.max, cm.ctxOut) : cfg.max,
-    messages: hist
+    messages: hist, stream_options: {include_usage: true}
   };
-  if (thinkAllowed) _pl.reasoning_effort = cfg.level === 'low' ? 'low' : cfg.level === 'high' ? 'high' : 'medium';
+  
   return _pl;
 }
 async function testCustomConnection(endpoint, apiKey, model){
@@ -2267,10 +2546,10 @@ let ctxMax = null, modelAlias = "", modelInfo = {}, searchOnline = false, modelL
 let modelId = "", modelFtype = "", modelVision = false;
 const cfg = {
   sys:"你是一个中文助手，所有回答与思考过程一律使用简体中文。",
-  think:true, search:false, level:"mid", temp:0.7, top_p:0.95, max:2048,
+  think:true, search:false, level:"mid", temp:0.7, top_p:0.95, max:8192,
   theme:"light", sendKey:"enter", thinkOpen:0, font:15
 };
-const LEVEL = {low:"思考：简洁", mid:"思考：标准", high:"思考：深入"};
+
 const LANG_NAMES = {zh:'简体中文', en:'English', ja:'日本語', ko:'한국어'};
 const I18N = {
 zh:{greeting:'欢迎回来，想从哪里继续探索？',wsub:'本地运行 · 对话不出本机',placeholder:'给 InfinityCore 发送消息',newChat:'开启新对话',localUser:'本地用户',think:'深度思考',thinkOff:'深度思考（已关）',search:'智能搜索',levelLow:'思考：简洁',levelMid:'思考：标准',levelHigh:'思考：深入',today:'今天',yesterday:'昨天',last30:'30天内',pinned:'置顶',tabGeneral:'通用设置',tabGen:'生成参数',tabData:'对话与数据',tabAbout:'关于',labelTheme:'主题',labelLang:'语言',labelSendKey:'发送快捷键',labelThinkOpen:'默认展开思考过程',labelFont:'字号',labelSearchState:'联网搜索服务',themeLight:'浅色',themeDark:'深色',themeAuto:'跟随系统',sendEnter:'Enter 发送',sendCtrl:'Ctrl+Enter 发送',thinkCollapsed:'折叠',thinkExpanded:'展开',fontSmall:'小',fontMedium:'中',fontLarge:'大',searchConv:'搜索对话…',searchContent:'搜索对话内容…',langChanged:'语言已切换'},
@@ -2282,12 +2561,7 @@ const LANG_SYS = {zh:'你是一个中文助手，所有回答与思考过程一�
 const LANG_SYS_OFF = {zh:'你是一个中文助手，所有回答一律使用简体中文。',en:'You are an assistant. Always answer in English.',ja:'あなたはアシスタントです。すべての回答は日本語で行ってください。',ko:'당신은 어시스턴트입니다. 모든 답변은 한국어로 작성해 주세요.'};
 const curLang = () => (typeof MSET !== 'undefined' && MSET && MSET.lang) || 'zh';
 const T = (k) => (I18N[curLang()] && I18N[curLang()][k]) || I18N.zh[k] || k;
-const LANG_LEVEL_HINT = {
-zh:{low:'思考保持精简，最多三步。最终回答也要极简：直接给结论，不超过两句话，不展开、不举例、不列步骤、不加多余解释。',mid:'请按常规深度推理：先理清关键点，再分步骤推导。最终回答要适中：先给结论，再用一段话讲清关键点，不要过度展开，也不要只给结论不给过程。',high:'请充分展开推理：拆解问题、列出可替代方案、检查边界情况与自洽性。最终回答也要充分展开：分点讲推理过程、替代方案、注意事项，最后给结论，篇幅和细节要明显多于简洁版，不要只给一两句话。'},
-en:{low:'Keep thinking concise, at most three steps. The final answer must also be extremely concise: give the conclusion directly, no more than two sentences, no expansion, no examples, no steps, no extra explanation.',mid:'Reason at a normal depth: clarify the key points first, then derive step by step. The final answer should be moderate: give the conclusion first, then one paragraph explaining the key points. Do not over-expand, and do not give only a conclusion without process.',high:'Expand reasoning fully: break down the problem, list alternatives, check edge cases and self-consistency. The final answer must also be fully expanded: explain the reasoning, alternatives and cautions in points, then conclude, with noticeably more detail than the concise version. Do not give only one or two sentences.'},
-ja:{low:'思考は簡潔に、最大で3ステップまで。最終回答も極めて簡潔に：結論を直接述べ、2文以内に収め、展開・例・手順・余計な説明は入れないこと。',mid:'通常の深さで推論すること：まず要点を整理し、次に段階的に導くこと。最終回答は適度に：まず結論を述べ、次に要点を1段落で説明すること。過度に展開せず、過程なしに結論だけを述べることもしないこと。',high:'推論を十分に展開すること：問題を分解し、代替案を挙げ、境界条件と整合性を確認すること。最終回答も十分に展開すること：推論過程・代替案・注意点を箇条書きで説明し、最後に結論を述べ、簡潔版より明らかに詳しくすること。1〜2文だけにしないこと。'},
-ko:{low:'사고는 간결하게, 최대 세 단계까지만 하세요. 최종 답변도 극도로 간결하게: 결론을 직접 제시하고, 두 문장을 넘지 않으며, 확장·예시·단계·불필요한 설명을 넣지 마세요.',mid:'보통 깊이로 추론하세요: 먼저 핵심을 정리한 뒤 단계적으로 도출하세요. 최종 답변은 적당하게: 먼저 결론을 제시한 뒤 핵심을 한 단락으로 설명하세요. 과도하게 확장하지도, 과정 없이 결론만 제시하지도 마세요.',high:'추론을 충분히 확장하세요: 문제를 분해하고, 대안을 나열하며, 경계 조건과 자기 일관성을 확인하세요. 최종 답변도 충분히 확장하세요: 추론 과정·대안·주의사항을 항목별로 설명한 뒤 결론을 내리고, 간결 버전보다 훨씬 더 자세하게 작성하세요. 한두 문장만으로 끝내지 마세요.'}
-};
+
 function applyLang(){
   try{
     document.documentElement.lang = curLang();
@@ -2313,7 +2587,6 @@ function applyLang(){
     const to = el('sThinkOpen'); if (to && to.options.length >= 2){ to.options[0].textContent = T('thinkCollapsed'); to.options[1].textContent = T('thinkExpanded'); }
     const ft = el('sFont'); if (ft && ft.options.length >= 3){ ft.options[0].textContent = T('fontSmall'); ft.options[1].textContent = T('fontMedium'); ft.options[2].textContent = T('fontLarge'); }
     const lg = el('sLang'); if (lg) lg.value = curLang();
-    LEVEL.low = T('levelLow'); LEVEL.mid = T('levelMid'); LEVEL.high = T('levelHigh');
     syncUI(); renderSessions();
   }catch(e){}
 }
@@ -2377,7 +2650,7 @@ function load(){
     const d = JSON.parse(localStorage.getItem(LS) || "{}");
     if (Array.isArray(d.sessions)) sessions = d.sessions;
     curId = d.curId || null; totalTokens = d.totalTokens || 0;
-    if (d.cfg) Object.assign(cfg, d.cfg);
+    if (d.cfg){ Object.assign(cfg, d.cfg); if (d.cfg.max === 2048) cfg.max = 8192; }
   }catch(e){}
   if (!sessions.length) newSession(false);
   if (!sessions.find(s => s.id === curId)) curId = sessions[0].id;
@@ -2575,7 +2848,7 @@ function renderThread(){ queueMicrotask(() => { if (window.__afterRender) window
 function startUserEdit(turnEl, bubbleEl, m, idx){
   if (isCurStreaming()){ toast('正在生成中，请稍后再编辑'); return; }
   if (turnEl.querySelector('.uedit-wrap')) return;
-  const orig = m.content || '';
+  const orig = parseAttachedFiles(m.content || '').text || '';
   const wrap = document.createElement('div'); wrap.className = 'uedit-wrap';
   const ta = document.createElement('textarea'); ta.className = 'uedit'; ta.value = orig;
   ta.rows = Math.min(8, Math.max(2, orig.split('\n').length));
@@ -2595,7 +2868,8 @@ function startUserEdit(turnEl, bubbleEl, m, idx){
     if (nv === orig){ wrap.remove(); bubbleEl.style.display = ''; if (acts) acts.style.display = ''; return; }
     const s = cur(); if (!s) return;
     s.msgs = s.msgs.slice(0, idx + 1);
-    s.msgs[idx].content = nv;
+    const _pf = parseAttachedFiles(m.content || '');
+    s.msgs[idx].content = _pf.files.length ? (nv + '\n\n' + _pf.files.map(f => '【文件：' + f.name + '】\n' + f.text).join('\n\n')) : nv;
     delete s.msgs[idx].search; delete s.msgs[idx].searchPending;
     s.msgs.push({role:'assistant', content:'', think:'', thinkSec:0});
     save(); renderThread(); run(s);
@@ -2603,14 +2877,27 @@ function startUserEdit(turnEl, bubbleEl, m, idx){
 }
 function userTurn(m, idx){
   const t = document.createElement('div'); t.className = 'turn user';
+  const _sq = (m.searchQuery || parseAttachedFiles(m.content || '').text || '').trim();
+  if (m.searchFailed){
+    const line = document.createElement('div'); line.className = 'srcline'; line.innerHTML = svgIco('globe','icn-sm') + '<span>联网检索失败：本次回答未使用实时搜索资料，仅为模型自身知识</span>';
+    const box = document.createElement('div'); box.className = 'srcbox';
+    if (_sq) box.innerHTML = '<div>在浏览器中亲自查一次：<a href="https://www.bing.com/search?q=' + encodeURIComponent(_sq) + '" target="_blank" rel="noopener noreferrer">在 Bing 中搜索</a>　<a href="https://duckduckgo.com/?q=' + encodeURIComponent(_sq) + '" target="_blank" rel="noopener noreferrer">在 DuckDuckGo 中搜索</a>　<a href="https://www.baidu.com/s?wd=' + encodeURIComponent(_sq) + '" target="_blank" rel="noopener noreferrer">在百度中搜索</a></div>';
+    line.onclick = () => box.classList.toggle('on');
+    t.appendChild(line); t.appendChild(box);
+  }
   if (m.search && m.search.length){
-    const line = document.createElement('div'); line.className = 'srcline'; line.innerHTML = svgIco('globe','icn-sm') + '<span>已联网检索 ' + m.search.length + ' 条</span>';
+    const line = document.createElement('div'); line.className = 'srcline'; line.innerHTML = svgIco('globe','icn-sm') + '<span>已联网检索 ' + m.search.length + ' 条（点击标题在浏览器中打开原文）</span>';
     const box = document.createElement('div'); box.className = 'srcbox';
     m.search.forEach(it => {
       const d = document.createElement('div');
       d.innerHTML = '<a href="' + escAttr(it.url) + '" target="_blank" rel="noopener noreferrer">' + esc(it.title) + '</a><br>' + esc(it.snippet || '');
       box.appendChild(d);
     });
+    if (_sq){
+      const d = document.createElement('div');
+      d.innerHTML = '在浏览器中亲自查一次：<a href="https://www.bing.com/search?q=' + encodeURIComponent(_sq) + '" target="_blank" rel="noopener noreferrer">在 Bing 中搜索</a>　<a href="https://duckduckgo.com/?q=' + encodeURIComponent(_sq) + '" target="_blank" rel="noopener noreferrer">在 DuckDuckGo 中搜索</a>';
+      box.appendChild(d);
+    }
     line.onclick = () => box.classList.toggle('on');
     t.appendChild(line); t.appendChild(box);
   }
@@ -2618,13 +2905,20 @@ function userTurn(m, idx){
     const line = document.createElement('div'); line.className = 'srcline'; line.innerHTML = svgIco('globe','icn-sm') + '<span>正在联网检索…</span>';
     t.appendChild(line);
   }
+  const _parsed = parseAttachedFiles(m.content || '');
+  if (_parsed.files.length){
+    const _fc = document.createElement('div'); _fc.className = 'fcards';
+    _parsed.files.forEach(f => _fc.appendChild(fileCardEl(f)));
+    t.appendChild(_fc);
+  }
   const b = document.createElement('div'); b.className = 'ububble';
-  b.textContent = m.content || '';
+  b.textContent = _parsed.text || '';
   (m.images || []).forEach(src => { const img = document.createElement('img'); img.src = src; img.alt = '用户上传的图片'; b.appendChild(img); });
+  if (!_parsed.text && !(m.images || []).length) b.style.display = 'none';
   if (MSET && MSET.showTs && m.ts){ const tm = document.createElement('span'); tm.className = 'ts'; tm.textContent = new Date(m.ts).toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}); t.appendChild(tm); }
   t.appendChild(b);
   const acts = document.createElement('div'); acts.className = 'acts uacts';
-  const cp = mkBtn(svgIco('copy'), () => { copyText(m.content || ''); cp.innerHTML = svgIco('check'); setTimeout(()=>cp.innerHTML = svgIco('copy'), 1200); });
+  const cp = mkBtn(svgIco('copy'), () => { copyText(_parsed.text || _parsed.files.map(f => f.name).join('\n') || ''); cp.innerHTML = svgIco('check'); setTimeout(()=>cp.innerHTML = svgIco('copy'), 1200); });
   cp.title = '复制'; cp.setAttribute('aria-label', '复制');
   acts.appendChild(cp);
   const ed = mkBtn(svgIco('edit'), () => startUserEdit(t, b, m, idx));
@@ -2636,10 +2930,11 @@ function botTurn(m, idx){
   const t = document.createElement('div'); t.className = 'turn';
   const row = document.createElement('div'); row.className = 'ablock';
   const area = document.createElement('div'); area.className = 'acontent';
-  if (m.think) area.appendChild(thinkBox(m.think, m.thinkSec, !!cfg.thinkOpen));
+  const _promoteOld = !m.content && !!m.think;
+  if (m.think && !_promoteOld) area.appendChild(thinkBox(m.think, m.thinkSec, !!cfg.thinkOpen));
   const body = document.createElement('div'); body.className = 'md';
   body.innerHTML = m.content ? md(m.content)
-    : (m.think ? '<p style="color:var(--sub)">（本回合内容都在思考过程里，展开上方查看）</p>' : '<p style="color:var(--sub)"><span class="waitorb" aria-label="正在生成"></span></p>');
+    : (_promoteOld ? md(m.think) : '<p style="color:var(--sub)"><span class="waitorb" aria-label="正在生成"></span></p>');
   area.appendChild(body);
   const acts = document.createElement('div'); acts.className = 'acts';
   const cp = mkBtn(svgIco('copy'), () => { copyText(m.content || ''); cp.innerHTML = svgIco('check'); setTimeout(()=>cp.innerHTML = svgIco('copy'), 1200); });
@@ -2691,8 +2986,9 @@ function setUsed(n){
   const pct = Math.min(100, (usedTokens / max) * 100);
   el('ringArc').style.strokeDasharray = CIRC;
   el('ringArc').style.strokeDashoffset = CIRC * (1 - pct / 100);
-  el('ringTip').textContent = pct.toFixed(1) + '% · ' + fmtTok(usedTokens) + ' / ' + fmtTok(max) + ' 上下文已使用';
-  const _rc = el('ringCap'); if (_rc) _rc.textContent = Math.round(pct) + '%';
+  const _tip = el('ringTip');
+  if (_tip) _tip.innerHTML = '<b>上下文已使用</b><span>' + pct.toFixed(1) + '%</span><span>' + Number(usedTokens).toLocaleString() + ' / ' + Number(max).toLocaleString() + ' tokens</span><span>剩余 ' + Number(Math.max(0, max - usedTokens)).toLocaleString() + ' tokens</span>';
+  const _rc = el('ringCap'); if (_rc) _rc.textContent = (pct < 10 ? pct.toFixed(1) : Math.round(pct)) + '%';
 }
 
 /* ---------- 连接 ---------- */
@@ -2701,8 +2997,8 @@ async function checkSearch(){
     const s = await fetch(searchBase() + '/ping', {cache:'no-store'});
     searchOnline = s.ok;
   }catch(e){ searchOnline = false; }
-  if (el('sSearchState')) el('sSearchState').textContent = searchOnline ? '在线（Bing 检索可用）' : '离线（检查网络）';
-  if (el('aSearch')) el('aSearch').textContent = searchOnline ? '可用' : '不可用';
+  if (el('sSearchState')) el('sSearchState').textContent = searchOnline ? '本地搜索服务可用' : '本地搜索服务不可用，将用公开搜索接口';
+  if (el('aSearch')) (el('aSearch')||{}).textContent = searchOnline ? '本地服务可用' : '公开接口兜底';
 }
 async function refresh(){
   const _cm0 = getActiveCustom();
@@ -2736,12 +3032,12 @@ async function refresh(){
       modelLoaded = false; modelId = ''; ctxMax = 0; modelAlias = '';
       el('dot').className = 'dot warn'; el('conn').textContent = '已连接 · 模型未加载';
       el('modName').textContent = '未加载模型'; el('modName').title = '未加载模型';
-      el('aModel').textContent = '（未加载）';
-      el('aQuant').textContent = '（未加载）';
-      el('aCtx').textContent = '（未加载）';
+      (el('aModel')||{}).textContent = '（未加载）';
+      (el('aQuant')||{}).textContent = '（未加载）';
+      (el('aCtx')||{}).textContent = '（未加载）';
       el('sCtx').textContent = '（未加载）';
-      el('aVision').textContent = '（未加载）';
-      el('aHost').textContent = location.origin;
+      (el('aVision')||{}).textContent = '（未加载）';
+      (el('aHost')||{}).textContent = location.origin;
       const items = el('modItems'); items.innerHTML = '';
       const d = document.createElement('div'); d.className = 'mi';
       d.innerHTML = '<b>模型已加载但未被识别</b><small>请在 LlamaApp 里确认模型状态为“已加载”</small>';
@@ -2764,13 +3060,13 @@ async function refresh(){
     el('dot').className = modelLoaded ? 'dot on' : 'dot warn';
     el('conn').textContent = modelLoaded ? '已连接' : '已连接 · 模型未加载';
     el('modName').textContent = modelAlias || '未加载模型'; el('modName').title = modelAlias || '未加载模型';
-    el('aModel').textContent = modelAlias || '—';
-    el('aQuant').textContent = modelFtype || '—';
-    el('aCtx').textContent = ctxMax ? Number(ctxMax).toLocaleString() + ' tokens' : '—';
+    (el('aModel')||{}).textContent = modelAlias || '—';
+    (el('aQuant')||{}).textContent = modelFtype || '—';
+    (el('aCtx')||{}).textContent = ctxMax ? Number(ctxMax).toLocaleString() + ' tokens' : '—';
     el('sCtx').textContent = ctxMax ? Number(ctxMax).toLocaleString() + ' tokens（训练上限 ' + Number(meta.n_ctx_train || 0).toLocaleString() + '）' : '—';
-    el('aVision').textContent = modelVision ? '已启用（mmproj）' : '未启用';
-    el('aHost').textContent = location.origin;
-    el('aBuild').textContent = (props && props.build_info) || (modelInfo && modelInfo.build_info) || '—';
+    (el('aVision')||{}).textContent = modelVision ? '已启用（mmproj）' : '未启用';
+    (el('aHost')||{}).textContent = location.origin;
+    (el('aBuild')||{}).textContent = (props && props.build_info) || (modelInfo && modelInfo.build_info) || '—';
     setUsed(usedTokens);
 
     const items = el('modItems'); items.innerHTML = '';
@@ -2788,26 +3084,474 @@ async function refresh(){
 
 /* ---------- 联网搜索 ---------- */
 async function webSearch(q){
-  if (!searchOnline){
-    const s = await fetch(searchBase() + '/ping').catch(()=>null);
-    if (!s || !s.ok) throw new Error('搜索服务未启动');
+  const count = Math.max(1, MSET.searchCount || 5);
+  const engine = MSET.searchEngine || 'auto';
+  // 你给一个网址就直接读这个网址：先试直接抓，跨域被挡就走公开中转取回页面，再解析标题、简介和正文。
+  // 中转只传你给的这个网址，不传对话和本地文件。抓到的内容会原样交给模型，让它告诉你这个站是干嘛的。
+  const urlMatch = (q || '').match(/https?:\/\/[^\s\)\]\u4e00-\u9fa5]+|www\.[^\s\)\]\u4e00-\u9fa5]+/);
+  if (urlMatch){
+    let rawUrl = urlMatch[0].replace(/[.,;!?]+$/, '');
+    if (rawUrl.startsWith('www.')) rawUrl = 'https://' + rawUrl;
+    const fetchPageText = async (u, ms) => {
+      const c = new AbortController();
+      const to = setTimeout(() => { try{ c.abort(); }catch(e){} }, ms || 10000);
+      try{ const r = await fetch(u, {cache:'no-store', signal: c.signal}); if (!r.ok) return null; return await r.text(); }catch(e){ return null; }finally{ clearTimeout(to); }
+    };
+    const parsePage = (html) => {
+      try{
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        doc.querySelectorAll('script, style, noscript, nav, footer, header, aside, iframe').forEach(el => el.remove());
+        const title = (doc.querySelector('title') ? doc.querySelector('title').textContent.trim() : '') || rawUrl;
+        const descEl = doc.querySelector('meta[name="description"], meta[property="og:description"]');
+        const desc = descEl ? (descEl.getAttribute('content') || '').trim() : '';
+        const bodyText = (doc.body ? doc.body.innerText : '').replace(/\s+/g, ' ').trim();
+        const snippet = (desc ? desc + '\n' : '') + bodyText.slice(0, 1500);
+        return {title, url: rawUrl, snippet, src: '你给的网址'};
+      }catch(e){ return null; }
+    };
+    let pageHtml = await fetchPageText(rawUrl, 10000);
+    if (!pageHtml){
+      const proxies = [
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(rawUrl),
+        'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(rawUrl),
+        'https://corsproxy.io/?url=' + encodeURIComponent(rawUrl)
+      ];
+      for (const u of proxies){
+        pageHtml = await fetchPageText(u, 10000);
+        if (pageHtml && pageHtml.length > 500) break;
+        pageHtml = null;
+      }
+    }
+    if (pageHtml){
+      const item = parsePage(pageHtml);
+      if (item && (item.snippet || '').replace(/\s/g, '').length > 40) return [item];
+    }
+    // 网址直接抓不到或内容太少时，继续往下走全网搜索，用这个网址/域名去搜，不会直接说搜不到。
   }
-  const r = await fetch(searchBase() + '/search?q=' + encodeURIComponent(q), {cache:'no-store'});
-  if (!r.ok) throw new Error('搜索失败 HTTP ' + r.status);
-  const j = await r.json();
-  return j.items || [];
+  const clean = s => String(s || '').replace(/<[^>]+>/g, '').trim();
+  const fetchJson = async (url, ms) => {
+    const c = new AbortController();
+    const to = setTimeout(() => { try{ c.abort(); }catch(e){} }, ms || 8000);
+    try{ const r = await fetch(url, {cache:'no-store', signal: c.signal}); if (!r.ok) return null; return await r.json(); }catch(e){ return null; }finally{ clearTimeout(to); }
+  };
+  const fetchText = async (url, ms) => {
+    const c = new AbortController();
+    const to = setTimeout(() => { try{ c.abort(); }catch(e){} }, ms || 9000);
+    try{ const r = await fetch(url, {cache:'no-store', signal: c.signal}); if (!r.ok) return null; return await r.text(); }catch(e){ return null; }finally{ clearTimeout(to); }
+  };
+  // 直搜搜索引擎结果页：搜索引擎本身不给浏览器跨域读，所以走公开中转取回页面再在本地解析。
+  // 中转只传搜索词和目标搜索页，不传对话、密钥和本地文件。任何一家中转不通就换下一家，不会卡死。
+  const viaProxy = async (target) => {
+    const proxies = [
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent(target),
+      'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(target),
+      'https://corsproxy.io/?url=' + encodeURIComponent(target)
+    ];
+    for (const u of proxies){
+      const html = await fetchText(u, 9000);
+      if (html && html.length > 1000) return html;
+    }
+    return null;
+  };
+  const parseDoc = (html) => {
+    try{ return new DOMParser().parseFromString(html, 'text/html'); }catch(e){ return null; }
+  };
+  const fromBaidu = async () => {
+    const html = await viaProxy('https://www.baidu.com/s?wd=' + encodeURIComponent(q) + '&rn=' + count);
+    if (!html) return [];
+    const doc = parseDoc(html); if (!doc) return [];
+    const items = [];
+    doc.querySelectorAll('.result, .c-container').forEach(el => {
+      const a = el.querySelector('h3 a, .t a');
+      if (!a || !a.href) return;
+      const title = clean(a.textContent); if (!title) return;
+      const sn = el.querySelector('.c-abstract, .c-span-last, .c-row');
+      items.push({title, url: a.href, snippet: sn ? clean(sn.textContent).slice(0, 200) : '', src: '百度'});
+    });
+    return items.slice(0, count);
+  };
+  const fromBing = async () => {
+    const html = await viaProxy('https://www.bing.com/search?q=' + encodeURIComponent(q) + '&count=' + count);
+    if (!html) return [];
+    const doc = parseDoc(html); if (!doc) return [];
+    const items = [];
+    doc.querySelectorAll('li.b_algo').forEach(el => {
+      const a = el.querySelector('h2 a');
+      if (!a || !a.href) return;
+      const title = clean(a.textContent); if (!title) return;
+      const sn = el.querySelector('p, .b_caption p');
+      items.push({title, url: a.href, snippet: sn ? clean(sn.textContent).slice(0, 200) : '', src: 'Bing'});
+    });
+    return items.slice(0, count);
+  };
+  const fromDDG = async () => {
+    const html = await viaProxy('https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q));
+    if (!html) return [];
+    const doc = parseDoc(html); if (!doc) return [];
+    const items = [];
+    doc.querySelectorAll('.result__a').forEach(a => {
+      const title = clean(a.textContent); if (!title || !a.href) return;
+      const wrap = a.closest('.result');
+      const sn = wrap ? wrap.querySelector('.result__snippet') : null;
+      items.push({title, url: a.href, snippet: sn ? clean(sn.textContent).slice(0, 200) : '', src: 'DuckDuckGo'});
+    });
+    return items.slice(0, count);
+  };
+  const fromDDGInstant = async () => {
+    const j = await fetchJson('https://api.duckduckgo.com/?q=' + encodeURIComponent(q) + '&format=json&no_html=1&skip_disambig=1');
+    if (!j) return [];
+    const items = [];
+    if (j.AbstractText) items.push({title: j.Heading || q, url: j.AbstractURL || '', snippet: j.AbstractText, src: 'DuckDuckGo'});
+    (j.RelatedTopics || []).forEach(tp => {
+      if (tp.Text && tp.FirstURL) items.push({title: clean(tp.Text).slice(0, 60), url: tp.FirstURL, snippet: clean(tp.Text), src: 'DuckDuckGo'});
+      else if (tp.Topics) tp.Topics.forEach(s => { if (s.Text && s.FirstURL) items.push({title: clean(s.Text).slice(0, 60), url: s.FirstURL, snippet: clean(s.Text), src: 'DuckDuckGo'}); });
+    });
+    return items.slice(0, count);
+  };
+  const fromWiki = async () => {
+    const j = await fetchJson('https://zh.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(q) + '&format=json&origin=*&srlimit=' + count);
+    return ((j && j.query && j.query.search) || []).map(s => ({title: s.title, url: 'https://zh.wikipedia.org/wiki/' + encodeURIComponent(String(s.title).replace(/ /g, '_')), snippet: clean(s.snippet), src: '维基百科'}));
+  };
+  // 天气专查（国内优先）：先用国内能直接打开的天气接口查，国外接口在国内经常打不开、超时，这就是上次只拿到日历网站的原因。
+  // 顺序：国内 vvhan 天气接口 -> Open-Meteo 直接 -> Open-Meteo 走中转；都拿不到时，把搜索词改成“城市 天气”，不再用原句里带“今天”去搜（“今天”会搜到日历、黄历）。
+  if (/天气|气温|下雨|下雪|晴|阴天|多云|刮风|温度/.test(q)){
+    const loc0 = (q || '').replace(/今天|明天|后天|大后天|天气|气温|怎么样|如何|怎样|好不好|会不会|请问|帮我查|查一下|告诉我|在|的|是|吗|？|\?/g, '').trim();
+    const dayIdx0 = /后天|大后天/.test(q) ? 2 : (/明天/.test(q) ? 1 : 0);
+    const dayName0 = dayIdx0 === 2 ? '后天' : (dayIdx0 === 1 ? '明天' : '今天');
+    if (loc0){
+      const cityTries = [loc0];
+      if (loc0.length > 4) cityTries.push(loc0.slice(0, 4));
+      if (loc0.length > 3) cityTries.push(loc0.slice(0, 3));
+      if (loc0.length > 2) cityTries.push(loc0.slice(0, 2));
+      // 国内接口先试
+      for (const ct of cityTries){
+        try{
+          const vj = await fetchJson('https://api.vvhan.com/api/weather?city=' + encodeURIComponent(ct), 9000);
+          if (vj && (vj.success || vj.data)){
+            const d = vj.data || {};
+            const fc = d.forecast || [];
+            let use = null;
+            if (dayIdx0 === 0 && d.type) use = {type: d.type, low: d.low, high: d.high, fx: d.fengxiang, fl: d.fengli, night: d.night};
+            else if (fc[dayIdx0]) use = {type: fc[dayIdx0].type, low: fc[dayIdx0].low, high: fc[dayIdx0].high, fx: fc[dayIdx0].fengxiang, fl: fc[dayIdx0].fengli};
+            else if (fc[0]) use = {type: fc[0].type, low: fc[0].low, high: fc[0].high, fx: fc[0].fengxiang, fl: fc[0].fengli};
+            if (use){
+              const snippet = dayName0 + '：' + use.type + '，' + (use.low || '') + '到' + (use.high || '') + '，' + (use.fx || '') + ' ' + (use.fl || '') + (use.night ? '，夜间' + use.night.type : '') + (vj.air ? '，空气质量 ' + (vj.air.aqi_name || '') + '（AQI ' + (vj.air.aqi || '') + '）' : '') + (vj.tip ? '。' + vj.tip : '') + '。地点：' + (vj.city || ct);
+              return [{title: (vj.city || ct) + ' ' + dayName0 + '天气', url: 'https://api.vvhan.com/api/weather?city=' + encodeURIComponent(ct), snippet, src: '天气实况与预报'}];
+            }
+          }
+        }catch(e){}
+      }
+      // 国内接口拿不到时，改搜索词，避免“今天”搜到日历
+      q = cityTries[cityTries.length - 1] + ' 天气';
+    }
+  }
+  // 天气专查：问天气时通用搜索只会返回天气网站介绍，拿不到具体温度、雨雪、风速。
+  // 所以先直接查公开天气数据：先把地名转经纬度，再查当天/明天/后天的实时和逐日预报，带上温度、体感、降水、风速、湿度。
+  if (/天气|气温|下雨|下雪|晴|阴天|多云|刮风|温度/.test(q)){
+    const loc = (q || '').replace(/今天|明天|后天|大后天|天气|气温|怎么样|如何|怎样|好不好|会不会|请问|帮我查|查一下|告诉我|在|的|是|吗|？|\?/g, '').trim();
+    const dayIdx = /后天|大后天/.test(q) ? 2 : (/明天/.test(q) ? 1 : 0);
+    const dayName = dayIdx === 2 ? '后天' : (dayIdx === 1 ? '明天' : '今天');
+    const wdesc = (c) => {
+      const m = {0:'晴',1:'多云',2:'多云',3:'阴',45:'雾',48:'雾凇',51:'毛毛雨',53:'毛毛雨',55:'毛毛雨',56:'冻毛毛雨',57:'冻毛毛雨',61:'小雨',63:'中雨',65:'大雨',66:'冻雨',67:'冻雨',71:'小雪',73:'中雪',75:'大雪',77:'雪粒',80:'阵雨',81:'阵雨',82:'暴雨',85:'阵雪',86:'阵雪',95:'雷阵雨',96:'冰雹雷阵雨',99:'冰雹雷阵雨'};
+      return m[c] || ('天气代码' + c);
+    };
+    if (loc){
+      try{
+        // 地名可能是学校、单位这种全名，地名接口查不到全名，就按越来越短的前缀试：全名 -> 前4字 -> 前3字 -> 前2字（比如“宜宾工业职业技术学院” -> “宜宾”），
+        // 只要有一个查到经纬度，就用那个城市的天气，不会因为全名查不到就直接放弃。
+        let g = null;
+        const tries = [loc];
+        if (loc.length > 4) tries.push(loc.slice(0, 4));
+        if (loc.length > 3) tries.push(loc.slice(0, 3));
+        if (loc.length > 2) tries.push(loc.slice(0, 2));
+        for (const tryLoc of tries){
+          const gj = await fetchJson('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(tryLoc) + '&count=1&language=zh&format=json', 9000);
+          if (gj && gj.results && gj.results[0]){ g = gj.results[0]; break; }
+        }
+        if (g){
+          const fj = await fetchJson('https://api.open-meteo.com/v1/forecast?latitude=' + g.latitude + '&longitude=' + g.longitude + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto', 9000);
+          if (fj && fj.current && fj.daily){
+            const cur = fj.current;
+            const d = fj.daily;
+            const title = (g.name || loc) + ' ' + dayName + '天气';
+            const snippet = dayName + '：' + wdesc(d.weather_code[dayIdx]) + '，最高 ' + d.temperature_2m_max[dayIdx] + '°C，最低 ' + d.temperature_2m_min[dayIdx] + '°C'
+              + (d.precipitation_probability_max && d.precipitation_probability_max[dayIdx] != null ? '，降水概率 ' + d.precipitation_probability_max[dayIdx] + '%' : '')
+              + '；现在实况：' + wdesc(cur.weather_code) + '，' + cur.temperature_2m + '°C，体感 ' + cur.apparent_temperature + '°C，湿度 ' + cur.relative_humidity_2m + '%，风速 ' + cur.wind_speed_10m + 'km/h，风向 ' + cur.wind_direction_10m + '°'
+              + '。地点：' + (g.name || loc) + (g.admin1 ? '，' + g.admin1 : '') + (g.country ? '，' + g.country : '');
+            return [{title, url: 'https://open-meteo.com/', snippet, src: '天气实况与预报'}];
+          }
+        }
+      }catch(e){}
+      // 公开天气数据拿不到时，继续往下走通用搜索，不会直接说没有。
+    }
+  }
+  // 国内热门网站专查：小红书、豆瓣、微博、知乎、B站、头条、快手、虎扑、36氪、澎湃等，问热点时不再只搜通用网页，
+  // 先去聚合热榜接口按平台拿榜单；学术问题则先去公开学术接口拿论文，不是只搜网站介绍。
+  // 注意：小红书、豆瓣小组、知网全文这些要登录、反爬的站，单文件前端拿不到全文，只能拿热榜和搜索引擎收录的摘要，这是诚实上限。
+  const platformMap = [
+    {names:['微博'], type:'weibo', domain:'weibo.com', label:'微博热搜'},
+    {names:['知乎'], type:'zhihu', domain:'zhihu.com', label:'知乎热榜'},
+    {names:['哔哩哔哩','B站','bilibili'], type:'bilibili', domain:'bilibili.com', label:'B站热门'},
+    {names:['小红书'], type:'xiaohongshu', domain:'xiaohongshu.com', label:'小红书热门'},
+    {names:['豆瓣'], type:'douban', domain:'douban.com', label:'豆瓣热门'},
+    {names:['今日头条','头条'], type:'toutiao', domain:'toutiao.com', label:'今日头条热榜'},
+    {names:['快手'], type:'kuaishou', domain:'kuaishou.com', label:'快手热榜'},
+    {names:['虎扑'], type:'hupu', domain:'hupu.com', label:'虎扑热榜'},
+    {names:['36氪'], type:'36kr', domain:'36kr.com', label:'36氪热榜'},
+    {names:['澎湃'], type:'thepaper', domain:'thepaper.cn', label:'澎湃热榜'},
+    {names:['IT之家'], type:'ithome', domain:'ithome.com', label:'IT之家热门'}
+  ];
+  const plat = platformMap.find(pl => pl.names.some(n => q.includes(n)));
+  if (plat && /热点|热搜|热榜|热门|今天|今日/.test(q)){
+    try{
+      const hj = await fetchJson('https://api.vvhan.com/api/hotlist?type=' + plat.type, 9000);
+      if (hj && hj.data){
+        let rows = [];
+        if (Array.isArray(hj.data) && hj.data.length && hj.data[0].title) rows = hj.data;
+        else if (Array.isArray(hj.data) && hj.data.length && hj.data[0].data) rows = hj.data[0].data;
+        const items = rows.filter(it => it && (it.title || it.word)).map(it => ({
+          title: it.title || it.word,
+          url: it.url || ('https://www.baidu.com/s?wd=' + encodeURIComponent(it.title || it.word)),
+          snippet: ((it.hot || it.hot_value || '') ? '热度：' + (it.hot || it.hot_value) : '').slice(0, 200),
+          src: plat.label
+        })).slice(0, count);
+        if (items.length) return items;
+      }
+    }catch(e){}
+    // B站热门有公开接口，直接试一次
+    if (plat.type === 'bilibili'){
+      try{
+        const bj = await fetchJson('https://api.bilibili.com/x/web-interface/popular?ps=20&pn=1', 9000);
+        const list = (bj && bj.data && bj.data.list) || [];
+        const items = list.map(v => ({
+          title: v.title,
+          url: 'https://www.bilibili.com/video/' + v.bvid,
+          snippet: (v.desc || '').slice(0, 200),
+          src: 'B站热门'
+        })).slice(0, count);
+        if (items.length) return items;
+      }catch(e){}
+    }
+    // 微博热搜官方接口（走中转）
+    if (plat.type === 'weibo'){
+      try{
+        const html = await viaProxy('https://weibo.com/ajax/side/hotSearch');
+        if (html){ const wj = JSON.parse(html); const rt = (wj && wj.data && wj.data.realtime) || []; const items = rt.filter(it => it && it.word).map(it => ({title: it.word, url: 'https://s.weibo.com/weibo?q=' + encodeURIComponent(it.word), snippet: '', src: '微博热搜'})).slice(0, count); if (items.length) return items; }
+      }catch(e){}
+    }
+    // 聚合榜拿不到时，继续往下走通用搜索，通用搜索本身就会搜到这些站被收录的内容。
+  }
+  // 学术专查：问论文、文献、学术时，先去公开学术接口拿真实论文，不是只搜知网首页介绍。
+  if (/论文|文献|学术|期刊/.test(q)){
+    const topic = (q || '').replace(/论文|文献|学术|期刊|最新|研究|帮我找|找一下|查一下|告诉我|是什么|有哪些|的|吗|？|\?/g, '').trim();
+    if (topic){
+      try{
+        const oj = await fetchJson('https://api.openalex.org/works?search=' + encodeURIComponent(topic) + '&per-page=5', 9000);
+        const works = (oj && oj.results) || [];
+        const items = works.map(w => {
+          let abs = '';
+          try{
+            if (w.abstract_inverted_index){
+              const pairs = [];
+              Object.entries(w.abstract_inverted_index).forEach(([word, pos]) => pos.forEach(pp => pairs.push([pp, word])));
+              pairs.sort((a,b) => a[0]-b[0]);
+              abs = pairs.map(x => x[1]).join(' ');
+            }
+          }catch(e){}
+          const authors = (w.authorships || []).map(a => (a.author && a.author.display_name) || '').filter(Boolean).join('、');
+          return {title: w.title || topic, url: w.doi ? 'https://doi.org/' + w.doi.replace('https://doi.org/','') : (w.primary_location && w.primary_location.source && w.primary_location.source.id) || '', snippet: ((w.publication_year ? w.publication_year + '年 ' : '') + (authors ? authors + ' ' : '') + abs).slice(0, 300), src: '学术论文'};
+        }).filter(it => it.title);
+        if (items.length) return items;
+      }catch(e){}
+      try{
+        const sj = await fetchJson('https://api.semanticscholar.org/graph/v1/paper/search?query=' + encodeURIComponent(topic) + '&limit=5&fields=title,abstract,authors,year,url', 9000);
+        const papers = (sj && sj.data) || [];
+        const items = papers.map(w => ({
+          title: w.title,
+          url: w.url || '',
+          snippet: (((w.year || '') + ' ') + ((w.authors || []).map(a => a.name).join('、') + ' ') + (w.abstract || '')).slice(0, 300),
+          src: '学术论文'
+        })).filter(it => it.title);
+        if (items.length) return items;
+      }catch(e){}
+    }
+    // 学术接口拿不到时，继续往下走通用搜索，通用搜索会搜到知网、万方等被收录的条目。
+  }
+  // 抖音热点专查：问“抖音今天的热点”时，通用搜索搜不到抖音榜单，抖音榜本身在抖音自己的热搜接口里。
+  // 所以先直接查抖音网页端公开热搜接口，再查免费聚合接口兜底，拿到的是带排名和热度的真实榜单，模型再按榜单给你总结。
+  if (/抖音/.test(q) && /热点|热搜|热榜|今天|今日/.test(q)){
+    const parseDouyin = (j) => {
+      const rows = [];
+      const walk = (o) => {
+        if (!o || typeof o !== 'object') return;
+        if (Array.isArray(o)){ o.forEach(walk); return; }
+        const word = o.word || o.keyword || o.title || o.sentence;
+        const heat = o.hot_value || o.hotValue || o.heat || o.hot || o.hotScore;
+        if (word && typeof word === 'string') rows.push({word, heat});
+        Object.values(o).forEach(walk);
+      };
+      walk(j);
+      // 去重，保留顺序
+      const seen = new Set(); const out = [];
+      rows.forEach(r => { if (!seen.has(r.word)){ seen.add(r.word); out.push(r); } });
+      return out.slice(0, count).map(r => ({
+        title: r.word,
+        url: 'https://www.douyin.com/search/' + encodeURIComponent(r.word),
+        snippet: (r.heat != null ? '热度：' + r.heat : '').slice(0, 200),
+        src: '抖音热点榜'
+      }));
+    };
+    // 1) 抖音官方网页热搜接口（直接试，跨域被挡走中转）
+    try{
+      let dj = await fetchJson('https://www.douyin.com/aweme/v1/web/hot/search/list/', 9000);
+      if (!dj){
+        const html = await viaProxy('https://www.douyin.com/aweme/v1/web/hot/search/list/');
+        if (html){ try{ dj = JSON.parse(html); }catch(e){} }
+      }
+      if (dj){ const items = parseDouyin(dj); if (items.length) return items; }
+    }catch(e){}
+    // 2) 免费聚合接口依次兜底
+    const douyinApis = [
+      'https://api.vvhan.com/api/hotlist?type=douyin',
+      'https://v2.xxapi.cn/api/douyinhot',
+      'https://v.api.aa1.cn/api/douyin-hot/index.php?aa1=hot'
+    ];
+    for (const api of douyinApis){
+      try{
+        const hj = await fetchJson(api, 9000);
+        if (!hj) continue;
+        let rows = [];
+        if (hj.data && Array.isArray(hj.data) && hj.data.length && hj.data[0].title) rows = hj.data;
+        else if (hj.data && Array.isArray(hj.data) && hj.data.length && hj.data[0].data) rows = hj.data[0].data;
+        else if (hj.result && Array.isArray(hj.result)) rows = hj.result;
+        else if (Array.isArray(hj)) rows = hj;
+        if (!rows.length){ const items = parseDouyin(hj); if (items.length) return items; continue; }
+        const items = rows.filter(it => it && (it.title || it.word)).map(it => ({
+          title: it.title || it.word,
+          url: it.url || ('https://www.douyin.com/search/' + encodeURIComponent(it.title || it.word)),
+          snippet: ((it.hot || it.hot_value || '') ? '热度：' + (it.hot || it.hot_value) : '').slice(0, 200),
+          src: '抖音热点榜'
+        })).slice(0, count);
+        if (items.length) return items;
+      }catch(e){}
+    }
+    // 榜接口都拿不到时，继续往下走通用搜索，不会直接说没有。
+  }
+  // 热点/热搜专查：问“今天的热点、热搜”时，通用搜索只会返回百度首页介绍，榜单本身是动态接口，不在首页静态内容里。
+  // 所以先直接查百度热搜实时榜官方接口 top.baidu.com/api/board，再查聚合热榜接口兜底，拿到的是带排名和热度的真实榜单。
+  if (/热搜|热点|热榜/.test(q)){
+    const parseBoard = (j) => {
+      try{
+        const cards = (j && j.data && j.data.cards) || [];
+        let rows = [];
+        cards.forEach(c => {
+          const cont = c.content || [];
+          cont.forEach(it => {
+            if (it.content && Array.isArray(it.content)) it.content.forEach(s => rows.push(s));
+            else rows.push(it);
+          });
+        });
+        return rows.filter(it => it && (it.word || it.title)).map(it => ({
+          title: it.word || it.title,
+          url: it.url || ('https://www.baidu.com/s?wd=' + encodeURIComponent(it.word || it.title)),
+          snippet: ((it.desc || '') + (it.hotScore ? ' 热度：' + it.hotScore : '')).slice(0, 200),
+          src: '百度热搜实时榜'
+        })).slice(0, count);
+      }catch(e){ return []; }
+    };
+    // 官方榜接口：直接试一次，跨域被挡就走中转
+    try{
+      let bj = await fetchJson('https://top.baidu.com/api/board?platform=pc&tab=realtime', 9000);
+      if (!bj){
+        const html = await viaProxy('https://top.baidu.com/api/board?platform=pc&tab=realtime');
+        if (html){ try{ bj = JSON.parse(html); }catch(e){} }
+      }
+      if (bj){ const items = parseBoard(bj); if (items.length) return items; }
+    }catch(e){}
+    // 聚合热榜接口兜底
+    try{
+      const hj = await fetchJson('https://api.vvhan.com/api/hotlist?type=baidu', 9000);
+      if (hj && hj.data){
+        let rows = [];
+        if (Array.isArray(hj.data) && hj.data.length && hj.data[0].title) rows = hj.data;
+        else if (Array.isArray(hj.data) && hj.data.length && hj.data[0].data) rows = hj.data[0].data;
+        const items = rows.filter(it => it && it.title).map(it => ({
+          title: it.title,
+          url: it.url || ('https://www.baidu.com/s?wd=' + encodeURIComponent(it.title)),
+          snippet: (it.hot ? '热度：' + it.hot : '').slice(0, 200),
+          src: '百度热搜实时榜'
+        })).slice(0, count);
+        if (items.length) return items;
+      }
+    }catch(e){}
+    // 榜接口都拿不到时，继续往下走通用搜索，不会直接说没有。
+  }
+  // 1) 本地搜索服务（如果用户自己起了）最优先
+  try{
+    const r = await fetch(searchBase() + '/search?q=' + encodeURIComponent(q), {cache:'no-store'});
+    if (r.ok){ const j = await r.json(); const items = j.items || []; if (items.length) return items.slice(0, count); }
+  }catch(e){}
+  // 2) 按搜索引擎走全网直搜：自动 = 国外能用 Bing 就用 Bing（全网），国内 Bing 不通就自动落到百度；
+  //    手动选了哪家就先试哪家，试不通再按 Bing -> 百度 -> DuckDuckGo 的顺序兜底，不会因为一家不通就直接说搜不到。
+  const order = engine === 'baidu' ? [fromBaidu, fromBing, fromDDG]
+    : engine === 'bing' ? [fromBing, fromBaidu, fromDDG]
+    : engine === 'ddg' ? [fromDDG, fromBing, fromBaidu]
+    : [fromBing, fromBaidu, fromDDG];
+  for (const fn of order){
+    try{ const items = await fn(); if (items && items.length) return items; }catch(e){}
+  }
+  try{ const items = await fromDDGInstant(); if (items.length) return items; }catch(e){}
+  try{ const items = await fromWiki(); if (items.length) return items; }catch(e){}
+  throw new Error('没有可用的联网搜索服务：本地搜索服务未启动，全网直搜（Bing / 百度 / DuckDuckGo）也都不可用，请检查网络，或在设置里把搜索引擎换一家再试');
 }
 
 /* ---------- 参数 ---------- */
-function levelHint(){
-  if (!cfg.think) return '';
-  const lh = LANG_LEVEL_HINT[curLang()] || LANG_LEVEL_HINT.zh;
-  return lh[cfg.level] || lh.mid;
+function levelHint(){ return ''; }
+/* 搜完再读页面：只看搜索摘要经常只有一句话、答不具体，所以像真人查资料一样，
+   把搜到的前 2 篇正文也抓回来读完再交给模型。已经是热搜、天气、你给的网址那种专查结果的，不再重复读。 */
+async function readSearchPages(items){
+  if (!items || !items.length) return items;
+  const skipSrc = ['百度热搜实时榜', '天气实况与预报', '你给的网址'];
+  const fetchText = async (u, ms) => {
+    const c = new AbortController();
+    const to = setTimeout(() => { try{ c.abort(); }catch(e){} }, ms || 9000);
+    try{ const r = await fetch(u, {cache:'no-store', signal: c.signal}); if (!r.ok) return null; return await r.text(); }catch(e){ return null; }finally{ clearTimeout(to); }
+  };
+  let read = 0;
+  for (const it of items){
+    if (read >= 2) break;
+    if (!it.url || skipSrc.includes(it.src)) continue;
+    try{
+      const host = new URL(it.url).hostname || '';
+      if (/baidu\.com$|bing\.com$|duckduckgo\.com$/.test(host)) continue;
+    }catch(e){ continue; }
+    let html = await fetchText(it.url, 9000);
+    if (!html){
+      const proxies = [
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(it.url),
+        'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(it.url),
+        'https://corsproxy.io/?url=' + encodeURIComponent(it.url)
+      ];
+      for (const u of proxies){
+        html = await fetchText(u, 9000);
+        if (html && html.length > 1000) break;
+        html = null;
+      }
+    }
+    if (!html) continue;
+    try{
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('script, style, noscript, nav, footer, header, aside, iframe').forEach(el => el.remove());
+      const txt = (doc.body ? doc.body.innerText : '').replace(/\s+/g, ' ').trim();
+      if (txt.length > 200) { it.fullText = txt.slice(0, 2500); read++; }
+    }catch(e){}
+  }
+  return items;
 }
 function searchBlock(items){
   if (!items || !items.length) return '';
   return '\n\n【以下是刚刚从网上检索到的资料，请优先依据这些资料回答，并在末尾列出用到的来源】\n'
-    + items.map((it, i) => (i+1) + '. ' + it.title + '\n   链接：' + it.url + '\n   摘要：' + (it.snippet || '')).join('\n');
+    + items.map((it, i) => (i+1) + '. ' + (it.src ? '【' + it.src + '】' : '') + it.title + '\n   链接：' + it.url + '\n   摘要：' + (it.snippet || '') + (it.fullText ? '\n   正文：' + it.fullText : '')).join('\n');
 }
 function payload(sess){
   const s = sess || cur();
@@ -2816,9 +3560,11 @@ function payload(sess){
   const extra = _noThink ? '你已经完成了思考，请直接输出最终答案，不要再输出任何思考过程。' : levelHint();
   const sys = [cfg.sys, extra, currentTimeLine()].filter(x => typeof x === 'string' && x).join('\n');
   const msgs = [{role:'system', content:sys}];
-  s.msgs.forEach(m => {
+  // 串题修复：检索资料只给本轮最后一个用户问题，不要给历史每一轮都贴。以前每一轮都贴“请优先依据这些资料回答”，模型下轮就按上一轮的宜宾天气资料又答一遍，根本不理新问题。
+  let _lastUserIdx = -1; s.msgs.forEach((mm, ii) => { if (mm.role === 'user') _lastUserIdx = ii; });
+  s.msgs.forEach((m, _idx) => {
     if (m.role !== 'user') return;
-    let text = (m.content || '') + searchBlock(m.search);
+    let text = (m.content || '') + (_idx === _lastUserIdx ? searchBlock(m.search) : '');
     if (m.images && m.images.length){
       const parts = [];
       if (text) parts.push({type:'text', text:text});
@@ -2831,7 +3577,7 @@ function payload(sess){
   return {
     model: modelId || modelAlias || 'local', stream: MSET.stream !== false,
     temperature: cfg.temp, top_p: cfg.top_p, max_tokens: cfg.max,
-    messages: hist, chat_template_kwargs: {enable_thinking: thinkOn}
+    messages: hist, chat_template_kwargs: {enable_thinking: thinkOn}, stream_options: {include_usage: true}
   };
 }
 
@@ -2849,7 +3595,7 @@ async function run(sessOverride){
   const isCurRun = s.id === (cur() && cur().id);
   if (isCurRun){ streaming = true; ctrl = runCtrl; el('btnSend').classList.add('stop'); el('btnSend').innerHTML = svgIco('stop'); }
   el('fbFinish').textContent = ''; el('fbSpeed').textContent = '速度 —';
-  const _to = setTimeout(() => { try{ runCtrl.abort(); }catch(e){} }, Math.max(1000, MSET.timeout || 60000));
+  let _to = null; const resetTo = () => { clearTimeout(_to); _to = setTimeout(() => { try{ runCtrl.abort(); }catch(e){} }, Math.max(1000, MSET.timeout || 60000)); }; resetTo();
   const t0 = performance.now(); let chunks = 0, usage = null, tThink = 0, tContent = 0;
 
   if (!m.ts) m.ts = Date.now();
@@ -2888,14 +3634,14 @@ async function run(sessOverride){
     const reader = resp.body.getReader(), dec = new TextDecoder();
     let buf = '';
     while (true){
-      const rv = await reader.read(); if (rv.done) break;
+      const rv = await reader.read(); if (rv.done) break; resetTo();
       buf += dec.decode(rv.value, {stream:true});
       const lines = buf.split('\n'); buf = lines.pop();
       for (const line of lines){
         const t = line.trim(); if (t.indexOf('data:') !== 0) continue;
         const data = t.slice(5).trim(); if (data === '[DONE]') continue;
         let j; try{ j = JSON.parse(data); }catch(e){ continue; }
-        if (j.usage) usage = j.usage;
+        if (j.usage){ usage = j.usage; if (j.usage.total_tokens) setUsed(j.usage.total_tokens); }
         if (j.timings && j.timings.predicted_per_second) el('fbSpeed').textContent = '速度 ' + j.timings.predicted_per_second.toFixed(1) + ' tok/s';
         const ch = j.choices && j.choices[0]; if (!ch) continue;
         if (ch.finish_reason) el('fbFinish').textContent = '结束 ' + ch.finish_reason;
@@ -2919,15 +3665,15 @@ async function run(sessOverride){
             if (!tEl._sumDone){ tEl._sumDone = true; tEl.querySelector('summary').textContent = '已思考（用时 ' + Math.max(1, Math.round(m.thinkSec || 1)) + ' 秒）'; }
           }
         }
-        chunks++; if (!j.timings){ const _secs = (performance.now() - t0) / 1000; if (_secs > 0) el('fbSpeed').textContent = '速度 ' + (chunks / _secs).toFixed(1) + ' tok/s'; } if (!scrollRaf) scrollRaf = requestAnimationFrame(() => { scrollRaf = 0; scrollBottom(); });
+        chunks++; if (chunks % 100 === 0){ try{ save(); }catch(e){} } if (!j.timings){ const _secs = (performance.now() - t0) / 1000; if (_secs > 0) el('fbSpeed').textContent = '速度 ' + (chunks / _secs).toFixed(1) + ' tok/s'; } if (!scrollRaf) scrollRaf = requestAnimationFrame(() => { scrollRaf = 0; scrollBottom(); });
       }
     }
     if (!m.content && suppressedThink) m.content = suppressedThink;
     if (!m.content && m.think){
-      const _cmPromote = getActiveCustom();
-      if (_cmPromote && (!_cmPromote.thinking || !cfg.think)){ m.content = m.think; m.think = ''; if (tEl && tEl.parentNode) tEl.remove(); }
+      m.content = m.think; m.think = '';
+      if (tEl && tEl.parentNode) tEl.remove();
+      body.innerHTML = md(m.content);
     }
-    if (!m.content && m.think) body.innerHTML = '<p style="color:var(--sub)">（本回合内容都在思考过程里，展开上方查看）</p>';
     if (el('fbSpeed').textContent.indexOf('tok/s') < 0){
       const secs = (performance.now() - t0) / 1000;
       if (chunks > 1) el('fbSpeed').textContent = '速度 ' + (chunks / secs).toFixed(1) + ' tok/s';
@@ -2968,15 +3714,28 @@ async function run(sessOverride){
       save(); if (s.id === (cur() && cur().id)) renderThread(); run(s);
       return;
     }
+    if (!m.content && !m.think && !doSkip){ m.content = '（模型这次返回为空，可能是文件太大把上下文挤满了，或者模型服务断了一下。请把文件换成纯文本、或只发关键部分，再问一次。）'; }
     noThinkBySession.delete(s.id); noThinkOnce = false;
     save(); if (s.id === (cur() && cur().id)) renderThread();
   }
 }
 
+let _interruptPending = false;
 async function send(){
   const s = cur();
-  const text = el('input').value.trim();
-  if ((!text && !attach.length) || isCurStreaming()) return;
+  let text = el('input').value.trim();
+  if (isCurStreaming()){
+    if (!text && !attach.length) return;
+    if (_interruptPending) return;
+    _interruptPending = true;
+    try{
+      try{ streamCtrls.get(s.id).abort(); }catch(e){}
+      for (let i = 0; i < 40 && streamCtrls.has(s.id); i++) await new Promise(r => setTimeout(r, 50));
+      if (streamCtrls.has(s.id)){ toast('上一条还在停止中，稍后再按一次回车'); return; }
+      text = el('input').value.trim();
+      if (!text && !attach.length) return;
+    }finally{ _interruptPending = false; }
+  } else if (!text && !attach.length) return;
   const _cmSend = getActiveCustom();
   if (!_cmSend && !modelLoaded){
     toast('模型还没加载：先在 LlamaApp 里点开模型，加载完这里会自动连上');
@@ -2998,12 +3757,15 @@ async function send(){
     msg.searchPending = true;
     renderThread();
     try{
-      const items = await webSearch(text);
+      let items = await webSearch(text);
+      try{ items = await readSearchPages(items); }catch(e){}
       msg.search = items;
       msg.searchPending = false;
       if (!items.length) toast('没有检索到结果，将直接回答');
     }catch(e){
       msg.searchPending = false;
+      msg.searchFailed = true;
+      msg.searchQuery = text;
       toast('联网检索失败：' + e.message);
     }
     renderThread();
@@ -3021,7 +3783,7 @@ function regenerate(){
 }
 
 /* ---------- 文档解析 ---------- */
-const TEXT_EXT = /\.(txt|md|markdown|csv|tsv|json|log|ya?ml|ini|cfg|py|js|ts|jsx|tsx|html|css|java|c|cpp|h|cs|go|rs|php|sql|sh|bat|xml)$/i;
+const TEXT_EXT = /\.(txt|md|markdown|csv|tsv|json|log|ya?ml|ini|cfg|py|js|ts|jsx|tsx|html|htm|css|java|c|cpp|h|cs|go|rs|php|sql|sh|bat|xml|svg|toml|lock|eml|ics|rtf)$/i;
 const ZIP_EXT = /\.(docx|xlsx|pptx)$/i;
 function readAs(file, mode){
   return new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result);
@@ -3114,6 +3876,50 @@ async function extractXlsx(file){
   }
   return out.join('\n\n');
 }
+async function extractRtf(file){
+  const raw = String(await readAs(file, 'text'));
+  return raw.replace(/\\'[0-9a-f]{2}/g, '').replace(/\\[a-z]+-?[0-9]* ?/g, '').replace(/[{}]/g, '').replace(/\n{3,}/g, '\n\n').trim();
+}
+async function extractOdt(file){
+  const z = await unzip(await readAs(file, 'buf'));
+  const xml = await z.read('content.xml');
+  if (!xml) throw new Error('odt 结构异常');
+  return xml2text(xml);
+}
+async function extractEpub(file){
+  const z = await unzip(await readAs(file, 'buf'));
+  const names = z.names.filter(n => /\.(xhtml|html|htm)$/i.test(n)).sort();
+  const parts = [];
+  for (const n of names.slice(0, 20)){
+    const html = await z.read(n);
+    if (!html) continue;
+    try{
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('script, style').forEach(el => el.remove());
+      const txt = (doc.body ? doc.body.innerText : '').replace(/\s+/g, ' ').trim();
+      if (txt) parts.push(txt);
+    }catch(e){}
+  }
+  return parts.join('\n\n');
+}
+async function extractZip(file){
+  const z = await unzip(await readAs(file, 'buf'));
+  const parts = ['【压缩包内文件列表】\n' + z.names.join('\n')];
+  for (const n of z.names){
+    if (parts.join('\n').length > 40000) break;
+    if (/\.(txt|md|csv|json|html|htm|xml|log|py|js|ts|css)$/i.test(n)){
+      const txt = await z.read(n);
+      if (txt) parts.push('\n【' + n + '】\n' + txt.slice(0, 10000));
+    }
+  }
+  return parts.join('\n');
+}
+async function extractOldBinary(file){
+  const buf = await readAs(file, 'buf');
+  const raw = new TextDecoder('latin1').decode(new Uint8Array(buf));
+  const strings = raw.match(/[\x20-\x7e\u4e00-\u9fa5]{4,}/g) || [];
+  return strings.filter(s => /[a-zA-Z\u4e00-\u9fa5]/.test(s)).join(' ').slice(0, 50000);
+}
 async function extractPdf(file){
   const buf = await readAs(file, 'buf');
   const u8 = new Uint8Array(buf);
@@ -3143,12 +3949,62 @@ async function extractPdf(file){
   if (!text) throw new Error('未能提取文字（可能是扫描件，需要 OCR）');
   return text;
 }
+
+/* DeepSeek 式附件卡片：显示只用卡片，模型照样收到全文。显示文本与发给模型的文本分开，
+   这样对话里不再贴出整篇文件代码，只显示一张卡片；旧消息里的【文件：名】段落也会被解析成卡片。 */
+function fmtFileSize(bytes){
+  if (bytes == null || !isFinite(bytes)) return '';
+  if (bytes < 1024) return bytes + 'B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(2) + 'KB';
+  return (bytes / 1048576).toFixed(2) + 'MB';
+}
+function fileTypeLabel(name){
+  const m = String(name || '').match(/\.([A-Za-z0-9]{1,8})$/);
+  return m ? m[1].toUpperCase() : '文件';
+}
+function parseAttachedFiles(content){
+  const src = String(content || '');
+  const re = /【文件：([^\】]+)】\n?/g;
+  let m, last = 0, text = '', files = [];
+  const parts = [];
+  while ((m = re.exec(src)) !== null){
+    if (parts.length === 0) text = src.slice(0, m.index);
+    else parts[parts.length - 1].text = src.slice(last, m.index);
+    parts.push({name: m[1], text: ''});
+    last = re.lastIndex;
+  }
+  if (parts.length){
+    parts[parts.length - 1].text = src.slice(last);
+    files = parts.map(f => {
+      let ft = f.text;
+      if (ft.endsWith('\n\n')) ft = ft.slice(0, -2);
+      let size = null;
+      try{ size = new Blob([ft]).size; }catch(e){ size = ft.length; }
+      return {name: f.name, text: ft, size: size};
+    });
+    text = text.replace(/\n+$/, '');
+  } else {
+    text = src;
+  }
+  return {text: text, files: files};
+}
+function fileCardEl(f){
+  const c = document.createElement('div');
+  c.className = 'fcard';
+  c.insertAdjacentHTML('beforeend', svgIco('doc', 'icn-sm'));
+  const tx = document.createElement('div'); tx.className = 'fcard-tx';
+  const nm = document.createElement('div'); nm.className = 'fcard-name'; nm.textContent = f.name; nm.title = f.name;
+  const mt = document.createElement('div'); mt.className = 'fcard-meta';
+  mt.textContent = fileTypeLabel(f.name) + (f.size != null ? ' ' + fmtFileSize(f.size) : '');
+  tx.appendChild(nm); tx.appendChild(mt); c.appendChild(tx);
+  return c;
+}
 function renderAttach(){
   const box = el('attachlist'); box.innerHTML = '';
   attach.forEach((a, i) => {
     const c = document.createElement('div'); c.className = 'achip' + (a.type === 'image' ? ' img-only' : '');
     if (a.type === 'image'){ const img = document.createElement('img'); img.src = a.data; img.alt = a.name || '附件图片'; img.title = a.name + (a.size ? ' · ' + (a.size / 1048576).toFixed(1) + 'MB' : ''); c.appendChild(img); }
-    else { c.insertAdjacentHTML('beforeend', svgIco('doc', 'icn-sm')); const sp = document.createElement('span'); sp.textContent = a.name; sp.title = a.name + (a.size ? ' · ' + (a.size / 1048576).toFixed(1) + 'MB' : ''); c.appendChild(sp); }
+    else { c.classList.add('fcard'); c.insertAdjacentHTML('beforeend', svgIco('doc', 'icn-sm')); const tx = document.createElement('div'); tx.className = 'fcard-tx'; const nm = document.createElement('div'); nm.className = 'fcard-name'; nm.textContent = a.name; nm.title = a.name; const mt = document.createElement('div'); mt.className = 'fcard-meta'; mt.textContent = fileTypeLabel(a.name) + (a.size != null ? ' ' + fmtFileSize(a.size) : ''); tx.appendChild(nm); tx.appendChild(mt); c.appendChild(tx); }
     const b = document.createElement('b'); b.innerHTML = svgIco('xmark','icn-sm');
     b.setAttribute('role','button'); b.tabIndex = 0; b.setAttribute('aria-label', '移除附件：' + (a.name || '')); b.title = '移除附件';
     b.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); attach.splice(i,1); renderAttach(); } };
@@ -3158,7 +4014,7 @@ function renderAttach(){
 }
 el('btnAttach').onclick = () => {
   const inp = document.createElement('input'); inp.type = 'file'; inp.multiple = true;
-  inp.accept = 'image/*,.pdf,.docx,.xlsx,.pptx,.txt,.md,.markdown,.csv,.tsv,.json,.log,.yml,.yaml,.ini,.cfg,.py,.js,.ts,.jsx,.tsx,.html,.css,.java,.c,.cpp,.h,.cs,.go,.rs,.php,.sql,.sh,.bat,.xml';
+  inp.accept = 'image/*,.pdf,.docx,.xlsx,.pptx,.doc,.xls,.ppt,.rtf,.odt,.ods,.odp,.epub,.zip,.htm,.svg,.toml,.eml,.txt,.md,.markdown,.csv,.tsv,.json,.log,.yml,.yaml,.ini,.cfg,.py,.js,.ts,.jsx,.tsx,.html,.css,.java,.c,.cpp,.h,.cs,.go,.rs,.php,.sql,.sh,.bat,.xml';
   inp.onchange = async () => {
     const allFiles = Array.from(inp.files || []); const files = allFiles.slice(0, 10 - attach.length); if (allFiles.length > files.length) toast('最多 10 个，已只选前 ' + files.length + ' 个');
     for (const f of files){
@@ -3175,10 +4031,35 @@ el('btnAttach').onclick = () => {
           attach.push({type:'doc', name:f.name, size:f.size, text: await extractXlsx(f)});
         }else if (/\.pptx$/i.test(f.name)){
           attach.push({type:'doc', name:f.name, size:f.size, text: await extractPptx(f)});
+        }else if (/\.rtf$/i.test(f.name)){
+          attach.push({type:'doc', name:f.name, size:f.size, text: await extractRtf(f)});
+        }else if (/\.(odt|ods|odp)$/i.test(f.name)){
+          attach.push({type:'doc', name:f.name, size:f.size, text: await extractOdt(f)});
+        }else if (/\.epub$/i.test(f.name)){
+          attach.push({type:'doc', name:f.name, size:f.size, text: await extractEpub(f)});
+        }else if (/\.zip$/i.test(f.name)){
+          attach.push({type:'doc', name:f.name, size:f.size, text: await extractZip(f)});
+        }else if (/\.(doc|xls|ppt)$/i.test(f.name)){
+          attach.push({type:'doc', name:f.name, size:f.size, text: await extractOldBinary(f)});
         }else if (TEXT_EXT.test(f.name) || f.type.startsWith('text/')){
-          attach.push({type:'doc', name:f.name, size:f.size, text: String(await readAs(f, 'text')).slice(0, 200000)});
+          let rawText = String(await readAs(f, 'text'));
+          if (/\.html?$/i.test(f.name)){
+            // HTML 文件不能直接把源码发给模型：196KB 源码里大部分是 CSS/JS，看不见的正文被埋住，模型上下文也被源码挤满，就会只回一个点、答不出来。
+            // 所以先解析成可见文字：去掉 script/style/nav/footer，再取正文，截 30000 字给模型。
+            try{
+              const doc = new DOMParser().parseFromString(rawText, 'text/html');
+              doc.querySelectorAll('script, style, noscript, nav, footer, header, aside, iframe').forEach(el => el.remove());
+              const title = doc.querySelector('title') ? doc.querySelector('title').textContent.trim() : '';
+              const bodyText = (doc.body ? doc.body.innerText : '').replace(/\s+/g, ' ').trim();
+              rawText = (title ? '标题：' + title + '\n' : '') + bodyText;
+            }catch(e){}
+          }
+          const txt = rawText.slice(0, 50000);
+          if (txt.trim().length < 20) toast('文件解析出来几乎是空的：' + f.name + '，模型看不到内容，请换成纯文本文件再试');
+          attach.push({type:'doc', name:f.name, size:f.size, text: txt});
         }else{
-          toast('不支持该格式：' + f.name);
+          toast('该格式暂不支持解析全文，只会把文件名、类型、大小发给模型：' + f.name);
+          attach.push({type:'doc', name:f.name, size:f.size, text: '【该文件格式暂不支持解析全文，仅知道文件名、类型、大小，请按文件名和用户问题回答，不要编造文件内容】'});
         }
       }catch(e){
         toast('解析失败：' + f.name + ' — ' + e.message);
@@ -3206,11 +4087,13 @@ function syncUI(){
   el('chipThinkLabel').textContent = cfg.think ? T('think') : T('thinkOff');
   el('chipSearch').classList.toggle('on', !!cfg.search);
   el('chipSearch').setAttribute('aria-pressed', cfg.search ? 'true' : 'false');
-  el('chipLevelLabel').textContent = (cfg.level === 'low' ? T('levelLow') : cfg.level === 'high' ? T('levelHigh') : T('levelMid'));
-  el('chipLevel').style.display = cfg.think ? '' : 'none';
-  el('chipLevel').style.opacity = cfg.think ? 1 : .45;
-  el('dCount').textContent = sessions.length;
-  el('dTokens').textContent = totalTokens.toLocaleString();
+  if (el('dCount')) el('dCount').textContent = sessions.length;
+  if (el('dTokens')) el('dTokens').textContent = totalTokens.toLocaleString();
+  if (el('dStorage')) el('dStorage').textContent = (nBytes() / 1024).toFixed(1) + ' KB（localStorage 字符数换算）';
+  if (el('sAutoClean')) el('sAutoClean').value = MSET.autoCleanDays;
+  if (el('sReduceMotion')) el('sReduceMotion').setAttribute('aria-checked', String(!!MSET.reduceMotion));
+  if (el('aLang')) el('aLang').textContent = (typeof LANG_NAMES !== 'undefined' && LANG_NAMES[curLang()]) || '简体中文';
+  if (el('aDiag')) el('aDiag').textContent = diagText();
   applyTheme();
 }
 el('sSys').oninput = e => { cfg.sys = e.target.value; save(); };
@@ -3232,12 +4115,16 @@ el('mClose').onclick = closeModal;
 if (el('mCloseTop')) el('mCloseTop').onclick = closeModal;
 el('mask').onclick = e => { if (e.target === el('mask')) closeModal(); };
 el('btnSettings').onclick = e => openModal(e.currentTarget);
-el('dExport').onclick = () => {
+if (el('dExport')) el('dExport').onclick = () => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(sessions, null, 2)], {type:'application/json'}));
   a.download = '对话记录-' + new Date().toLocaleDateString('zh-CN').replace(/\//g,'-') + '.json'; a.click();
 };
-el('dClear').onclick = () => { if (confirm('确定清空全部对话？不可恢复。')){ sessions = []; newSession(); totalTokens = 0; setUsed(0); save(); syncUI(); toast('已清空'); } };
+if (el('dClear')) el('dClear').onclick = () => { if (confirm('确定清空全部对话？不可恢复。')){ sessions = []; newSession(); totalTokens = 0; setUsed(0); save(); syncUI(); toast('已清空'); } };
+  if (el('dImport')) el('dImport').onclick = () => importJSON();
+  if (el('dExportOne')) el('dExportOne').onclick = () => exportOne();
+  if (el('sAutoClean')) el('sAutoClean').onchange = e => { let v = Number(e.target.value); if (!isFinite(v)) v = MSET.autoCleanDays; v = Math.max(0, Math.min(3650, v)); setK('autoCleanDays', v); };
+  if (el('sReduceMotion')) el('sReduceMotion').onclick = () => setK('reduceMotion', !MSET.reduceMotion);
 
 /* ---------- 交互 ---------- */
 el('chipThink').onclick = () => { cfg.think = !cfg.think; const _cmChip = getActiveCustom(); if (_cmChip){ _cmChip.thinking = cfg.think; saveCustomModels(); if (typeof renderSettingsAll === 'function') renderSettingsAll(); } save(); syncUI(); };
@@ -3246,15 +4133,6 @@ el('chipSearch').onclick = () => {
   const _cmChipS = getActiveCustom(); if (_cmChipS){ _cmChipS.tools = cfg.search; saveCustomModels(); if (typeof renderSettingsAll === 'function') renderSettingsAll(); }
   if (cfg.search && !searchOnline){ toast('搜索服务未就绪'); }
   save(); syncUI();
-};
-el('chipLevel').onclick = () => {
-  if (!cfg.think){
-    cfg.think = true;
-    const _cmL = getActiveCustom(); if (_cmL){ _cmL.thinking = true; saveCustomModels(); if (typeof renderSettingsAll === 'function') renderSettingsAll(); }
-  }
-  const order = ['low','mid','high'];
-  cfg.level = order[(order.indexOf(cfg.level) + 1) % 3];
-  save(); syncUI(); toast(LEVEL[cfg.level]);
 };
 el('modBtn').onclick = e => { e.stopPropagation(); const on = el('modMenu').classList.toggle('on'); el('modBtn').setAttribute('aria-expanded', on ? 'true' : 'false'); };
 function closeModMenu(){ el('modMenu').classList.remove('on'); el('modBtn').setAttribute('aria-expanded','false'); }
@@ -3358,8 +4236,8 @@ window.__afterRender = () => {
 /* ===== 设置存储与移动端页面 ===== */
 const SKEY = 'local-llm-gpt-v4-settings';
 const SDEF = { lang:'zh', fontSize:15, density:'normal', showTs:false, wrapCode:true, lineNo:false,
-  sendMode:'enter', clearAfterSend:true, timeout:60000, retries:0, ctxKeep:20, stream:true,
-  thinkDefault:true, apiUrl:'', searchUrl:'', searchCount:5, searchDefault:false,
+  sendMode:'enter', clearAfterSend:true, timeout:600000, retries:0, ctxKeep:20, stream:true,
+  thinkDefault:true, apiUrl:'', searchUrl:'', searchCount:5, searchDefault:false, searchEngine:'auto',
   reduceMotion:false, autoCleanDays:0, presets:[] };
 function loadSet(){
   const out = Object.assign({}, SDEF);
@@ -3418,7 +4296,7 @@ const GROUPS = [
     { k:'sendMode', t:'seg', label:'回车键作用', opts:[['enter','发送'],['newline','换行（⌘/Ctrl+回车发送）']] },
     { k:'clearAfterSend', t:'sw', label:'发送后清空输入' } ]},
   { id:'gen', pane:'gen', title:'生成与请求', items:[
-    { k:'timeout', t:'num', label:'请求超时（毫秒）', min:2000, max:600000, step:1000 },
+    { k:'timeout', t:'num', label:'无新内容超时（毫秒）', min:2000, max:600000, step:1000 },
     { k:'retries', t:'num', label:'失败重试次数', min:0, max:5, step:1 },
     { k:'ctxKeep', t:'num', label:'上下文保留条数', min:2, max:200, step:2 },
     { k:'stream', t:'sw', label:'流式输出' },
@@ -3429,20 +4307,11 @@ const GROUPS = [
     { t:'act', label:'模型列表', btns:[['手动刷新','refresh']] },
     { t:'presets', label:'多服务预设' },
     { t:'customModels', label:'第三方模型' } ]},
-  { id:'data', pane:'data', title:'数据', items:[
-    { t:'act', label:'导入 / 导出', btns:[['导入 JSON（合并）','import'],['导出当前对话','exportOne']] },
-    { t:'act', label:'存储占用', out:'storage' },
-    { k:'autoCleanDays', t:'num', label:'自动清理（天，0 关闭）', min:0, max:3650, step:1 },
-    { t:'act', label:'清空全部对话', btns:[['清空（需二次确认）','clearAll',1]] } ]},
   { id:'search', pane:'gen', title:'搜索与联网', items:[
     { k:'searchUrl', t:'text', label:'搜索服务地址（留空走同源）', ph:'http://127.0.0.1:8080' },
     { k:'searchCount', t:'num', label:'结果条数', min:1, max:20, step:1 },
+    { k:'searchEngine', t:'seg', label:'搜索引擎', opts:[['auto','自动'],['baidu','百度'],['bing','Bing'],['ddg','DuckDuckGo']] },
     { k:'searchDefault', t:'sw', label:'默认开启联网' } ]},
-  { id:'a11y', pane:'about', title:'无障碍与动效', items:[
-    { k:'reduceMotion', t:'sw', label:'减少动效' },
-    { t:'act', label:'快捷键', btns:[] , note:'Enter 发送 / Shift+Enter 换行 / ⌘·Ctrl+Enter 发送（换行模式） / Esc 关闭浮层 / Tab 在弹层内循环'},
-    { t:'act', label:'诊断信息', out:'diag' },
-    { t:'lang', label:'语言' } ]}
 ];
 function svgUse(id, cls){
   const d = document.createElement('span');
@@ -3645,12 +4514,13 @@ const paneMap = { general:'general', gen:'gen', data:'data', about:'about' };
 function renderSettingsAll(){
   document.querySelectorAll('.setblock').forEach(x => x.remove());
   GROUPS.forEach(g => {
+    if (g.pane === 'data' || g.pane === 'about') return;
     const pane = document.querySelector('.pane[data-pane="' + paneMap[g.pane] + '"]');
     if (!pane) return;
     const box = document.createElement('div'); box.className = 'setblock';
     const h = document.createElement('div'); h.className = 'mlabel'; h.style.margin = '14px 0 6px'; h.textContent = g.title;
     box.appendChild(h);
-    const card = document.createElement('div'); card.className = 'mgroup'; card.style.margin = '0 0 10px';
+    const card = document.createElement('div'); card.className = 'setplain'; card.style.margin = '0 0 10px';
     g.items.forEach(it => card.appendChild(buildItemRow(it)));
     box.appendChild(card); pane.appendChild(box);
   });
@@ -4141,6 +5011,19 @@ if (!_isMobileGlass) try {
       }
     });
   });
+})();
+</script>
+<script>
+(function(){
+  const ring = document.getElementById('ring'); const tip = document.getElementById('ringTip'); if (!ring || !tip) return;
+  ring.addEventListener('mouseenter', () => {
+    ring.classList.remove('tip-left');
+    const r = ring.getBoundingClientRect();
+    const avail = window.innerWidth - r.right - 20;
+    if (avail < 172) tip.style.setProperty('width', Math.max(120, avail) + 'px', 'important');
+    else tip.style.removeProperty('width');
+  });
+  ring.addEventListener('mouseleave', () => { tip.style.removeProperty('width'); });
 })();
 </script>
 </body>
