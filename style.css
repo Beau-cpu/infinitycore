@@ -48,7 +48,7 @@ body {
     position: relative;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    cursor: none; /* 默认隐藏光标，触摸设备通过 @media 覆盖 */
+    cursor: none; /* 隐藏默认光标 */
 }
 
 /* 背景纹理 - 更微妙的纸质感（保持不变） */
@@ -252,12 +252,7 @@ body::before {
     100% { width: 60px; opacity: 1; }
 }
 
-/* ============================================================
-   导航栏 - 苹果级设计（优化版）
-   - Logo 固定在左侧
-   - 导航链接 + 语言切换整体靠右
-   - 移动端下拉菜单纯白无重影
-   ============================================================ */
+/* ====== 导航栏 - 苹果级设计（保持框架不变）====== */
 .navbar {
     background: rgba(255, 255, 255, 0.92);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -266,10 +261,9 @@ body::before {
     top: 0;
     z-index: 100;
     display: flex;
-    justify-content: flex-end; /* 改为 flex-end，配合 logo 的 margin-right: auto 实现左固定右排列 */
+    justify-content: space-between;
     align-items: center;
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     transform: translateY(-10px);
     opacity: 0;
     animation: slideDown 0.6s ease forwards 1.8s;
@@ -281,29 +275,25 @@ body::before {
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* 滚动时的导航栏效果 */
+/* 新增：滚动时的导航栏效果 */
 .navbar.scrolled {
     padding: 0.8rem 5%;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
 }
 
 .navbar.scrolled .logo {
     font-size: 1.4rem;
 }
 
-/* ====== Logo — 固定在左侧 ====== */
 .logo {
     font-size: 1.6rem;
     font-weight: 600;
     color: var(--dark);
     display: flex;
     align-items: center;
-    margin-right: auto; /* 关键：把右侧空间让给 nav-links 和 lang-toggle */
     transition: transform 0.3s ease;
     letter-spacing: 0.5px;
-    flex-shrink: 0;
 }
 
 .logo:hover {
@@ -323,14 +313,9 @@ body::before {
     transform: rotate(360deg);
 }
 
-/* ====== 导航链接 — 桌面端靠右排列 ====== */
 .nav-links {
     display: flex;
     list-style: none;
-    align-items: center;
-    gap: 4px;
-    margin: 0;
-    padding: 0;
 }
 
 .nav-links li a {
@@ -343,7 +328,7 @@ body::before {
     font-weight: 500;
     position: relative;
     overflow: hidden;
-    white-space: nowrap;
+    transition: all 0.3s var(--ease-out);
 }
 
 .nav-links li a::before {
@@ -369,49 +354,12 @@ body::before {
     width: 70%;
 }
 
+/* 导航链接点击效果 */
 .nav-links li a:active {
     transform: scale(0.95);
     transition: transform 0.1s ease;
 }
 
-/* ====== 右侧操作区（语言切换 + 汉堡菜单） ====== */
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-    margin-left: 12px;
-}
-
-/* ====== 语言切换按钮 ====== */
-.lang-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 34px;
-    background: linear-gradient(135deg, var(--accent), var(--primary));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
-}
-
-.lang-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(199, 162, 124, 0.35);
-}
-
-.lang-toggle:active {
-    transform: scale(0.95);
-}
-
-/* ====== 汉堡菜单按钮（仅移动端显示） ====== */
 .mobile-toggle {
     display: none;
     background: none;
@@ -422,139 +370,11 @@ body::before {
     transition: transform 0.3s ease;
     padding: 8px;
     border-radius: 4px;
-    flex-shrink: 0;
 }
 
 .mobile-toggle:hover {
     background: rgba(199, 162, 124, 0.1);
     transform: rotate(90deg);
-}
-
-/* ============================================================
-   响应式设计
-   ============================================================ */
-
-/* ====== 桌面端 (≥ 769px) ====== */
-@media (min-width: 769px) {
-    /* 桌面端：正常显示 nav-links，隐藏汉堡菜单 */
-    .nav-links {
-        display: flex !important;
-        position: static;
-        background: transparent;
-        box-shadow: none;
-        border: none;
-        padding: 0;
-        border-radius: 0;
-        flex-direction: row;
-        animation: none;
-    }
-
-    .mobile-toggle {
-        display: none !important;
-    }
-
-    /* 桌面端：语言切换按钮放到 nav-links 右侧 */
-    .nav-actions {
-        order: 1;
-        margin-left: 12px;
-    }
-
-    .nav-links {
-        order: 0;
-    }
-
-    /* 桌面端导航链接靠右排列（由于 logo 的 margin-right: auto，nav-links 和 nav-actions 会整体靠右） */
-    .nav-links li a {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.95rem;
-    }
-}
-
-/* ====== 移动端 (< 769px) ====== */
-@media (max-width: 768px) {
-    /* 导航栏在移动端保持 flex-end 布局，logo 靠左 */
-    .navbar {
-        padding: 1rem 4%;
-        flex-wrap: nowrap;
-    }
-
-    .logo {
-        font-size: 1.3rem;
-        margin-right: auto;
-    }
-
-    .logo-icon {
-        font-size: 1.1em;
-        margin-right: 6px;
-    }
-
-    /* 极小屏：隐藏 logo 文字只显示图标 */
-    @media (max-width: 480px) {
-        .logo span:not(.logo-icon) {
-            display: none;
-        }
-        .logo-icon {
-            font-size: 1.3em;
-            margin-right: 0;
-        }
-    }
-
-    /* 汉堡菜单显示 */
-    .mobile-toggle {
-        display: block;
-    }
-
-    /* 语言切换按钮移动端适配 */
-    .lang-toggle {
-        width: 36px;
-        height: 32px;
-        font-size: 0.78rem;
-    }
-
-    /* ====== 下拉菜单 — 修复重影问题 ====== */
-    .nav-links {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        /* 纯白背景，完全不透明，消除重影 */
-        background: #ffffff;
-        flex-direction: column;
-        padding: 1.5rem 1.5rem 1.8rem;
-        /* 清晰但不过度的阴影，避免模糊重影感 */
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        border-top: 1px solid rgba(0, 0, 0, 0.06);
-        border-radius: 0 0 20px 20px;
-        animation: slideDownMenu 0.25s ease;
-        z-index: 999;
-        /* 移除 backdrop-filter，避免半透明叠加 */
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-    }
-
-    @keyframes slideDownMenu {
-        from {
-            opacity: 0;
-            transform: translateY(-8px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .nav-links.active {
-        display: flex;
-    }
-
-    .nav-links li a {
-        padding: 1rem 1.2rem;
-        font-size: 1rem;
-        border-radius: 10px;
-        text-align: center;
-        width: 100%;
-    }
 }
 
 /* ====== 主要内容区域 ====== */
@@ -1240,7 +1060,7 @@ body::before {
     font-weight: 500;
 }
 
-/* ====== 自定义光标（桌面端保留，触摸设备通过 @media 隐藏）====== */
+/* ====== 自定义光标（保持不变）====== */
 .cursor-dot {
     position: fixed;
     width: 8px;
@@ -1446,24 +1266,19 @@ footer p {
 
 .qr-code-img-container {
     position: relative;
-    width: 220px;
-    height: 220px;
+    width: 260px;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: white;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    overflow: hidden !important;
-    padding: 0;
-    box-sizing: border-box;
 }
 
 .qr-code-img {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: cover !important;
-    object-position: center center !important;
-    display: block !important;
+    max-width: 240px;
+    max-height: 240px;
     border-radius: var(--radius-sm);
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -1637,207 +1452,47 @@ footer p {
     50% { opacity: 0; }
 }
 
-/* ============================================================
-   响应式设计（完整版）
-   ============================================================ */
-
-/* 平板设备 */
-@media (max-width: 1024px) {
-    .container {
-        max-width: 95%;
-        margin: 2.5rem auto;
-        padding: 0 3%;
+/* ====== 响应式设计 ====== */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.98);
+        flex-direction: column;
+        padding: 1.5rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    .hero {
-        padding: 3rem 0 4rem;
-    }
-
-    .hero h1 {
-        font-size: 2.3rem;
-    }
-
-    .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
-}
-
-/* ====== 触摸设备专用：隐藏自定义光标 + 禁用悬停效果 ====== */
-@media (hover: none), (pointer: coarse) {
-    /* 禁用悬停效果，避免点击后卡在hover状态 */
-    .nav-links li a:hover,
-    .content-card:hover,
-    .stat-badge:hover,
-    .quick-access-card:hover,
-    .lang-toggle:hover,
-    .logo:hover {
-        transform: none !important;
-    }
-
-    .content-card:hover .icon-container {
-        transform: none !important;
-        background: linear-gradient(135deg, rgba(199, 162, 124, 0.15), rgba(74, 111, 165, 0.1)) !important;
-        color: var(--accent) !important;
-        box-shadow: none !important;
-    }
-
-    /* 隐藏自定义光标，恢复系统默认 */
-    body {
-        cursor: auto !important;
-    }
-    .cursor-dot {
-        display: none !important;
-    }
-
-    /* 增大点击区域（iOS 推荐最小 44px） */
-    .nav-links li a {
-        padding: 12px 16px;
-    }
-
-    .btn, .btn-secondary {
-        min-height: 44px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+    .nav-links.active {
+        display: flex;
     }
 
     .mobile-toggle {
-        min-width: 44px;
-        min-height: 44px;
-    }
-
-    .lang-toggle {
-        min-width: 44px;
-        min-height: 44px;
-    }
-
-    /* 移动端禁用3D效果 */
-    .card-3d {
-        transform-style: flat !important;
-    }
-    .content-card.perspective {
-        perspective: none !important;
-    }
-    .content-card:hover {
-        transform: translateY(-2px) !important;
-    }
-}
-
-/* 手机设备 - 横屏及小平板 */
-@media (max-width: 768px) {
-    /* 导航栏移动端优化（已在上方单独处理） */
-    /* 容器 */
-    .container {
-        max-width: 100%;
-        margin: 2rem auto;
-        padding: 0 4%;
-    }
-
-    .hero {
-        padding: 2.5rem 0 3.5rem;
-        margin-bottom: 1.5rem;
+        display: block;
     }
 
     .hero h1 {
-        font-size: 1.8rem;
-        letter-spacing: -0.3px;
+        font-size: 2rem;
     }
 
     .hero p {
-        font-size: 0.95rem;
-        line-height: 1.7;
-        max-width: 90%;
+        font-size: 1rem;
     }
 
-    .hero-stats {
-        gap: 8px;
-        margin-top: 1.5rem;
-    }
-
-    .stat-badge {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-        border-radius: 20px;
-    }
-
-    .stat-badge i {
-        font-size: 0.75rem;
+    .container {
+        padding: 0 4%;
     }
 
     .content-card {
         padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border-radius: var(--radius-lg);
-    }
-
-    .content-card h2 {
-        font-size: 1.25rem;
-    }
-
-    .content-card p {
-        font-size: 0.9rem;
-        line-height: 1.7;
-    }
-
-    .icon-container {
-        width: 52px;
-        height: 52px;
-        font-size: 1.35rem;
-        margin-bottom: 1.2rem;
-    }
-
-    .tech-tags {
-        gap: 6px;
-        margin-top: 1rem;
-    }
-
-    .mini-tag {
-        padding: 3px 10px;
-        font-size: 0.72rem;
     }
 
     .projects-grid {
         grid-template-columns: 1fr;
-        gap: 1.2rem;
-    }
-
-    .project-card {
-        padding: 1.4rem;
-        border-radius: var(--radius-lg);
-    }
-
-    .project-card h3 {
-        font-size: 1.1rem;
-    }
-
-    .project-card p {
-        font-size: 0.88rem;
-    }
-
-    .project-header {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .project-status {
-        font-size: 0.75rem;
-        padding: 3px 10px;
-    }
-
-    .project-tags {
-        gap: 6px;
-        margin-top: 1rem;
-    }
-
-    .tag {
-        font-size: 0.72rem;
-        padding: 3px 10px;
-    }
-
-    .btn, .btn-secondary {
-        padding: 8px 18px;
-        font-size: 0.85rem;
     }
 
     .quick-access-grid {
@@ -1845,88 +1500,13 @@ footer p {
         gap: 12px;
     }
 
-    .quick-access-card {
-        padding: 1.3rem;
-        border-radius: var(--radius-md);
+    .hero-stats {
+        gap: 10px;
     }
 
-    .quick-access-card h3 {
-        font-size: 0.95rem;
-    }
-
-    .update-item {
-        flex-wrap: wrap;
-        gap: 6px;
-        padding: 0.8rem 0;
-    }
-
-    .update-date {
-        font-size: 0.78rem;
-        min-width: 85px;
-    }
-
-    .update-text {
-        font-size: 0.85rem;
-        flex: 1;
-    }
-
-    .update-tag {
-        font-size: 0.7rem;
-        padding: 2px 8px;
-    }
-
-    .skill-name {
-        font-size: 0.88rem;
-    }
-
-    .skill-percent {
+    .stat-badge {
+        padding: 8px 14px;
         font-size: 0.82rem;
-    }
-
-    .skill-bar {
-        height: 8px;
-    }
-
-    .timeline-item {
-        padding-left: 30px;
-    }
-
-    .timeline-content h4 {
-        font-size: 1rem;
-    }
-
-    .timeline-content p {
-        font-size: 0.88rem;
-    }
-
-    .timeline-date {
-        font-size: 0.82rem;
-    }
-
-    .contact-item {
-        font-size: 0.88rem;
-        word-break: break-all;
-    }
-
-    footer {
-        padding: 2rem 4% !important;
-        text-align: center;
-    }
-
-    footer p {
-        font-size: 0.85rem;
-        line-height: 1.8;
-    }
-
-    .social-links {
-        justify-content: center;
-        margin-top: 1.2rem;
-    }
-
-    .social-links a {
-        font-size: 1.2rem;
-        width: 40px;
-        height: 40px;
     }
 
     .donate-btn {
@@ -1942,338 +1522,40 @@ footer p {
         right: 22px;
         width: 38px;
         height: 38px;
-        font-size: 0.9rem;
-    }
-
-    .modal-content {
-        padding: 1.5rem;
-        margin: 1rem auto;
-        max-width: 92%;
-        border-radius: var(--radius-lg);
-    }
-
-    .modal-content h2 {
-        font-size: 1.3rem;
-    }
-
-    .qr-tabs {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .tab-btn {
-        flex: 1;
-        min-width: 120px;
-        padding: 10px 16px;
-        font-size: 0.9rem;
-    }
-
-    .qr-code-img-container {
-        width: 200px;
-        height: 200px;
-        padding: 0;
-        overflow: hidden !important;
-        box-sizing: border-box;
-    }
-
-    .qr-code-img-container .qr-code-img {
-        max-width: 100% !important;
-        max-height: 100% !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-    }
-
-    .donate-text p {
-        font-size: 0.88rem;
-    }
-
-    .logo-loading {
-        font-size: 2.2rem;
-    }
-
-    .loader-spinner {
-        width: 80px;
-        height: 80px;
-    }
-
-    .loader-complete {
-        font-size: 0.95rem;
     }
 }
 
-/* 小屏手机 */
 @media (max-width: 480px) {
-    .navbar {
-        padding: 0.8rem 3%;
-    }
-
-    .logo {
-        font-size: 1.15rem;
-    }
-
-    .logo span:not(.logo-icon) {
-        display: none;
-    }
-
-    .logo-icon {
-        font-size: 1.3em;
-        margin-right: 0;
-    }
-
-    .container {
-        padding: 0 3%;
-        margin: 1.5rem auto;
-    }
-
-    .hero {
-        padding: 2rem 0 2.5rem;
-    }
-
-    .hero h1 {
-        font-size: 1.5rem;
-    }
-
-    .hero p {
-        font-size: 0.88rem;
-        max-width: 95%;
-    }
-
-    .hero-stats {
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .stat-badge {
-        width: 100%;
-        max-width: 200px;
-        justify-content: center;
-        padding: 10px 16px;
-    }
-
-    .content-card {
-        padding: 1.2rem;
-        border-radius: var(--radius-md);
-        margin-bottom: 1.2rem;
-    }
-
-    .content-card h2 {
-        font-size: 1.15rem;
-    }
-
-    .icon-container {
-        width: 46px;
-        height: 46px;
-        font-size: 1.2rem;
-    }
-
     .quick-access-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 10px;
     }
 
     .quick-access-card {
-        padding: 1rem;
-        border-radius: var(--radius-sm);
+        padding: 1.2rem;
     }
 
     .qa-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1.1rem;
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
     }
 
     .quick-access-card h3 {
-        font-size: 0.88rem;
+        font-size: 0.95rem;
     }
 
     .project-card {
-        padding: 1.2rem;
-        border-radius: var(--radius-md);
-    }
-
-    .project-card h3 {
-        font-size: 1.05rem;
-    }
-
-    .update-list {
-        margin-top: 1rem;
-    }
-
-    .update-item {
-        padding: 0.7rem 0;
-        gap: 6px;
+        padding: 1.4rem;
     }
 
     .modal-content {
-        padding: 1.2rem;
-        border-radius: var(--radius-md);
+        padding: 1.8rem;
     }
 
     .qr-code-img-container {
-        width: 180px;
-        height: 180px;
-        padding: 0;
-        overflow: hidden !important;
-        box-sizing: border-box;
-    }
-
-    .qr-code-img-container .qr-code-img {
-        max-width: 100% !important;
-        max-height: 100% !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-    }
-
-    .footer p {
-        font-size: 0.8rem;
-    }
-
-    .social-links a {
-        width: 36px;
-        height: 36px;
-        font-size: 1.1rem;
-    }
-
-    .donate-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
-        bottom: 15px;
-        right: 15px;
-    }
-
-    .back-to-top {
-        width: 34px;
-        height: 34px;
-        bottom: 68px;
-        right: 17px;
-        font-size: 0.85rem;
-    }
-
-    .skills-container {
-        gap: 1rem;
-    }
-
-    .skill-item {
-        margin-bottom: 0.8rem;
-    }
-}
-
-/* 超小屏幕手机 */
-@media (max-width: 360px) {
-    .hero h1 {
-        font-size: 1.3rem;
-    }
-
-    .hero p {
-        font-size: 0.82rem;
-    }
-
-    .content-card {
-        padding: 1rem;
-    }
-
-    .content-card h2 {
-        font-size: 1.05rem;
-    }
-
-    .content-card p {
-        font-size: 0.82rem;
-    }
-
-    .quick-access-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stat-badge {
-        font-size: 0.75rem;
-        padding: 8px 12px;
-    }
-
-    .lang-toggle {
-        width: 32px;
-        height: 28px;
-        font-size: 0.7rem;
-    }
-}
-
-/* 横屏模式优化 */
-@media (max-width: 900px) and (orientation: landscape) {
-    .hero {
-        padding: 2rem 0 2.5rem;
-    }
-
-    .hero h1 {
-        font-size: 1.6rem;
-    }
-
-    .container {
-        margin: 1.5rem auto;
-    }
-
-    .navbar {
-        padding: 0.6rem 4%;
-    }
-}
-
-/* 高分辨率屏幕优化 */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    body::before {
-        background-size: cover, 150px 150px;
-    }
-
-    .border-thin {
-        border-width: 0.5px;
-    }
-}
-
-/* 暗色模式支持（预留） */
-@media (prefers-color-scheme: dark) {
-    /* 可以在这里添加暗色模式样式 */
-    /* 当前保持浅色主题 */
-}
-
-/* 减少动画偏好支持 */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-
-    .particle {
-        animation: none;
-    }
-}
-
-/* 打印样式 */
-@media print {
-    .navbar,
-    .mobile-toggle,
-    .lang-toggle,
-    .donate-btn,
-    .back-to-top,
-    .particles,
-    .cursor-dot,
-    .loader,
-    .modal {
-        display: none !important;
-    }
-
-    body {
-        background: white;
-        color: black;
-    }
-
-    .content-card {
-        break-inside: avoid;
-        box-shadow: none;
-        border: 1px solid #ddd;
+        width: 220px;
+        height: 220px;
     }
 }
 
@@ -2304,4 +1586,33 @@ footer p {
 ::-moz-selection {
     background: rgba(199, 162, 124, 0.3);
     color: var(--dark);
+}
+
+/* ====== 手机端排列修复（2026-10-31）：导航链接改块级避免重叠，数据徽章改 2×2 ====== */
+@media (max-width: 768px) {
+    .navbar { padding: 0.85rem 4%; }
+    .logo { font-size: 1.25rem; white-space: nowrap; }
+    .logo-icon { margin-right: 6px; }
+    .mobile-toggle { font-size: 1.4rem; padding: 6px 10px; flex-shrink: 0; }
+    .mobile-toggle:hover { transform: none; }
+    .nav-links { padding: 0.25rem 0 0.75rem; gap: 0; border-radius: 0 0 16px 16px; overflow: hidden; }
+    .nav-links li { width: 100%; }
+    .nav-links li a { display: block; padding: 0.95rem 1.5rem; font-size: 1rem; line-height: 1.4; border-radius: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+    .nav-links li:last-child a { border-bottom: none; }
+    .nav-links li a::before { display: none; }
+    .nav-links li a.active { background: rgba(199, 162, 124, 0.14); }
+    .container { margin: 1.5rem auto; }
+    .hero { padding: 2rem 0 2.5rem; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: 1.85rem; line-height: 1.3; }
+    .hero p { font-size: 0.98rem; line-height: 1.7; }
+    .hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 430px; margin: 1.75rem auto 0; }
+    .stat-badge { justify-content: center; padding: 10px 8px; font-size: 0.85rem; white-space: nowrap; }
+}
+
+@media (max-width: 480px) {
+    .logo { font-size: 1.15rem; }
+    .hero h1 { font-size: 1.6rem; }
+    .hero-stats { gap: 8px; }
+    .stat-badge { font-size: 0.82rem; padding: 9px 6px; }
+    .nav-links li a { padding: 0.85rem 1.25rem; }
 }
